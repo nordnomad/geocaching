@@ -1,8 +1,15 @@
 package map.test.myapplication3.app;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationClient;
@@ -11,15 +18,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
-public class MapsActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MapsActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LocationClient mLocationClient;
+
+    private String[] mPlanetTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +38,48 @@ public class MapsActivity extends FragmentActivity implements ConnectionCallback
         setContentView(R.layout.activity_maps);
         mLocationClient = new LocationClient(this, this, this);
         mLocationClient.connect();
+
+
+        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+        // Set the list's click listener
+        class DrawerItemClickListener implements ListView.OnItemClickListener {
+            ActionBarDrawerToggle(
+                    this, /* host Activity */
+                    mDrawerLayout, /* DrawerLayout object */
+                    R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+                    R.string.drawer_open, /* "open drawer" description */
+                    R.string.drawer_close /* "close drawer" description */
+            ) {
+
+                /** Called when a drawer has settled in a completely closed state. */
+                public void onDrawerClosed (View view){
+                    getSupportActionBar().setTitle("mTitle");
+                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+
+                /** Called when a drawer has settled in a completely open state. */
+
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle("mDrawerTitle");
+                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        } @Override
+        public void onItemClick (AdapterView parent, View view,int position, long id){
+            Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
+        }
+        }
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBarDrawerToggle mDrawerToggle = new;
+        //mDrawerLayout.setDrawerListener(mDrawerToggle);
+        getActionBar().setIcon(R.drawable.ic_drawer);
         setUpMapIfNeeded();
     }
 
@@ -36,21 +89,6 @@ public class MapsActivity extends FragmentActivity implements ConnectionCallback
         setUpMapIfNeeded();
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -66,7 +104,13 @@ public class MapsActivity extends FragmentActivity implements ConnectionCallback
     }
 
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(MapsActivity.this, GeoCacheActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

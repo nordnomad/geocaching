@@ -4,5 +4,13 @@
     <string name="app_name">My Application 3</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key">AIzaSyDY9dZoM97iLvz3zMEK888i7-IYZmBZ7SA</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
 
+    <array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+    </array>
 </resources>
