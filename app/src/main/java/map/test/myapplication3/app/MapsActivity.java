@@ -64,7 +64,6 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                 }
 
                 /** Called when a drawer has settled in a completely open state. */
-
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle("mDrawerTitle");
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -72,7 +71,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
         } @Override
         public void onItemClick (AdapterView parent, View view,int position, long id){
             Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
-        }
+            }
         }
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
