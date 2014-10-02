@@ -6,8 +6,8 @@
     <LinearLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <include layout="@layout/map_fragment"/>
+            android:layout_height="match_parent" >
+        <include layout="@layout/map_fragment" />
     </LinearLayout>
     <ListView android:id="@+id/left_drawer"
               android:layout_width="240dp"

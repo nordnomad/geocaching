@@ -49,34 +49,34 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
         // Set the list's click listener
         class DrawerItemClickListener implements ListView.OnItemClickListener {
-            ActionBarDrawerToggle(
-                    this, /* host Activity */
-                    mDrawerLayout, /* DrawerLayout object */
-                    R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
-                    R.string.drawer_open, /* "open drawer" description */
-                    R.string.drawer_close /* "close drawer" description */
-            ) {
-
-                /** Called when a drawer has settled in a completely closed state. */
-                public void onDrawerClosed (View view){
-                    getSupportActionBar().setTitle("mTitle");
-                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                }
-
-                /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("mDrawerTitle");
-                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        } @Override
-        public void onItemClick (AdapterView parent, View view,int position, long id){
-            Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
             }
         }
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        ActionBarDrawerToggle mDrawerToggle = new;
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                this, /* host Activity */
+                mDrawerLayout, /* DrawerLayout object */
+                R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open, /* "open drawer" description */
+                R.string.drawer_close /* "close drawer" description */
+        ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                getSupportActionBar().setTitle("mTitle");
+                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle("mDrawerTitle");
+                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
         //mDrawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setIcon(R.drawable.ic_drawer);
         setUpMapIfNeeded();
