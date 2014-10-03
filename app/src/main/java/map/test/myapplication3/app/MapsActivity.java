@@ -106,7 +106,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(MapsActivity.this, GeoCacheActivity.class);
+                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });

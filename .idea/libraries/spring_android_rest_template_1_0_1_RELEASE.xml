@@ -5,7 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.ideaLibSources/spring-android-rest-template-1.0.1.RELEASE-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.android/spring-android-rest-template/1.0.1.RELEASE/a3f165f517617361739eeaf2e0e7dc1cf701cab8/spring-android-rest-template-1.0.1.RELEASE-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

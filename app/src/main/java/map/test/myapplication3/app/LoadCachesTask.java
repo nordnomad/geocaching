@@ -54,7 +54,11 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
         return null;
     }
 
-    private InputStreamReader getInputSteamReader(URL url) throws IOException {
+    public static InputStreamReader getInputSteamReader(String url) throws IOException {
+        return  getInputSteamReader(new URL(url));
+    }
+
+    public static InputStreamReader getInputSteamReader(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Accept-Encoding", "gzip;q=1.0, identity;q=0.5, *;q=0");
 
@@ -70,7 +74,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
         return new InputStreamReader(inputStream, charset);
     }
 
-    private String getCharsetFromContentType(String contentType) {
+    private static String getCharsetFromContentType(String contentType) {
         if (contentType != null) {
             for (String param : contentType.replace(" ", "").split(";")) {
                 if (param.toLowerCase().startsWith("charset=")) {

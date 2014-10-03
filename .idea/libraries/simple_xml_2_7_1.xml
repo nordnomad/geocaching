@@ -5,7 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.ideaLibSources/simple-xml-2.7.1-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.simpleframework/simple-xml/2.7.1/2a949576bb8da7514024dc0b84efeeb2fc902a0/simple-xml-2.7.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
