@@ -20,15 +20,16 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.message.BasicNameValuePair;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -266,7 +267,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
             // TODO: attempt authentication against a network service.
             String address = "http://pda.geocaching.su/login.php";
             try {
-                new ServerAuthenticate().signIn("sheff4ik2010@yandex.ru", "l8w4U5tm");
+                try {
+                    new ServerAuthenticate().signIn("sheff4ik2010@yandex.ru", "l8w4U5tm");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 //                CookieManager.getDefault().get("pda.geocaching.su", http_client.getAllHeaders())
 //                for(Cookie cookie : http_client.getCookieStore().getCookies()) {
 //                    if(cookie.getName().equals("caching_auth_st"))
@@ -312,68 +317,23 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>{
 }
 
 class ServerAuthenticate{
-    String signIn(String email, String password){
-        String url = "http://pda.geocaching.su/index.php";
+    String signIn(String email, String password) throws IOException {
+        String url = "http://pda.geocaching.su/login.php";
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost(url);
 
-        /*try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("Accept-Encoding", "gzip;q=1.0, identity;q=0.5, *;q=0");
-//            connection.setRequestProperty("email", email);
-//            connection.setRequestProperty("passwd", password);
-//            connection.setRequestProperty("LogIn", "");
-            connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.connect();
+        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        urlParameters.add(new BasicNameValuePair("email", "sheff4ik2010@yandex.ru"));
+        urlParameters.add(new BasicNameValuePair("passwd", "l8w4U5tm"));
+        urlParameters.add(new BasicNameValuePair("LogIn", ""));
 
-//            connection.getOutputStream().write( ("email=" + email).getBytes());
-//            connection.getOutputStream().write( ("passwd=" + password).getBytes());
-//            connection.getOutputStream().write( ("LogIn=").getBytes());
-            connection.getOutputStream().write( ("email=sheff4ik2010%40yandex.ru&passwd=l8w4U5tm&LogIn=%C2%EE%E9%F2%E8").getBytes());
-            InputStream is = connection.getInputStream();
-            byte[] b = new byte[1024];
-            StringBuilder buffer = new StringBuilder();
-            while ( is.read(b) != -1)
-                buffer.append(new String(b));
-            connection.disconnect();
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Can't connect to geocaching.su. Response: " + connection.getResponseCode());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        post.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(url);
-        String authtoken = null;
-        try {
-            HttpParams params = new BasicHttpParams();
-            params.setParameter("email", "sheff4ik2010@yandex.ru");
-            params.setParameter("passwd", password);
-            params.setParameter("LogIn", "");
-            httpPost.setParams(params);
-//            httpPost.setHeader("Accept-Encoding", "gzip;q=1.0, identity;q=0.5, *;q=0");
-//            httpPost.setHeader("Accept", "*/*");
-//            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpPost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36");
-//            httpPost.setHeader("Accept-Encoding","gzip,deflate");
-//            httpPost.setHeader("Cookie", "geocaching=b48245bf5025697e623e9adedd063b9d");
-//            httpPost.setHeader("Origin","http://pda.geocaching.su");
-//            httpPost.setHeader("Referer","http://pda.geocaching.su/login.php");
-            httpClient.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
-            httpClient.getParams().setParameter("http.protocol.cookie-policy", CookiePolicy.BROWSER_COMPATIBILITY);
-            httpClient.getParams().setParameter("http.protocol.single-cookie-header", Boolean.TRUE);
-            HttpResponse response = httpClient.execute(httpPost);
-            String responseString = EntityUtils.toString(response.getEntity());
+        HttpResponse response = client.execute(post);
 
-            if (response.getStatusLine().getStatusCode() != 201) {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return authtoken;
+        return "authtoken";
     }
 }
 
