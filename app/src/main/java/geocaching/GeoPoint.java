@@ -1,4 +1,4 @@
-package map.test.myapplication3.app;
+package geocaching;
 
 public class GeoPoint {
 

@@ -1,4 +1,4 @@
-package map.test.myapplication3.app;
+package geocaching;
 
 import android.os.AsyncTask;
 import com.google.android.gms.maps.GoogleMap;

@@ -1,10 +1,11 @@
-package map.test.myapplication3.app;
+package geocaching;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import map.test.myapplication3.app.R;
 
 public class GeoCacheActivity extends Activity {
     @Override

@@ -1,4 +1,4 @@
-package map.test.myapplication3.app;
+package geocaching;
 
 /**
  * Class for parsing data from geocaching.su and put it in the List of GeoCache. Parse XML file is as follows:
