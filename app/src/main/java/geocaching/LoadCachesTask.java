@@ -39,7 +39,6 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
         double southLat = bounds.southwest.latitude;
         double southLong = bounds.southwest.longitude;
 
-//        String url = "http://www.geocaching.su/pages/1031.ajax.php?lngmax=50.0455223&lngmin=49.8421028&latmax=36.076026&latmin=36.536897&id=12345678&geocaching=5767e405a17c4b0e1cbaecffdb93475d&exactly=1";
         String url = "http://www.geocaching.su/pages/1031.ajax.php?lngmax=" + northLong + "&lngmin=" + southLong + "&latmax=" + northLat + "&latmin=" + southLat + "&id=12345678&geocaching=5767e405a17c4b0e1cbaecffdb93475d&exactly=1";
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();

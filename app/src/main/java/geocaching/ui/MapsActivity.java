@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import geocaching.LoadCachesTask;
+import geocaching.login.CurrentUser;
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
@@ -41,9 +42,9 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
     GoogleMap googleMap; // Might be null if Google Play services APK is not available.
     LocationClient locationClient;
 
-    String[] planetTitles;
-    DrawerLayout drawerLayout;
-    ListView drawerList;
+    String[] menuItems;
+    DrawerLayout menuLayout;
+    ListView menuList;
 
     UserLoginTask authTask;
     EditText emailView;
@@ -83,13 +84,14 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
             locationClient = new LocationClient(this, this, this);
             locationClient.connect();
 
-            planetTitles = getResources().getStringArray(R.array.planets_array);
-            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            //menuItems = getResources().getStringArray(R.array.planets_array);
+            menuItems = new String[]{CurrentUser.username, "Карта", "Избранное", "Настройки"};
+            menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            drawerList = (ListView) findViewById(R.id.left_drawer);
+            menuList = (ListView) findViewById(R.id.left_drawer);
 
             // Set the adapter for the list view
-            drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, planetTitles));
+            menuList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, menuItems));
             // Set the list's click listener
             class DrawerItemClickListener implements ListView.OnItemClickListener {
                 @Override
@@ -97,12 +99,12 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                     Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
                 }
             }
-            drawerList.setOnItemClickListener(new DrawerItemClickListener());
+            menuList.setOnItemClickListener(new DrawerItemClickListener());
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
             ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                     this, /* host Activity */
-                    drawerLayout, /* DrawerLayout object */
+                    menuLayout, /* DrawerLayout object */
                     R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
                     R.string.drawer_open, /* "open drawer" description */
                     R.string.drawer_close /* "close drawer" description */
@@ -123,7 +125,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                     supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 }
             };
-            //drawerLayout.setDrawerListener(mDrawerToggle);
+            //menuLayout.setDrawerListener(mDrawerToggle);
             getActionBar().setIcon(R.drawable.ic_drawer);
             setUpMapIfNeeded();
         }
