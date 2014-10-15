@@ -88,7 +88,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     @Override
     protected void onPostExecute(Void o) {
         for (GeoCache cach : caches) {
-            map.addMarker(new MarkerOptions().position(new LatLng(cach.geoPoint.latitude, cach.geoPoint.longitude)).title(cach.name));
+            map.addMarker(new MarkerOptions().position(new LatLng(cach.getLa(), cach.getLn())).title(cach.getN()));
         }
     }
 }
@@ -128,17 +128,19 @@ class GeoCachesHandler extends DefaultHandler {
         if (localName.equalsIgnoreCase(ID)) {
             geoCache.id = parseInt(text, 0);
         } else if (localName.equalsIgnoreCase(NAME)) {
-            geoCache.name = text;
+            geoCache.setN(text);
         } else if (localName.equalsIgnoreCase(LATITUDE)) {
             latitude = parseCoordinate(text);
         } else if (localName.equalsIgnoreCase(LONGITUDE)) {
             longitude = parseCoordinate(text);
         } else if (localName.equalsIgnoreCase(CACHE_TYPE)) {
-            geoCache.type = numberToType(parseCacheParameter(text));
+//            geoCache.type = numberToType(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(STATUS)) {
-            geoCache.status = numberToStatus(parseCacheParameter(text));
+//            geoCache.status = numberToStatus(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(C)) {
-            geoCache.geoPoint = new GeoPoint(latitude, longitude);
+//            geoCache.geoPoint = new GeoPoint(latitude, longitude);
+            geoCache.setLa(latitude);
+            geoCache.setLn(longitude);
             geoCaches.add(geoCache);
         }
     }

@@ -1,4 +1,4 @@
-package geocaching;
+package geocaching.ui;
 
 import android.content.Intent;
 import android.location.Location;
@@ -19,6 +19,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import geocaching.LoadCachesTask;
+import geocaching.LoginActivity;
 import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -26,28 +28,28 @@ import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectio
 
 public class MapsActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private LocationClient mLocationClient;
+    private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
+    private LocationClient locationClient;
 
-    private String[] mPlanetTitles;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private String[] planetTitles;
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        mLocationClient = new LocationClient(this, this, this);
-        mLocationClient.connect();
+        locationClient = new LocationClient(this, this, this);
+        locationClient.connect();
 
 
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        planetTitles = getResources().getStringArray(R.array.planets_array);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        drawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
+        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, planetTitles));
         // Set the list's click listener
         class DrawerItemClickListener implements ListView.OnItemClickListener {
             @Override
@@ -55,12 +57,12 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                 Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
             }
         }
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this, /* host Activity */
-                mDrawerLayout, /* DrawerLayout object */
+                drawerLayout, /* DrawerLayout object */
                 R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open, /* "open drawer" description */
                 R.string.drawer_close /* "close drawer" description */
@@ -78,7 +80,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        //mDrawerLayout.setDrawerListener(mDrawerToggle);
+        //drawerLayout.setDrawerListener(mDrawerToggle);
         getActionBar().setIcon(R.drawable.ic_drawer);
         setUpMapIfNeeded();
     }
@@ -91,12 +93,12 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
 
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
+        if (googleMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
-            if (mMap != null) {
+            if (googleMap != null) {
                 setUpMap();
 
             }
@@ -104,7 +106,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
     }
 
     private void setUpMap() {
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
@@ -116,13 +118,13 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
     @Override
     public void onConnected(Bundle bundle) {
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        Location l = mLocationClient.getLastLocation();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
-//        new LoadCachesTask(mMap).execute();
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+        Location l = locationClient.getLastLocation();
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
+//        new LoadCachesTask(googleMap).execute();
+        googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                new LoadCachesTask(mMap).execute(mMap.getProjection().getVisibleRegion().latLngBounds);
+                new LoadCachesTask(googleMap).execute(googleMap.getProjection().getVisibleRegion().latLngBounds);
             }
         });
     }
