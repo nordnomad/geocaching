@@ -1,7 +1,6 @@
 package geocaching.login;
 
 import android.accounts.Account;
-import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,6 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import geocaching.ui.MapsActivity;
+import map.test.myapplication3.app.R;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,15 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static app.login.Const.*;
+import static geocaching.login.Const.*;
 
 public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
     String email;
     String password;
-    AccountAuthenticatorActivity context;
+    MapsActivity context;
 
-    public UserLoginTask(AccountAuthenticatorActivity context, String email, String password) {
+    public UserLoginTask(MapsActivity context, String email, String password) {
         this.email = email;
         this.password = password;
         this.context = context;

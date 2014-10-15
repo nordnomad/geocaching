@@ -4,6 +4,7 @@ import android.accounts.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import geocaching.ui.MapsActivity;
 
 public class Authnticator extends AbstractAccountAuthenticator {
 
@@ -24,7 +25,7 @@ public class Authnticator extends AbstractAccountAuthenticator {
         Bundle result;
         Intent intent;
 
-        intent = new Intent(this.context, LoginActivity.class);
+        intent = new Intent(this.context, MapsActivity.class);
         intent.putExtra("AUTHTOKEN_TYPEgeo", authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 

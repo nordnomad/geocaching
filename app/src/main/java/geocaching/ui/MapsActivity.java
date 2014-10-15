@@ -1,16 +1,22 @@
 package geocaching.ui;
 
-import android.content.Intent;
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.inputmethod.EditorInfo;
+import android.widget.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,76 +26,114 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import geocaching.LoadCachesTask;
-import geocaching.LoginActivity;
+import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
+import static android.text.TextUtils.isEmpty;
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
 public class MapsActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
-    private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
-    private LocationClient locationClient;
+    AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
+    Bundle mResultBundle = null;
 
-    private String[] planetTitles;
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
+    GoogleMap googleMap; // Might be null if Google Play services APK is not available.
+    LocationClient locationClient;
+
+    String[] planetTitles;
+    DrawerLayout drawerLayout;
+    ListView drawerList;
+
+    UserLoginTask authTask;
+    EditText emailView;
+    EditText passwordView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        locationClient = new LocationClient(this, this, this);
-        locationClient.connect();
-
-
-        planetTitles = getResources().getStringArray(R.array.planets_array);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        drawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, planetTitles));
-        // Set the list's click listener
-        class DrawerItemClickListener implements ListView.OnItemClickListener {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-                Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
-            }
+        mAccountAuthenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        if (mAccountAuthenticatorResponse != null) {
+            mAccountAuthenticatorResponse.onRequestContinued();
         }
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                this, /* host Activity */
-                drawerLayout, /* DrawerLayout object */
-                R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open, /* "open drawer" description */
-                R.string.drawer_close /* "close drawer" description */
-        ) {
+        Account[] accounts = AccountManager.get(this).getAccountsByType("com.geocaching");
+        if (accounts.length == 0) {
+            setContentView(R.layout.activity_login);
+            emailView = (EditText) findViewById(R.id.email);
+            passwordView = (EditText) findViewById(R.id.password);
+            passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                    if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                        attemptLogin();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            Button loginButton = (Button) findViewById(R.id.login_button);
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin();
+                }
+            });
+        } else {
+            setContentView(R.layout.activity_maps);
+            locationClient = new LocationClient(this, this, this);
+            locationClient.connect();
 
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                getSupportActionBar().setTitle("mTitle");
-                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
+            planetTitles = getResources().getStringArray(R.array.planets_array);
+            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle("mDrawerTitle");
-                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            drawerList = (ListView) findViewById(R.id.left_drawer);
+
+            // Set the adapter for the list view
+            drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, planetTitles));
+            // Set the list's click listener
+            class DrawerItemClickListener implements ListView.OnItemClickListener {
+                @Override
+                public void onItemClick(AdapterView parent, View view, int position, long id) {
+                    Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
+                }
             }
-        };
-        //drawerLayout.setDrawerListener(mDrawerToggle);
-        getActionBar().setIcon(R.drawable.ic_drawer);
-        setUpMapIfNeeded();
+            drawerList.setOnItemClickListener(new DrawerItemClickListener());
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                    this, /* host Activity */
+                    drawerLayout, /* DrawerLayout object */
+                    R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+                    R.string.drawer_open, /* "open drawer" description */
+                    R.string.drawer_close /* "close drawer" description */
+            ) {
+                /**
+                 * Called when a drawer has settled in a completely closed state.
+                 */
+                public void onDrawerClosed(View view) {
+                    getSupportActionBar().setTitle("mTitle");
+                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+
+                /**
+                 * Called when a drawer has settled in a completely open state.
+                 */
+                public void onDrawerOpened(View drawerView) {
+                    getSupportActionBar().setTitle("mDrawerTitle");
+                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                }
+            };
+            //drawerLayout.setDrawerListener(mDrawerToggle);
+            getActionBar().setIcon(R.drawable.ic_drawer);
+            setUpMapIfNeeded();
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        setUpMapIfNeeded();
+//    }
 
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
@@ -109,8 +153,8 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+//                startActivity(intent);
             }
         });
     }
@@ -137,5 +181,74 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Toast.makeText(this, "Failed.", Toast.LENGTH_SHORT).show();
+    }
+
+    public void attemptLogin() {
+        if (!isOnline()) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            AlertDialog alertDialog = alertDialogBuilder
+                    .setTitle("Network is required")
+                    .setMessage("You are offline, please connect to internet to be able to login!")
+                    .setCancelable(false)
+                    .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .create();
+            alertDialog.show();
+            return;
+        }
+        if (authTask != null) {
+            return;
+        }
+        emailView.setError(null);
+        passwordView.setError(null);
+
+        String email = emailView.getText().toString();
+        String password = passwordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+        if (isEmpty(password)) {
+            passwordView.setError(getString(R.string.error_invalid_password));
+            focusView = passwordView;
+            cancel = true;
+        }
+        if (isEmpty(email)) {
+            emailView.setError(getString(R.string.error_field_required));
+            focusView = emailView;
+            cancel = true;
+        }
+        if (cancel) {
+            focusView.requestFocus();
+        } else {
+            authTask = new UserLoginTask(this, email, password);
+            authTask.execute((Void) null);
+        }
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
+    }
+
+    public final void setAccountAuthenticatorResult(Bundle result) {
+        mResultBundle = result;
+    }
+
+    public void finish() {
+        if (mAccountAuthenticatorResponse != null) {
+            // send the result bundle back if set, otherwise send an error.
+            if (mResultBundle != null) {
+                mAccountAuthenticatorResponse.onResult(mResultBundle);
+            } else {
+                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED,
+                        "canceled");
+            }
+            mAccountAuthenticatorResponse = null;
+        }
+        super.finish();
     }
 }
