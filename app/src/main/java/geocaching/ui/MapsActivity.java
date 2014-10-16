@@ -6,41 +6,28 @@ import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import geocaching.LoadCachesTask;
-import geocaching.login.CurrentUser;
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
 import static android.text.TextUtils.isEmpty;
-import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
-public class MapsActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class MapsActivity extends ActionBarActivity /*implements ConnectionCallbacks, OnConnectionFailedListener */ {
 
-    AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;
-    Bundle mResultBundle = null;
-
-    GoogleMap googleMap; // Might be null if Google Play services APK is not available.
-    LocationClient locationClient;
+    AccountAuthenticatorResponse mAccountAuthenticatorResponse;
+    Bundle mResultBundle;
 
     String[] menuItems;
     DrawerLayout menuLayout;
@@ -81,15 +68,10 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
             });
         } else {
             setContentView(R.layout.activity_maps);
-            locationClient = new LocationClient(this, this, this);
-            locationClient.connect();
-
             //menuItems = getResources().getStringArray(R.array.planets_array);
-            menuItems = new String[]{CurrentUser.username, "Карта", "Избранное", "Настройки"};
+            menuItems = new String[]{"CurrentUser.username", "Карта", "Избранное", "Настройки"};
             menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
             menuList = (ListView) findViewById(R.id.left_drawer);
-
             // Set the adapter for the list view
             menuList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, menuItems));
             // Set the list's click listener
@@ -97,6 +79,7 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
                 @Override
                 public void onItemClick(AdapterView parent, View view, int position, long id) {
                     Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
+                    selectItem(position);
                 }
             }
             menuList.setOnItemClickListener(new DrawerItemClickListener());
@@ -127,62 +110,39 @@ public class MapsActivity extends ActionBarActivity implements ConnectionCallbac
             };
             //menuLayout.setDrawerListener(mDrawerToggle);
             getActionBar().setIcon(R.drawable.ic_drawer);
-            setUpMapIfNeeded();
+            selectItem(0);
         }
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        setUpMapIfNeeded();
-//    }
-
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (googleMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (googleMap != null) {
-                setUpMap();
-
-            }
+    private void selectItem(int position) {
+        // Update the main content by replacing fragments
+        Fragment fragment = null;
+        switch (position) {
+            case 0:
+                fragment = new ProfileScreen();
+                break;
+            case 1:
+                fragment = new MapScreen();
+                break;
+            case 2:
+                fragment = new OptionsScreen();
+                break;
+            default:
+                break;
         }
-    }
-
-    private void setUpMap() {
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-//                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-//                startActivity(intent);
-            }
-        });
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        Location l = locationClient.getLastLocation();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
-//        new LoadCachesTask(googleMap).execute();
-        googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                new LoadCachesTask(googleMap).execute(googleMap.getProjection().getVisibleRegion().latLngBounds);
-            }
-        });
-    }
-
-    @Override
-    public void onDisconnected() {
-        Toast.makeText(this, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(this, "Failed.", Toast.LENGTH_SHORT).show();
+        // Insert the fragment by replacing any existing fragment
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment).commit();
+            // Highlight the selected item, update the title, and close the drawer
+            menuList.setItemChecked(position, true);
+            setTitle(menuItems[position]);
+            menuLayout.closeDrawer(menuList);
+        } else {
+            // Error
+            Log.e(getLocalClassName(), "Error. Fragment is not created");
+        }
     }
 
     public void attemptLogin() {

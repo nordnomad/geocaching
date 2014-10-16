@@ -54,7 +54,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     }
 
     public static InputStreamReader getInputSteamReader(String url) throws IOException {
-        return  getInputSteamReader(new URL(url));
+        return getInputSteamReader(new URL(url));
     }
 
     public static InputStreamReader getInputSteamReader(URL url) throws IOException {
