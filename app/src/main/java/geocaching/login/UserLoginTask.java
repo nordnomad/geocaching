@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import geocaching.ui.MapsActivity;
+import geocaching.ui.MainActivity;
 import map.test.myapplication3.app.R;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -35,9 +35,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
     String email;
     String password;
-    MapsActivity context;
+    MainActivity context;
 
-    public UserLoginTask(MapsActivity context, String email, String password) {
+    public UserLoginTask(MainActivity context, String email, String password) {
         this.email = email;
         this.password = password;
         this.context = context;

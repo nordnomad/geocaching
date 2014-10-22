@@ -24,7 +24,7 @@ import map.test.myapplication3.app.R;
 
 import static android.text.TextUtils.isEmpty;
 
-public class MapsActivity extends ActionBarActivity /*implements ConnectionCallbacks, OnConnectionFailedListener */ {
+public class MainActivity extends ActionBarActivity {
 
     AccountAuthenticatorResponse mAccountAuthenticatorResponse;
     Bundle mResultBundle;
@@ -78,7 +78,7 @@ public class MapsActivity extends ActionBarActivity /*implements ConnectionCallb
             class DrawerItemClickListener implements ListView.OnItemClickListener {
                 @Override
                 public void onItemClick(AdapterView parent, View view, int position, long id) {
-                    Toast.makeText(MapsActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
                     selectItem(position);
                 }
             }
@@ -110,12 +110,11 @@ public class MapsActivity extends ActionBarActivity /*implements ConnectionCallb
             };
             //menuLayout.setDrawerListener(mDrawerToggle);
             getActionBar().setIcon(R.drawable.ic_drawer);
-            selectItem(0);
+            selectItem(1);
         }
     }
 
     private void selectItem(int position) {
-        // Update the main content by replacing fragments
         Fragment fragment = null;
         switch (position) {
             case 0:
@@ -130,17 +129,14 @@ public class MapsActivity extends ActionBarActivity /*implements ConnectionCallb
             default:
                 break;
         }
-        // Insert the fragment by replacing any existing fragment
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment).commit();
-            // Highlight the selected item, update the title, and close the drawer
             menuList.setItemChecked(position, true);
             setTitle(menuItems[position]);
             menuLayout.closeDrawer(menuList);
         } else {
-            // Error
             Log.e(getLocalClassName(), "Error. Fragment is not created");
         }
     }
@@ -206,8 +202,7 @@ public class MapsActivity extends ActionBarActivity /*implements ConnectionCallb
             if (mResultBundle != null) {
                 mAccountAuthenticatorResponse.onResult(mResultBundle);
             } else {
-                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED,
-                        "canceled");
+                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
             }
             mAccountAuthenticatorResponse = null;
         }

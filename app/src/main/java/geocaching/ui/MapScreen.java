@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationClient;
@@ -24,18 +25,20 @@ import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectio
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
     GoogleMap googleMap; // Might be null if Google Play services APK is not available.
     LocationClient locationClient;
-
+    View markerInfo;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         locationClient = new LocationClient(getActivity(), this, this);
         locationClient.connect();
         View view = inflater.inflate(R.layout.map_screen, container, false);
-        setUpMapIfNeeded();
+        //setUpMapIfNeeded();
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        markerInfo = view.findViewById(R.id.markerInfo);
         if (googleMap != null) {
             setUpMap();
         } else {
@@ -84,11 +87,24 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     }
 
     private void setUpMap() {
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        googleMap.setMyLocationEnabled(true);
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public void onInfoWindowClick(Marker marker) {
-//                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-//                startActivity(intent);
+            public boolean onMarkerClick(Marker marker) {
+                if(markerInfo.getVisibility() == View.GONE){
+                    markerInfo.setVisibility(View.VISIBLE);
+                }
+                TextView textView = (TextView) markerInfo.findViewById(R.id.nameView);
+                textView.setText(marker.getTitle());
+                return true; // to prevent center marker on screen
+            }
+        });
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(markerInfo.getVisibility() == View.VISIBLE){
+                    markerInfo.setVisibility(View.GONE);
+                }
             }
         });
     }
