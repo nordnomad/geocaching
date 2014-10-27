@@ -16,9 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 import geocaching.login.UserLoginTask;
@@ -88,7 +86,6 @@ public class MainActivity extends ActionBarActivity {
 
             drawerToggle = new ActionBarDrawerToggle(this, menuLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
                 public void onDrawerClosed(View view) {
-                    getSupportActionBar().setTitle("mTitle");
                     supportInvalidateOptionsMenu();
                 }
                 public void onDrawerOpened(View drawerView) {
@@ -148,16 +145,32 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_bar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(menuLayout != null) {
+            boolean drawerOpen = menuLayout.isDrawerOpen(menuList);
+            menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+        }
+        return super.onPrepareOptionsMenu(menu);
+
+    }
+
     /**
      * When using the ActionBarDrawerToggle, you must call it during
      * onPostCreate() and onConfigurationChanged()...
      */
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
+        if(drawerToggle != null) drawerToggle.syncState();
     }
 
     @Override
