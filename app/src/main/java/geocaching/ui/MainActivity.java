@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
@@ -26,8 +28,8 @@ import static android.text.TextUtils.isEmpty;
 
 public class MainActivity extends ActionBarActivity {
 
-    AccountAuthenticatorResponse mAccountAuthenticatorResponse;
-    Bundle mResultBundle;
+    AccountAuthenticatorResponse accountAuthenticatorResponse;
+    Bundle resultBundle;
 
     String[] menuItems;
     DrawerLayout menuLayout;
@@ -36,13 +38,14 @@ public class MainActivity extends ActionBarActivity {
     UserLoginTask authTask;
     EditText emailView;
     EditText passwordView;
+    ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAccountAuthenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-        if (mAccountAuthenticatorResponse != null) {
-            mAccountAuthenticatorResponse.onRequestContinued();
+        accountAuthenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        if (accountAuthenticatorResponse != null) {
+            accountAuthenticatorResponse.onRequestContinued();
         }
         Account[] accounts = AccountManager.get(this).getAccountsByType("com.geocaching");
         if (accounts.length == 0) {
@@ -68,50 +71,54 @@ public class MainActivity extends ActionBarActivity {
             });
         } else {
             setContentView(R.layout.activity_maps);
-            //menuItems = getResources().getStringArray(R.array.planets_array);
             menuItems = new String[]{"CurrentUser.username", "Карта", "Избранное", "Настройки"};
             menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             menuList = (ListView) findViewById(R.id.left_drawer);
-            // Set the adapter for the list view
             menuList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, menuItems));
-            // Set the list's click listener
             class DrawerItemClickListener implements ListView.OnItemClickListener {
                 @Override
                 public void onItemClick(AdapterView parent, View view, int position, long id) {
-                    Toast.makeText(MainActivity.this, "DrawerItemClickListener.", Toast.LENGTH_SHORT).show();
                     selectItem(position);
                 }
             }
             menuList.setOnItemClickListener(new DrawerItemClickListener());
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                    this, /* host Activity */
-                    menuLayout, /* DrawerLayout object */
-                    R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
-                    R.string.drawer_open, /* "open drawer" description */
-                    R.string.drawer_close /* "close drawer" description */
-            ) {
-                /**
-                 * Called when a drawer has settled in a completely closed state.
-                 */
+
+            drawerToggle = new ActionBarDrawerToggle(this, menuLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
                 public void onDrawerClosed(View view) {
                     getSupportActionBar().setTitle("mTitle");
-                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    supportInvalidateOptionsMenu();
                 }
-
-                /**
-                 * Called when a drawer has settled in a completely open state.
-                 */
                 public void onDrawerOpened(View drawerView) {
-                    getSupportActionBar().setTitle("mDrawerTitle");
-                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    getSupportActionBar().setTitle("Geocaching");
+                    supportInvalidateOptionsMenu();
                 }
             };
-            //menuLayout.setDrawerListener(mDrawerToggle);
-            getActionBar().setIcon(R.drawable.ic_drawer);
-            selectItem(1);
+            menuLayout.setDrawerListener(drawerToggle);
+
+            if (savedInstanceState == null) {
+                selectItem(1);
+            }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        switch (item.getItemId()) {
+//            case R.id.home:
+//                menuLayout.isDrawerOpen(item.getActionView());
+//                Toast.makeText(this, "Settings selected", Toast.LENGTH_LONG).show();
+//                break;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void selectItem(int position) {
@@ -134,11 +141,30 @@ public class MainActivity extends ActionBarActivity {
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment).commit();
             menuList.setItemChecked(position, true);
-            setTitle(menuItems[position]);
+            getSupportActionBar().setTitle(menuItems[position]);
             menuLayout.closeDrawer(menuList);
         } else {
             Log.e(getLocalClassName(), "Error. Fragment is not created");
         }
+    }
+
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     public void attemptLogin() {
@@ -193,18 +219,18 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public final void setAccountAuthenticatorResult(Bundle result) {
-        mResultBundle = result;
+        resultBundle = result;
     }
 
     public void finish() {
-        if (mAccountAuthenticatorResponse != null) {
+        if (accountAuthenticatorResponse != null) {
             // send the result bundle back if set, otherwise send an error.
-            if (mResultBundle != null) {
-                mAccountAuthenticatorResponse.onResult(mResultBundle);
+            if (resultBundle != null) {
+                accountAuthenticatorResponse.onResult(resultBundle);
             } else {
-                mAccountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
+                accountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
             }
-            mAccountAuthenticatorResponse = null;
+            accountAuthenticatorResponse = null;
         }
         super.finish();
     }

@@ -2,9 +2,11 @@ package geocaching;
 
 import android.os.AsyncTask;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import map.test.myapplication3.app.R;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -87,7 +89,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     @Override
     protected void onPostExecute(Void o) {
         for (GeoCache cach : caches) {
-            map.addMarker(new MarkerOptions().position(new LatLng(cach.getLa(), cach.getLn())).title(cach.getN()));
+            map.addMarker(new MarkerOptions().position(new LatLng(cach.getLa(), cach.getLn())).title(cach.getN()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_36dp)));
         }
     }
 }

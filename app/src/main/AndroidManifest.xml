@@ -37,6 +37,7 @@
         </activity>
 
         <activity android:name="geocaching.GeoCacheActivity" />
+        <activity android:name="geocaching.ui.CompassActivity" />
 
         <service android:name="geocaching.login.AuthService">
             <intent-filter>
