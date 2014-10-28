@@ -69,7 +69,7 @@ class GeoCachesHandler extends DefaultHandler {
     String ID = "id";
     String CN = "cn";
     String AREA = "a";
-    String NAME = "name";
+    String NAME = "n";
     String LATITUDE = "la";
     String LONGITUDE = "ln";
     String CACHE_TYPE = "ct";

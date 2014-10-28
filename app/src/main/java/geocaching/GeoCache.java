@@ -9,7 +9,7 @@ package geocaching;
  *             <id>8901</id>
  *             <cn>10</cn>
  *             <a>47</a>
- *             <name>Geocache name</name>
+ *             <n>Geocache name</n>
  *             <la>59.6952333333</la>
  *             <ln>29.3968666667</ln>
  *             <ct>3</ct>
