@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
@@ -106,12 +106,20 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 TextView textView = (TextView) markerInfo.findViewById(R.id.nameView);
                 textView.setText(marker.getTitle() + " " + String.format("%.1f km", distanceTo / 1000.0));
 
-                Button findBtn = (Button) markerInfo.findViewById(R.id.findBtn);
+                ImageButton findBtn = (ImageButton) markerInfo.findViewById(R.id.findBtn);
                 findBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), CompassActivity.class);
                         startActivity(intent);
+                    }
+                });
+
+                ImageButton saveBtn = (ImageButton) markerInfo.findViewById(R.id.saveBtn);
+                saveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       
                     }
                 });
 

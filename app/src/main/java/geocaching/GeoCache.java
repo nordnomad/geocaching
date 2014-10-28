@@ -28,6 +28,9 @@ public class GeoCache {
     int ct; // type
     int st; // status
 
+    public GeoCacheType type;
+    public GeoCacheStatus status;
+
     public int getId() {
         return id;
     }

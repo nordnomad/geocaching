@@ -24,8 +24,15 @@
                 android:layout_weight="0.8"
                 android:layout_height="fill_parent"
                 android:id="@+id/nameView" />
-        <Button
-                android:drawableTop="@drawable/ic_navigation_black_24dp"
+
+        <ImageButton
+                android:src="@drawable/ic_get_app_black_48dp"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="fill_parent"
+                android:id="@+id/saveBtn" />
+        <ImageButton
+                android:src="@drawable/ic_navigation_black_48dp"
                 android:layout_width="0dp"
                 android:layout_weight="0.2"
                 android:layout_height="fill_parent"

@@ -6,7 +6,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import map.test.myapplication3.app.R;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -22,6 +21,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+
+import static geocaching.Utils.getMarkerResId;
+import static geocaching.Utils.numberToStatus;
+import static geocaching.Utils.numberToType;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     List<GeoCache> caches = new ArrayList<GeoCache>();
@@ -88,8 +91,13 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
 
     @Override
     protected void onPostExecute(Void o) {
+        if(!caches.isEmpty())
         for (GeoCache cach : caches) {
-            map.addMarker(new MarkerOptions().position(new LatLng(cach.getLa(), cach.getLn())).title(cach.getN()).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_36dp)));
+            map.addMarker(new MarkerOptions()
+                    .position(new LatLng(cach.getLa(), cach.getLn()))
+                    .title(cach.getN())
+                    .icon(BitmapDescriptorFactory.fromResource(
+                            getMarkerResId(cach.type, cach.status))));
         }
     }
 }
@@ -135,9 +143,9 @@ class GeoCachesHandler extends DefaultHandler {
         } else if (localName.equalsIgnoreCase(LONGITUDE)) {
             longitude = parseCoordinate(text);
         } else if (localName.equalsIgnoreCase(CACHE_TYPE)) {
-//            geoCache.type = numberToType(parseCacheParameter(text));
+            geoCache.type = numberToType(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(STATUS)) {
-//            geoCache.status = numberToStatus(parseCacheParameter(text));
+           geoCache.status = numberToStatus(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(C)) {
 //            geoCache.geoPoint = new GeoPoint(latitude, longitude);
             geoCache.setLa(latitude);
@@ -172,39 +180,4 @@ class GeoCachesHandler extends DefaultHandler {
         return defaultValue;
     }
 
-    GeoCacheType numberToType(int type) {
-        switch (type) {
-            case 1:
-                return GeoCacheType.TRADITIONAL;
-            case 2:
-                return GeoCacheType.STEP_BY_STEP_TRADITIONAL;
-            case 3:
-                return GeoCacheType.VIRTUAL;
-            case 4:
-                return GeoCacheType.EVENT;
-            case 5:
-                return GeoCacheType.WEBCAM;
-            case 6:
-                return GeoCacheType.EXTREME;
-            case 7:
-                return GeoCacheType.STEP_BY_STEP_VIRTUAL;
-            case 8:
-                return GeoCacheType.CONTEST;
-            default:
-                return GeoCacheType.TRADITIONAL;
-        }
-    }
-
-    GeoCacheStatus numberToStatus(int number) {
-        switch (number) {
-            case 1:
-                return GeoCacheStatus.VALID;
-            case 2:
-                return GeoCacheStatus.NOT_VALID;
-            case 3:
-                return GeoCacheStatus.NOT_CONFIRMED;
-            default:
-                return GeoCacheStatus.VALID;
-        }
-    }
 }
