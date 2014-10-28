@@ -1,11 +1,14 @@
 package geocaching;
 
 import android.os.AsyncTask;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -13,6 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +26,9 @@ import static geocaching.Utils.*;
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     List<GeoCache> caches = new ArrayList<GeoCache>();
 
-    GoogleMap map;
+    MapWrapper map;
 
-    public LoadCachesTask(GoogleMap map) {
+    public LoadCachesTask(MapWrapper map) {
         this.map = map;
     }
 
@@ -52,12 +56,18 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
 
     @Override
     protected void onPostExecute(Void o) {
-        for (GeoCache cach : caches) {
-            map.addMarker(new MarkerOptions()
-                    .position(new LatLng(cach.la, cach.ln))
-                    .title(cach.name)
-                    .icon(BitmapDescriptorFactory.fromResource(
-                            getMarkerResId(cach.type, cach.status))));
+        for (GeoCache cache : caches) {
+            if (!map.markerGeoCaches.containsKey(cache)) {
+                Marker marker = map.map.addMarker(markerFromCache(cache));
+                map.markerGeoCaches.put(cache, marker);
+            }
+        }
+        for (GeoCache cache : map.markerGeoCaches.keySet()){
+            if(!caches.contains(cache)){
+                Marker marker = map.markerGeoCaches.get(cache);
+                marker.remove();
+                map.markerGeoCaches.remove(cache);
+            }
         }
     }
 }
@@ -105,7 +115,7 @@ class GeoCachesHandler extends DefaultHandler {
         } else if (localName.equalsIgnoreCase(CACHE_TYPE)) {
             geoCache.type = numberToType(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(STATUS)) {
-           geoCache.status = numberToStatus(parseCacheParameter(text));
+            geoCache.status = numberToStatus(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(C)) {
 //            geoCache.geoPoint = new GeoPoint(latitude, longitude);
             geoCache.la = latitude;

@@ -12,31 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapWrapper {
-    GoogleMap map;
-    LocationClient locationClient;
-    Map<Marker, GeoCache> markerMap = new HashMap<Marker, GeoCache>();
-    Marker selectedMarker;
+    public GoogleMap map;
+    public Map<GeoCache, Marker> markerGeoCaches = new HashMap<GeoCache, Marker>();
 
     public MapWrapper(GoogleMap googleMap) {
         this.map = googleMap;
         this.map.setMyLocationEnabled(true);
-
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_48dp));
-                Location location = new Location("Test");
-                location.setLatitude(marker.getPosition().latitude);
-                location.setLongitude(marker.getPosition().longitude);
-
-                return true; // to prevent center marker on screen
-            }
-        });
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-            }
-        });
     }
 }

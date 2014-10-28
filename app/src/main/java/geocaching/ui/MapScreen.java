@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +21,18 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import geocaching.LoadCachesTask;
+import geocaching.MapWrapper;
 import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
-    GoogleMap googleMap; // Might be null if Google Play services APK is not available.
+    MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     LocationClient locationClient;
     View markerInfo;
+
+    FragmentManager fragmentManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        fragmentManager = getActivity().getSupportFragmentManager();
         markerInfo = view.findViewById(R.id.markerInfo);
         if (googleMap != null) {
             setUpMap();
@@ -51,8 +56,9 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onDestroyView() {
         super.onDestroyView();
         if (googleMap != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .remove(getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).commit();
+            fragmentManager.beginTransaction()
+                    .remove(fragmentManager.findFragmentById(R.id.map))
+                    .commit();
             googleMap = null;
         }
     }
@@ -61,11 +67,11 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onConnected(Bundle bundle) {
         Toast.makeText(getActivity(), "Connected", Toast.LENGTH_SHORT).show();
         Location l = locationClient.getLastLocation();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
-        googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+        googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
+        googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                new LoadCachesTask(googleMap).execute(googleMap.getProjection().getVisibleRegion().latLngBounds);
+                new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
             }
         });
     }
@@ -82,14 +88,14 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     private void setUpMapIfNeeded() {
         if (googleMap == null) {
-            googleMap = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            googleMap = new MapWrapper(((SupportMapFragment) fragmentManager.findFragmentById(R.id.map)).getMap());
             if (googleMap != null) setUpMap();
         }
     }
 
     private void setUpMap() {
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        googleMap.map.setMyLocationEnabled(true);
+        googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if (markerInfo.getVisibility() == View.GONE) {
@@ -119,14 +125,14 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       
+
                     }
                 });
 
                 return true; // to prevent center marker on screen
             }
         });
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        googleMap.map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if (markerInfo.getVisibility() == View.VISIBLE) {
