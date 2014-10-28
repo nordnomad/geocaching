@@ -2,6 +2,13 @@ package geocaching;
 
 import map.test.myapplication3.app.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.zip.GZIPInputStream;
+
 public class Utils {
     public static int getMarkerResId(GeoCacheType type, GeoCacheStatus status) {
         switch (type) {
@@ -126,5 +133,32 @@ public class Utils {
             default:
                 return GeoCacheStatus.VALID;
         }
+    }
+
+    public static String getCharsetFromContentType(String contentType) {
+        if (contentType != null) {
+            for (String param : contentType.replace(" ", "").split(";")) {
+                if (param.toLowerCase().startsWith("charset=")) {
+                    return param.split("=", 2)[1];
+                }
+            }
+        }
+        return "windows-1251";
+    }
+
+    public static InputStreamReader getInputSteamReader(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("Accept-Encoding", "gzip;q=1.0, identity;q=0.5, *;q=0");
+
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new IOException("Can't connect to geocaching.su. Response: " + connection.getResponseCode());
+        }
+        InputStream inputStream = connection.getInputStream();
+        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
+            inputStream = new GZIPInputStream(inputStream);
+        }
+        String charset = getCharsetFromContentType(connection.getContentType());
+
+        return new InputStreamReader(inputStream, charset);
     }
 }

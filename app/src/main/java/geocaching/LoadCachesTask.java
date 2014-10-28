@@ -13,18 +13,11 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
-import static geocaching.Utils.getMarkerResId;
-import static geocaching.Utils.numberToStatus;
-import static geocaching.Utils.numberToType;
+import static geocaching.Utils.*;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     List<GeoCache> caches = new ArrayList<GeoCache>();
@@ -37,7 +30,6 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
 
     @Override
     protected Void doInBackground(LatLngBounds... bounds1) {
-//        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
         LatLngBounds bounds = bounds1[0];
         double northLat = bounds.northeast.latitude;
         double northLong = bounds.northeast.longitude;
@@ -58,44 +50,12 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
         return null;
     }
 
-    public static InputStreamReader getInputSteamReader(String url) throws IOException {
-        return getInputSteamReader(new URL(url));
-    }
-
-    public static InputStreamReader getInputSteamReader(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Accept-Encoding", "gzip;q=1.0, identity;q=0.5, *;q=0");
-
-        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            throw new IOException("Can't connect to geocaching.su. Response: " + connection.getResponseCode());
-        }
-        InputStream inputStream = connection.getInputStream();
-        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-            inputStream = new GZIPInputStream(inputStream);
-        }
-        String charset = getCharsetFromContentType(connection.getContentType());
-
-        return new InputStreamReader(inputStream, charset);
-    }
-
-    private static String getCharsetFromContentType(String contentType) {
-        if (contentType != null) {
-            for (String param : contentType.replace(" ", "").split(";")) {
-                if (param.toLowerCase().startsWith("charset=")) {
-                    return param.split("=", 2)[1];
-                }
-            }
-        }
-        return "windows-1251";
-    }
-
     @Override
     protected void onPostExecute(Void o) {
-        if(!caches.isEmpty())
         for (GeoCache cach : caches) {
             map.addMarker(new MarkerOptions()
-                    .position(new LatLng(cach.getLa(), cach.getLn()))
-                    .title(cach.getN())
+                    .position(new LatLng(cach.la, cach.ln))
+                    .title(cach.name)
                     .icon(BitmapDescriptorFactory.fromResource(
                             getMarkerResId(cach.type, cach.status))));
         }
@@ -109,7 +69,7 @@ class GeoCachesHandler extends DefaultHandler {
     String ID = "id";
     String CN = "cn";
     String AREA = "a";
-    String NAME = "n";
+    String NAME = "name";
     String LATITUDE = "la";
     String LONGITUDE = "ln";
     String CACHE_TYPE = "ct";
@@ -137,7 +97,7 @@ class GeoCachesHandler extends DefaultHandler {
         if (localName.equalsIgnoreCase(ID)) {
             geoCache.id = parseInt(text, 0);
         } else if (localName.equalsIgnoreCase(NAME)) {
-            geoCache.setN(text);
+            geoCache.name = text;
         } else if (localName.equalsIgnoreCase(LATITUDE)) {
             latitude = parseCoordinate(text);
         } else if (localName.equalsIgnoreCase(LONGITUDE)) {
@@ -148,8 +108,8 @@ class GeoCachesHandler extends DefaultHandler {
            geoCache.status = numberToStatus(parseCacheParameter(text));
         } else if (localName.equalsIgnoreCase(C)) {
 //            geoCache.geoPoint = new GeoPoint(latitude, longitude);
-            geoCache.setLa(latitude);
-            geoCache.setLn(longitude);
+            geoCache.la = latitude;
+            geoCache.ln = longitude;
             geoCaches.add(geoCache);
         }
     }
