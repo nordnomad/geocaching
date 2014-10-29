@@ -3,8 +3,8 @@
 
     <string name="app_name">Geocache</string>
     <string name="title_activity_maps">Geochache</string>
-    <string name="google_maps_key1">AIzaSyDY9dZoM97iLvz3zMEK888i7-IYZmBZ7SA</string>
-    <string name="google_maps_key">AIzaSyCZVpQg7DUkr5UT3aeA8z9SLnsePxIiwsg</string>
+    <string name="google_maps_key">AIzaSyDY9dZoM97iLvz3zMEK888i7-IYZmBZ7SA</string>
+    <string name="google_maps_key1">AIzaSyCZVpQg7DUkr5UT3aeA8z9SLnsePxIiwsg</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
 

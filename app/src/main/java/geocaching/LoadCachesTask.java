@@ -1,14 +1,8 @@
 package geocaching;
 
 import android.os.AsyncTask;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -16,9 +10,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static geocaching.Utils.*;
@@ -62,11 +56,13 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
                 map.markerGeoCaches.put(cache, marker);
             }
         }
-        for (GeoCache cache : map.markerGeoCaches.keySet()){
-            if(!caches.contains(cache)){
+        Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
+        while (iterator.hasNext()) {
+            GeoCache cache = iterator.next();
+            if (!caches.contains(cache)) {
                 Marker marker = map.markerGeoCaches.get(cache);
                 marker.remove();
-                map.markerGeoCaches.remove(cache);
+                iterator.remove();
             }
         }
     }
