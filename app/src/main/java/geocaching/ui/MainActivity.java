@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -23,6 +25,7 @@ import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
 import static android.text.TextUtils.isEmpty;
+import static android.widget.Toast.LENGTH_LONG;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -88,6 +91,7 @@ public class MainActivity extends ActionBarActivity {
                 public void onDrawerClosed(View view) {
                     supportInvalidateOptionsMenu();
                 }
+
                 public void onDrawerOpened(View drawerView) {
                     getSupportActionBar().setTitle("Geocaching");
                     supportInvalidateOptionsMenu();
@@ -107,15 +111,14 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         switch (item.getItemId()) {
-//            case R.id.home:
+            case R.id.action_search:
 //                menuLayout.isDrawerOpen(item.getActionView());
-//                Toast.makeText(this, "Settings selected", Toast.LENGTH_LONG).show();
-//                break;
+                Toast.makeText(this, "Settings selected", LENGTH_LONG).show();
+                return true;
 
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void selectItem(int position) {
@@ -147,30 +150,48 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_bar, menu);
-        return super.onCreateOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) item.getActionView();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(info);
+
+//        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem item) {
+//                // Do something when collapsed
+//                return true;  // Return true to collapse action view
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem item) {
+//                // Do something when expanded
+//                return true;  // Return true to expand action view
+//            }
+//        });
+
+        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(menuLayout != null) {
+        if (menuLayout != null) {
             boolean drawerOpen = menuLayout.isDrawerOpen(menuList);
             menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+            menu.findItem(R.id.action_save).setVisible(!drawerOpen);
         }
         return super.onPrepareOptionsMenu(menu);
 
     }
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        if(drawerToggle != null) drawerToggle.syncState();
+        if (drawerToggle != null) drawerToggle.syncState();
     }
 
     @Override

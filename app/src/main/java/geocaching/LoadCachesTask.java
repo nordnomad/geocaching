@@ -12,7 +12,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static geocaching.Utils.*;
@@ -56,15 +55,15 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
                 map.markerGeoCaches.put(cache, marker);
             }
         }
-        Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
-        while (iterator.hasNext()) {
-            GeoCache cache = iterator.next();
-            if (!caches.contains(cache)) {
-                Marker marker = map.markerGeoCaches.get(cache);
-                marker.remove();
-                iterator.remove();
-            }
-        }
+//        Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
+//        while (iterator.hasNext()) {
+//            GeoCache cache = iterator.next();
+//            if (!caches.contains(cache)) {
+//                Marker marker = map.markerGeoCaches.get(cache);
+//                marker.remove();
+//                iterator.remove();
+//            }
+//        }
     }
 }
 

@@ -3,7 +3,6 @@ package geocaching;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import map.test.myapplication3.app.R;
 
 import java.io.IOException;
@@ -166,11 +165,11 @@ public class Utils {
         return new InputStreamReader(inputStream, charset);
     }
 
-    public static MarkerOptions markerFromCache(GeoCache geoCache){
+    public static MarkerOptions markerFromCache(GeoCache geoCache) {
         return new MarkerOptions()
-                    .position(new LatLng(geoCache.la, geoCache.ln))
-                    .title(geoCache.name)
-                    .icon(BitmapDescriptorFactory.fromResource(
-                            getMarkerResId(geoCache.type, geoCache.status)));
+                .position(new LatLng(geoCache.la, geoCache.ln))
+                .title(geoCache.name)
+                .icon(BitmapDescriptorFactory.fromResource(
+                        getMarkerResId(geoCache.type, geoCache.status)));
     }
 }
