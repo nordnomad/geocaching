@@ -24,8 +24,8 @@ import android.widget.*;
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
-import static android.text.TextUtils.isEmpty;
 import static android.widget.Toast.LENGTH_LONG;
+import static geocaching.Utils.isBlank;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -228,12 +228,12 @@ public class MainActivity extends ActionBarActivity {
 
         boolean cancel = false;
         View focusView = null;
-        if (isEmpty(password)) {
+        if (isBlank(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
             cancel = true;
         }
-        if (isEmpty(email)) {
+        if (isBlank(email)) {
             emailView.setError(getString(R.string.error_field_required));
             focusView = emailView;
             cancel = true;

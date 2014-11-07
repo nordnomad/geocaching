@@ -14,4 +14,12 @@ public class MapWrapper {
         this.map = googleMap;
         this.map.setMyLocationEnabled(true);
     }
+
+    public Map<Marker, GeoCache> inverseMap() {
+        Map<Marker, GeoCache> inversed = new HashMap<Marker, GeoCache>();
+        for (Map.Entry<GeoCache, Marker> entry : markerGeoCaches.entrySet()) {
+            inversed.put(entry.getValue(), entry.getKey());
+        }
+        return inversed;
+    }
 }

@@ -44,13 +44,13 @@ public class GeoCacheProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         switch (uriMatcher.match(uri)) {
             case URI_CACHES:
-                if (sortOrder == null || sortOrder.isEmpty()) {
+                if (isBlank(sortOrder)) {
                     sortOrder = DB.Column.NAME + " ASC";
                 }
                 break;
             case URI_CACHES_ID:
                 String id = uri.getLastPathSegment();
-                if (selection == null || selection.isEmpty()) {
+                if (isBlank(selection)) {
                     selection = DB.Column.ID + " = " + id;
                 } else {
                     selection = selection + " AND " + DB.Column.ID + " = " + id;
