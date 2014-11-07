@@ -172,4 +172,8 @@ public class Utils {
                 .icon(BitmapDescriptorFactory.fromResource(
                         getMarkerResId(geoCache.type, geoCache.status)));
     }
+
+    public static boolean isBlank(String val) {
+        return val == null || val.trim().isEmpty();
+    }
 }

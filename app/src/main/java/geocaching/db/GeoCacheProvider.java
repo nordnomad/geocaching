@@ -7,6 +7,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
+import static geocaching.Utils.isBlank;
+
 public class GeoCacheProvider extends ContentProvider {
 
     DB db;
@@ -84,11 +86,44 @@ public class GeoCacheProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        switch (uriMatcher.match(uri)) {
+            case URI_CACHES:
+                // TODO delete all
+                break;
+            case URI_CACHES_ID:
+                String id = uri.getLastPathSegment();
+                if (isBlank(selection)) {
+                    selection = DB.Column.ID + " = " + id;
+                } else {
+                    selection = selection + " AND " + DB.Column.ID + " = " + id;
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong URI: " + uri);
+        }
+        int cnt = db.getWritableDatabase().delete(DB.Table.GEO_CACHE, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return cnt;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        switch (uriMatcher.match(uri)) {
+            case URI_CACHES:
+                break;
+            case URI_CACHES_ID:
+                String id = uri.getLastPathSegment();
+                if (isBlank(selection)) {
+                    selection = DB.Column.ID + " = " + id;
+                } else {
+                    selection = selection + " AND " + DB.Column.ID + " = " + id;
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong URI: " + uri);
+        }
+        int cnt = db.getWritableDatabase().update(DB.Table.GEO_CACHE, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return cnt;
     }
 }
