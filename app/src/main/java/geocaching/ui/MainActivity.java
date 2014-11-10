@@ -131,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
                 fragment = new MapScreen();
                 break;
             case 2:
-                fragment = new OptionsScreen();
+                fragment = new FavoritesScreen();
                 break;
             default:
                 break;
