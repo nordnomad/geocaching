@@ -7,11 +7,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.*;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import map.test.myapplication3.app.R;
 
@@ -29,14 +27,10 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        listView = (ListView) getActivity().findViewById(android.R.id.list);
-        String[] dataColumns = {DB.Column.NAME};
-        int[] viewIDs = {android.R.id.text1};
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_activated_1,
-                null, dataColumns, viewIDs, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        setListAdapter(adapter);
+        setListAdapter(new FavouritesListAdapter(getActivity(), null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
         getLoaderManager().initLoader(0, null, this);
 
+        listView = (ListView) getActivity().findViewById(android.R.id.list);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
@@ -83,11 +77,11 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
+        ((FavouritesListAdapter) this.getListAdapter()).swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
+        ((FavouritesListAdapter) this.getListAdapter()).swapCursor(null);
     }
 }

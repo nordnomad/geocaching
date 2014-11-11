@@ -100,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
             menuLayout.setDrawerListener(drawerToggle);
 
             if (savedInstanceState == null) {
-                selectItem(1);
+                selectItem(2);
             }
         }
     }
