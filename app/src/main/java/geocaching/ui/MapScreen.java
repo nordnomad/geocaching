@@ -7,9 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +36,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     View markerInfo;
 
     FragmentManager fragmentManager;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -156,4 +160,11 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
             }
         });
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.action_bar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 }

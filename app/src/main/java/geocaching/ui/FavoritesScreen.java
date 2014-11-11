@@ -20,8 +20,20 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
     ListView listView;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.favorites_screen, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.favourites_list_action_bar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -68,6 +80,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
 
             }
         });
+
+
     }
 
     @Override

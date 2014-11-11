@@ -4,8 +4,6 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -18,7 +16,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.*;
 import geocaching.login.UserLoginTask;
@@ -151,13 +152,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_bar, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) item.getActionView();
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
-        searchView.setSearchableInfo(info);
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.action_bar, menu);
+//        MenuItem item = menu.findItem(R.id.action_search);
+//        SearchView searchView = (SearchView) item.getActionView();
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchableInfo info = searchManager.getSearchableInfo(getComponentName());
+//        searchView.setSearchableInfo(info);
 
 //        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
 //            @Override
@@ -173,18 +174,8 @@ public class MainActivity extends ActionBarActivity {
 //            }
 //        });
 
+//        return true;
         return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (menuLayout != null) {
-            boolean drawerOpen = menuLayout.isDrawerOpen(menuList);
-            menu.findItem(R.id.action_search).setVisible(!drawerOpen);
-            menu.findItem(R.id.action_save).setVisible(!drawerOpen);
-        }
-        return super.onPrepareOptionsMenu(menu);
-
     }
 
     @Override
