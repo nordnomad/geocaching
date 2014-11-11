@@ -25,7 +25,6 @@ import android.widget.*;
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
-import static android.widget.Toast.LENGTH_LONG;
 import static geocaching.Utils.isBlank;
 
 public class MainActivity extends ActionBarActivity {
@@ -111,15 +110,16 @@ public class MainActivity extends ActionBarActivity {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        switch (item.getItemId()) {
-            case R.id.action_search:
+//        switch (item.getItemId()) {
+//            case R.id.action_search:
 //                menuLayout.isDrawerOpen(item.getActionView());
-                Toast.makeText(this, "Settings selected", LENGTH_LONG).show();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+//                Toast.makeText(this, "Settings selected", LENGTH_LONG).show();
+//                return true;
+//
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+        return true;
     }
 
     private void selectItem(int position) {
@@ -153,7 +153,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 //        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.action_bar, menu);
+//        inflater.inflate(R.menu.map_screen_action_bar, menu);
 //        MenuItem item = menu.findItem(R.id.action_search);
 //        SearchView searchView = (SearchView) item.getActionView();
 //        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

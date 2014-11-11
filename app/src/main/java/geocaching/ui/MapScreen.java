@@ -27,6 +27,8 @@ import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import map.test.myapplication3.app.R;
 
+import java.util.Set;
+
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
@@ -163,8 +165,28 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.action_bar, menu);
+        inflater.inflate(R.menu.map_screen_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        MenuItem item = menu.findItem(R.id.map_save);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Set<GeoCache> geoCaches = googleMap.markerGeoCaches.keySet();
+                for (GeoCache geoCache : geoCaches) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(DB.Column._ID, geoCache.id);
+                    cv.put(DB.Column.NAME, geoCache.name);
+                    cv.put(DB.Column.LAT, geoCache.la);
+                    cv.put(DB.Column.LON, geoCache.ln);
+                    cv.put(DB.Column.STATUS, geoCache.status.ordinal());
+                    cv.put(DB.Column.TYPE, geoCache.type.ordinal());
+
+                    ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
+                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, cv);
+                }
+                return true;
+            }
+        });
     }
 
 }
