@@ -61,7 +61,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.item_delete:
-                        String where = "id IN " + Arrays.toString(getListView().getCheckedItemIds()).replace("[", "(").replace("]", ")");
+                        String where = "_id IN " + Arrays.toString(getListView().getCheckedItemIds()).replace("[", "(").replace("]", ")");
                         getActivity().getContentResolver().delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, where, null);
                         mode.finish();
                         return true;

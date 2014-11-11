@@ -132,7 +132,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     @Override
                     public void onClick(View v) {
                         ContentValues cv = new ContentValues();
-                        cv.put(DB.Column.ID, geoCache.id);
+                        cv.put(DB.Column._ID, geoCache.id);
                         cv.put(DB.Column.NAME, geoCache.name);
                         cv.put(DB.Column.LAT, geoCache.la);
                         cv.put(DB.Column.LON, geoCache.ln);

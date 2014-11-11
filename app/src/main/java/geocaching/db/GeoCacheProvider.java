@@ -93,9 +93,9 @@ public class GeoCacheProvider extends ContentProvider {
             case URI_CACHES_ID:
                 String id = uri.getLastPathSegment();
                 if (isBlank(selection)) {
-                    selection = DB.Column.ID + " = " + id;
+                    selection = DB.Column._ID + " = " + id;
                 } else {
-                    selection = selection + " AND " + DB.Column.ID + " = " + id;
+                    selection = selection + " AND " + DB.Column._ID + " = " + id;
                 }
                 break;
             default:
