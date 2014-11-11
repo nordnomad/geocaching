@@ -34,7 +34,7 @@ public class DB extends SQLiteOpenHelper {
     private static final String SQL_DROP_DATABASE_TABLE = String.format("DROP TABLE IF EXISTS %s", Table.GEO_CACHE);
 
     private static final String SQL_CREATE_DATABASE_TABLE = String.format(
-            "CREATE TABLE %s (%s INTEGER, %s INTEGER, %s STRING, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s STRING, %s STRING, %s STRING, %s STRING);",
+            "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s INTEGER, %s STRING, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s STRING, %s STRING, %s STRING, %s STRING);",
             Table.GEO_CACHE, _ID, ID, NAME, TYPE, STATUS, LAT, LON, DESCR, COMMENTS, USER_NOTES, PHOTOS);
 
     public DB(Context context) {
