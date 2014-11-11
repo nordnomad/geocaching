@@ -1,8 +1,10 @@
 package geocaching;
 
+import android.content.ContentValues;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import geocaching.db.DB;
 import map.test.myapplication3.app.R;
 
 import java.io.IOException;
@@ -175,5 +177,16 @@ public class Utils {
 
     public static boolean isBlank(String val) {
         return val == null || val.trim().isEmpty();
+    }
+
+    public static ContentValues geoCacheToContentValues(GeoCache geoCache) {
+        ContentValues cv = new ContentValues();
+        cv.put(DB.Column._ID, geoCache.id);
+        cv.put(DB.Column.NAME, geoCache.name);
+        cv.put(DB.Column.LAT, geoCache.la);
+        cv.put(DB.Column.LON, geoCache.ln);
+        cv.put(DB.Column.STATUS, geoCache.status.ordinal());
+        cv.put(DB.Column.TYPE, geoCache.type.ordinal());
+        return cv;
     }
 }

@@ -1,7 +1,6 @@
 package geocaching.ui;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import com.google.android.gms.maps.model.Marker;
 import geocaching.GeoCache;
 import geocaching.LoadCachesTask;
 import geocaching.MapWrapper;
-import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import map.test.myapplication3.app.R;
 
@@ -31,6 +29,7 @@ import java.util.Set;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import static geocaching.Utils.geoCacheToContentValues;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -137,16 +136,8 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ContentValues cv = new ContentValues();
-                        cv.put(DB.Column._ID, geoCache.id);
-                        cv.put(DB.Column.NAME, geoCache.name);
-                        cv.put(DB.Column.LAT, geoCache.la);
-                        cv.put(DB.Column.LON, geoCache.ln);
-                        cv.put(DB.Column.STATUS, geoCache.status.ordinal());
-                        cv.put(DB.Column.TYPE, geoCache.type.ordinal());
-
                         ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, cv);
+                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
                     }
                 });
 
@@ -173,16 +164,8 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
             public boolean onMenuItemClick(MenuItem item) {
                 Set<GeoCache> geoCaches = googleMap.markerGeoCaches.keySet();
                 for (GeoCache geoCache : geoCaches) {
-                    ContentValues cv = new ContentValues();
-                    cv.put(DB.Column._ID, geoCache.id);
-                    cv.put(DB.Column.NAME, geoCache.name);
-                    cv.put(DB.Column.LAT, geoCache.la);
-                    cv.put(DB.Column.LON, geoCache.ln);
-                    cv.put(DB.Column.STATUS, geoCache.status.ordinal());
-                    cv.put(DB.Column.TYPE, geoCache.type.ordinal());
-
                     ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, cv);
+                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
                 }
                 return true;
             }
