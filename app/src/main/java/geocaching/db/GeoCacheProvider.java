@@ -88,7 +88,6 @@ public class GeoCacheProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
             case URI_CACHES:
-                // TODO delete all
                 break;
             case URI_CACHES_ID:
                 String id = uri.getLastPathSegment();

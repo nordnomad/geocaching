@@ -1,5 +1,6 @@
 package geocaching.ui;
 
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -34,6 +35,15 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.favourites_list_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        MenuItem item = menu.findItem(R.id.favourites_delete);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ContentResolver resolver = getActivity().getContentResolver();
+                resolver.delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, null, null);
+                return true;
+            }
+        });
     }
 
     @Override
