@@ -1,4 +1,4 @@
-package geocaching.ui;
+package geocaching.ui.adapters;
 
 import android.content.Context;
 import android.database.Cursor;

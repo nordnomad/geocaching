@@ -1,6 +1,7 @@
 package geocaching.ui;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -10,8 +11,10 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.view.*;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import geocaching.db.GeoCacheProvider;
+import geocaching.ui.adapters.FavouritesListAdapter;
 import map.test.myapplication3.app.R;
 
 import java.util.Arrays;
@@ -91,7 +94,13 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             }
         });
 
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), GeoChacheActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
