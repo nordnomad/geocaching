@@ -20,9 +20,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import geocaching.GeoCache;
-import geocaching.LoadCachesTask;
 import geocaching.MapWrapper;
 import geocaching.db.GeoCacheProvider;
+import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
 import java.util.Set;

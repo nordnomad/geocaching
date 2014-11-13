@@ -1,8 +1,10 @@
-package geocaching;
+package geocaching.tasks;
 
 import android.os.AsyncTask;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import geocaching.GeoCache;
+import geocaching.MapWrapper;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

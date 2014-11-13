@@ -98,6 +98,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), GeoChacheActivity.class);
+                intent.putExtra("geoCacheId", id);
                 startActivity(intent);
             }
         });

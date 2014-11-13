@@ -1,7 +1,12 @@
 package geocaching.login;
 
 public interface Const {
-    String LOGIN_URL = "http://pda.geocaching.su/login.php";
+    String PDA_GEOCACHING = "http://pda.geocaching.su";
+    String LOGIN_URL = PDA_GEOCACHING + "/login.php";
+    String INFO_URL = PDA_GEOCACHING + "/cache.php?cid=%d&mode=0";
+    String COMMENTS_URL = PDA_GEOCACHING + "/note.php?cid=%d&mode=0";
+    String PHOTO_URL = PDA_GEOCACHING + "/pict.php?cid=%d&mode=0";
+
     String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.101 Safari/537.36";
     String EMAIL_PARAM = "email";
     String PASSWORD_PARAM = "passwd";
