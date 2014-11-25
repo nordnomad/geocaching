@@ -23,7 +23,6 @@ import geocaching.GeoCache;
 import geocaching.MapWrapper;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
-import map.test.myapplication3.app.R;
 
 import java.util.Set;
 
