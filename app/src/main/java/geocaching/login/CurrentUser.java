@@ -2,7 +2,9 @@ package geocaching.login;
 
 import java.util.Map;
 
-import static geocaching.login.Const.*;
+import static geocaching.Const.caching_auth_lt;
+import static geocaching.Const.caching_auth_st;
+import static geocaching.Const.geocaching;
 
 public class CurrentUser {
     public static String username;

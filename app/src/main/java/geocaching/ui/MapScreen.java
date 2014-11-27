@@ -6,10 +6,16 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,12 +25,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+
+import java.util.Set;
+
 import geocaching.GeoCache;
 import geocaching.MapWrapper;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
-
-import java.util.Set;
+import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import static com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -97,7 +105,8 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     private void setUpMapIfNeeded() {
         if (googleMap == null) {
-            googleMap = new MapWrapper(((SupportMapFragment) fragmentManager.findFragmentById(R.id.map)).getMap());
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            googleMap = new MapWrapper(mapFragment.getMap());
             if (googleMap != null) setUpMap();
         }
     }

@@ -21,7 +21,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
@@ -100,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
             menuLayout.setDrawerListener(drawerToggle);
 
             if (savedInstanceState == null) {
-                selectItem(2);
+                selectItem(1);
             }
         }
     }

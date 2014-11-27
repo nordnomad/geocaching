@@ -3,7 +3,7 @@ package geocaching.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
-import geocaching.login.Const;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+
+import geocaching.Const;
 
 import static geocaching.Utils.getInputSteamReader;
 

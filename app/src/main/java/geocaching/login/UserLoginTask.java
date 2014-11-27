@@ -13,8 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import geocaching.ui.MainActivity;
-import map.test.myapplication3.app.R;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -29,7 +28,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static geocaching.login.Const.*;
+import geocaching.ui.MainActivity;
+import map.test.myapplication3.app.R;
+
+import static geocaching.Const.ACCOUNT_TYPE;
+import static geocaching.Const.EMAIL_PARAM;
+import static geocaching.Const.LOGIN_PARAM;
+import static geocaching.Const.LOGIN_PARAM_VAL;
+import static geocaching.Const.LOGIN_URL;
+import static geocaching.Const.LONGTERM_PARAM;
+import static geocaching.Const.LONGTERM_PARAM_VAL;
+import static geocaching.Const.PASSWORD_PARAM;
+import static geocaching.Const.USER_AGENT;
+import static geocaching.Const.caching_auth_lt;
+import static geocaching.Const.caching_auth_st;
+import static geocaching.Const.geocaching;
 
 public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 

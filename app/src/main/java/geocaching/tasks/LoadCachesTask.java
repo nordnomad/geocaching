@@ -1,22 +1,29 @@
 package geocaching.tasks;
 
 import android.os.AsyncTask;
+
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import geocaching.GeoCache;
-import geocaching.MapWrapper;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static geocaching.Utils.*;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import geocaching.GeoCache;
+import geocaching.MapWrapper;
+
+import static geocaching.Utils.getInputSteamReader;
+import static geocaching.Utils.markerFromCache;
+import static geocaching.Utils.numberToStatus;
+import static geocaching.Utils.numberToType;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
     List<GeoCache> caches = new ArrayList<GeoCache>();
@@ -46,6 +53,9 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+//        Rest.request(url);
+
         return null;
     }
 

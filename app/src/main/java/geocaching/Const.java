@@ -1,4 +1,4 @@
-package geocaching.login;
+package geocaching;
 
 public interface Const {
     String PDA_GEOCACHING = "http://pda.geocaching.su";
