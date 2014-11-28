@@ -4,8 +4,10 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
@@ -78,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
             });
         } else {
             setContentView(R.layout.activity_maps);
-            menuItems = new String[]{"CurrentUser.username", "Карта", "Избранное", "Настройки"};
+            menuItems = new String[]{accounts[0].name, "Карта", "Избранное"/*, "Настройки"*/};
             menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             menuList = (ListView) findViewById(R.id.left_drawer);
             menuList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, menuItems));
@@ -181,6 +184,9 @@ public class MainActivity extends ActionBarActivity {
 //        });
 
 //        return true;
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.map_search).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
     }
 
@@ -264,5 +270,14 @@ public class MainActivity extends ActionBarActivity {
             accountAuthenticatorResponse = null;
         }
         super.finish();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Toast.makeText(this, query, Toast.LENGTH_LONG).show();
+        }
     }
 }

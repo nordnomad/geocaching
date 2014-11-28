@@ -1,8 +1,13 @@
 package geocaching.ui;
 
+import android.app.SearchManager;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +32,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import geocaching.GeoCache;
@@ -178,6 +187,66 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 return true;
             }
         });
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.map_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
+                Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                try {
+                    geocoder.getFromLocationName(s, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                new GetAddressTask(getActivity()).execute(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+//                loadHistory(query);
+                return false;
+
+            }
+
+        });
+
+    }
+
+    private class GetAddressTask extends AsyncTask<String, Void, LatLng> {
+        Context mContext;
+
+        public GetAddressTask(Context context) {
+            super();
+            mContext = context;
+        }
+
+        @Override
+        protected LatLng doInBackground(String... params) {
+            Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                addresses = geocoder.getFromLocationName(params[0], 1);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                return null;
+            }
+            if (addresses != null && addresses.size() > 0) {
+                Address address = addresses.get(0);
+                return new LatLng(address.getLatitude(), address.getLongitude());
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(LatLng latLng) {
+            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+        }
     }
 
 }
