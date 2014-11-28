@@ -4,10 +4,13 @@ import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -33,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -172,7 +177,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.map_screen_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem item = menu.findItem(R.id.map_save);
@@ -195,7 +200,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Toast.makeText(getActivity(), s, Toast.LENGTH_LONG).show();
                 Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
                 try {
                     geocoder.getFromLocationName(s, 1);
@@ -208,16 +212,64 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
             @Override
             public boolean onQueryTextChange(String query) {
-//                loadHistory(query);
+                loadHistory(query);
                 return false;
 
             }
 
-        });
+            List<String> items = Arrays.asList("test1", "test2", "test3", "test4");
 
+            private void loadHistory(String query) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    // Load data from list to cursor
+                    String[] columns = new String[]{"_id", "text"};
+                    Object[] temp = new Object[]{0, "default"};
+                    MatrixCursor cursor = new MatrixCursor(columns);
+                    for (int i = 0; i < items.size(); i++) {
+                        temp[0] = i;
+                        temp[1] = items.get(i);
+                        cursor.addRow(temp);
+                    }
+                    // Alternatively load data from database
+                    //Cursor cursor = db.rawQuery("SELECT * FROM table_name", null);
+                    SearchManager manager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+                    final SearchView search = (SearchView) menu.findItem(R.id.map_search).getActionView();
+                    search.setSearchableInfo(manager.getSearchableInfo(getActivity().getComponentName()));
+                    search.setSuggestionsAdapter(new ExampleAdapter(getActivity(), cursor, items));
+                }
+            }
+
+            class ExampleAdapter extends CursorAdapter {
+                private List<String> items;
+                private TextView text;
+
+                public ExampleAdapter(Context context, Cursor cursor, List items) {
+                    super(context, cursor, false);
+                    this.items = items;
+                }
+
+                @Override
+                public void bindView(View view, Context context, Cursor cursor) {
+                    // Show list item data from cursor
+                    text.setText(items.get(cursor.getPosition()));
+                    // Alternatively show data direct from database
+                    //text.setText(cursor.getString(cursor.getColumnIndex("column_name")));
+
+                }
+
+                @Override
+                public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View view = inflater.inflate(R.layout.history_item, parent, false);
+                    text = (TextView) view.findViewById(R.id.text);
+                    return view;
+                }
+
+            }
+        });
     }
 
-    private class GetAddressTask extends AsyncTask<String, Void, LatLng> {
+    class GetAddressTask extends AsyncTask<String, Void, LatLng> {
         Context mContext;
 
         public GetAddressTask(Context context) {
@@ -245,7 +297,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
         @Override
         protected void onPostExecute(LatLng latLng) {
-            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+            if (latLng != null)
+                googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+            else
+                Toast.makeText(mContext, "Неудалось найти указанный адрес", Toast.LENGTH_SHORT).show();
         }
     }
 

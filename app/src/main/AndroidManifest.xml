@@ -27,9 +27,7 @@
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
                 android:value="@string/google_maps_key"/>
-        <meta-data
-            android:name="android.app.searchable"
-            android:resource="@xml/searchable" />
+
         <meta-data
             android:name="android.app.default_searchable"
             android:value="geocaching.ui.MainActivity" />
@@ -46,6 +44,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity android:name="geocaching.ui.GeoChacheActivity"/>
         <activity android:name="geocaching.ui.CompassActivity"/>

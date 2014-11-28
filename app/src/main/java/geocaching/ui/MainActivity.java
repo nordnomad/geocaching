@@ -4,10 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -29,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
@@ -270,14 +267,5 @@ public class MainActivity extends ActionBarActivity {
             accountAuthenticatorResponse = null;
         }
         super.finish();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(this, query, Toast.LENGTH_LONG).show();
-        }
     }
 }
