@@ -3,25 +3,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/activatedBackgroundIndicator">
 
     <ImageView
             android:id="@+id/favouritesGeoCacheIcon"
             android:src="@drawable/ic_cache_default_traditional_valid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+        android:paddingBottom="16dip"
+        android:paddingLeft="16dip"
+        android:paddingRight="16dip"
+        android:paddingTop="16dip"
             />
-    <TextView
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
             android:id="@+id/favouritesGeoCacheText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:textAppearance="?android:attr/textAppearanceListItem"
             android:gravity="center_vertical"
-            android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-            android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
-            />
+            android:text="Full_name" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Traditional"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:gravity="center_vertical"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_marginRight="10dip"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:textSize="10dip"
+                android:minHeight="10dip"
+                android:background="#ff1892ff" />
+
+            <TextView
+                android:text="Active"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:gravity="center_vertical"
+                android:textColor="?android:attr/textColorSecondary"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:textSize="10dip"
+                android:minHeight="10dip"
+                android:background="#ff1892ff" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

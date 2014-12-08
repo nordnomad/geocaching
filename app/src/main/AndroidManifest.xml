@@ -33,7 +33,7 @@
             android:value="geocaching.ui.MainActivity" />
 
         <activity
-                android:theme="@style/Theme.AppCompat.Light"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
                 android:name="geocaching.ui.MainActivity"
                 android:label="@string/title_activity_maps">
             <intent-filter>
