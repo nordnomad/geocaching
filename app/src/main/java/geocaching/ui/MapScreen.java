@@ -88,7 +88,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         super.onDestroyView();
         if (googleMap != null) {
             fragmentManager.beginTransaction()
-                    .remove(fragmentManager.findFragmentById(R.id.map))
+                    .remove(getChildFragmentManager().findFragmentById(R.id.map))
                     .commit();
             googleMap = null;
         }
