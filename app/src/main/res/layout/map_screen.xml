@@ -1,43 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <fragment
-              android:id="@+id/map"
-              android:layout_width="match_parent"
-              android:layout_height="0dp"
-              android:layout_weight="1"
-              android:name="com.google.android.gms.maps.SupportMapFragment"
-            />
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_gravity="center_horizontal|top"
+        tools:layout="@layout/abc_screen_simple"
+
+        />
+
     <LinearLayout
-            android:id="@+id/markerInfo"
-            android:visibility="gone"
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+        android:layout_gravity="center_horizontal|bottom"
+        android:id="@+id/markerInfo"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff0ecbff">
 
         <TextView
-                android:text=""
-                android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:layout_height="fill_parent"
-                android:id="@+id/nameView" />
+            android:text=""
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_height="fill_parent"
+            android:id="@+id/nameView" />
 
         <ImageButton
-                android:src="@drawable/ic_get_app_black_48dp"
-                android:layout_width="0dp"
-                android:layout_weight="0.2"
-                android:layout_height="fill_parent"
-                android:id="@+id/saveBtn" />
+            android:src="@drawable/ic_get_app_black_48dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="fill_parent"
+            android:id="@+id/saveBtn" />
+
         <ImageButton
-                android:src="@drawable/ic_navigation_black_48dp"
-                android:layout_width="0dp"
-                android:layout_weight="0.2"
-                android:layout_height="fill_parent"
-                android:id="@+id/findBtn" />
+            android:src="@drawable/ic_navigation_black_48dp"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="fill_parent"
+            android:id="@+id/findBtn" />
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

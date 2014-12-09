@@ -47,7 +47,7 @@
                 android:layout_marginRight="10dip"
                 android:paddingLeft="5dip"
                 android:paddingRight="5dip"
-                android:textSize="10dip"
+                android:textSize="10sp"
                 android:minHeight="10dip"
                 android:background="#ff1892ff" />
 
@@ -60,7 +60,7 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:paddingLeft="5dip"
                 android:paddingRight="5dip"
-                android:textSize="10dip"
+                android:textSize="10sp"
                 android:minHeight="10dip"
                 android:background="#ff1892ff" />
         </LinearLayout>

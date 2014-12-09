@@ -1,16 +1,12 @@
 package geocaching.ui;
 
-import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,9 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageButton;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +25,10 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -98,7 +89,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onConnected(Bundle bundle) {
         Toast.makeText(getActivity(), "Connected", Toast.LENGTH_SHORT).show();
         Location l = locationClient.getLastLocation();
-        googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 14.0f));
+        googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13.0f));
         googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
@@ -127,14 +118,16 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     private void setUpMap() {
         googleMap.map.setMyLocationEnabled(true);
+        googleMap.map.getUiSettings().setCompassEnabled(true);
+        googleMap.map.getUiSettings().setZoomControlsEnabled(false);
+
         googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
+                marker.showInfoWindow();
                 if (markerInfo.getVisibility() == View.GONE) {
                     markerInfo.setVisibility(View.VISIBLE);
                 }
-
-                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_black_48dp));
                 Location location = new Location("Test");
                 location.setLatitude(marker.getPosition().latitude);
                 location.setLongitude(marker.getPosition().longitude);
@@ -192,81 +185,82 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 return true;
             }
         });
+        //TODO implement in better way in future
         // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.map_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-                try {
-                    geocoder.getFromLocationName(s, 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                new GetAddressTask(getActivity()).execute(s);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                loadHistory(query);
-                return false;
-
-            }
-
-            List<String> items = Arrays.asList("test1", "test2", "test3", "test4");
-
-            private void loadHistory(String query) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    // Load data from list to cursor
-                    String[] columns = new String[]{"_id", "text"};
-                    Object[] temp = new Object[]{0, "default"};
-                    MatrixCursor cursor = new MatrixCursor(columns);
-                    for (int i = 0; i < items.size(); i++) {
-                        temp[0] = i;
-                        temp[1] = items.get(i);
-                        cursor.addRow(temp);
-                    }
-                    // Alternatively load data from database
-                    //Cursor cursor = db.rawQuery("SELECT * FROM table_name", null);
-                    SearchManager manager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-                    final SearchView search = (SearchView) menu.findItem(R.id.map_search).getActionView();
-                    search.setSearchableInfo(manager.getSearchableInfo(getActivity().getComponentName()));
-                    search.setSuggestionsAdapter(new ExampleAdapter(getActivity(), cursor, items));
-                }
-            }
-
-            class ExampleAdapter extends CursorAdapter {
-                private List<String> items;
-                private TextView text;
-
-                public ExampleAdapter(Context context, Cursor cursor, List items) {
-                    super(context, cursor, false);
-                    this.items = items;
-                }
-
-                @Override
-                public void bindView(View view, Context context, Cursor cursor) {
-                    // Show list item data from cursor
-                    text.setText(items.get(cursor.getPosition()));
-                    // Alternatively show data direct from database
-                    //text.setText(cursor.getString(cursor.getColumnIndex("column_name")));
-
-                }
-
-                @Override
-                public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    View view = inflater.inflate(R.layout.history_item, parent, false);
-                    text = (TextView) view.findViewById(R.id.text);
-                    return view;
-                }
-
-            }
-        });
+//        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.map_search).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//
+//            @Override
+//            public boolean onQueryTextSubmit(String s) {
+//                Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+//                try {
+//                    geocoder.getFromLocationName(s, 1);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                new GetAddressTask(getActivity()).execute(s);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String query) {
+//                loadHistory(query);
+//                return false;
+//
+//            }
+//
+//            List<String> items = Arrays.asList("test1", "test2", "test3", "test4");
+//
+//            private void loadHistory(String query) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//                    // Load data from list to cursor
+//                    String[] columns = new String[]{"_id", "text"};
+//                    Object[] temp = new Object[]{0, "default"};
+//                    MatrixCursor cursor = new MatrixCursor(columns);
+//                    for (int i = 0; i < items.size(); i++) {
+//                        temp[0] = i;
+//                        temp[1] = items.get(i);
+//                        cursor.addRow(temp);
+//                    }
+//                    // Alternatively load data from database
+//                    //Cursor cursor = db.rawQuery("SELECT * FROM table_name", null);
+//                    SearchManager manager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+//                    final SearchView search = (SearchView) menu.findItem(R.id.map_search).getActionView();
+//                    search.setSearchableInfo(manager.getSearchableInfo(getActivity().getComponentName()));
+//                    search.setSuggestionsAdapter(new ExampleAdapter(getActivity(), cursor, items));
+//                }
+//            }
+//
+//            class ExampleAdapter extends CursorAdapter {
+//                private List<String> items;
+//                private TextView text;
+//
+//                public ExampleAdapter(Context context, Cursor cursor, List<String> items) {
+//                    super(context, cursor, false);
+//                    this.items = items;
+//                }
+//
+//                @Override
+//                public void bindView(View view, Context context, Cursor cursor) {
+//                    // Show list item data from cursor
+//                    text.setText(items.get(cursor.getPosition()));
+//                    // Alternatively show data direct from database
+//                    //text.setText(cursor.getString(cursor.getColumnIndex("column_name")));
+//
+//                }
+//
+//                @Override
+//                public View newView(Context context, Cursor cursor, ViewGroup parent) {
+//                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//                    View view = inflater.inflate(R.layout.history_item, parent, false);
+//                    text = (TextView) view.findViewById(R.id.text);
+//                    return view;
+//                }
+//
+//            }
+//        });
     }
 
     class GetAddressTask extends AsyncTask<String, Void, LatLng> {
@@ -280,7 +274,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         @Override
         protected LatLng doInBackground(String... params) {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
-            List<Address> addresses = null;
+            List<Address> addresses;
             try {
                 addresses = geocoder.getFromLocationName(params[0], 1);
             } catch (Exception e1) {

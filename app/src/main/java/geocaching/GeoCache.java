@@ -35,9 +35,8 @@ public class GeoCache {
 
         GeoCache geoCache = (GeoCache) o;
 
-        if (id != geoCache.id) return false;
+        return id == geoCache.id;
 
-        return true;
     }
 
     @Override

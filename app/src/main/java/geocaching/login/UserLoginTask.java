@@ -65,7 +65,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         HttpClient client = AndroidHttpClient.newInstance(USER_AGENT);
         HttpPost post = new HttpPost(LOGIN_URL);
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair(EMAIL_PARAM, email));
         urlParameters.add(new BasicNameValuePair(PASSWORD_PARAM, password));
         urlParameters.add(new BasicNameValuePair(LONGTERM_PARAM, LONGTERM_PARAM_VAL));
@@ -79,7 +79,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             Log.d(getClass().getCanonicalName(), e.getMessage());
             return false;
         }
-        Map<String, String> tokens = new HashMap<String, String>();
+        Map<String, String> tokens = new HashMap<>();
         if (response.getStatusLine().getStatusCode() == 302) {
             Header[] geoCookie = response.getHeaders("Set-Cookie");
             for (Header header : geoCookie) {

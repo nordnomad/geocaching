@@ -1,11 +1,10 @@
 package geocaching;
 
 import android.content.ContentValues;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import geocaching.db.DB;
-import map.test.myapplication3.app.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +13,40 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
+import geocaching.db.DB;
+import map.test.myapplication3.app.R;
+
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_ORANGE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_YELLOW;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
+
 public class Utils {
+    public static BitmapDescriptor getMarkerBitmapDescriptor(GeoCacheType type, GeoCacheStatus status) {
+        switch (type) {
+            case TRADITIONAL:
+                return defaultMarker(100f);
+            case STEP_BY_STEP_TRADITIONAL:
+                return defaultMarker(HUE_YELLOW);
+            case VIRTUAL:
+            case WEBCAM:
+                return defaultMarker(200f);
+            case STEP_BY_STEP_VIRTUAL:
+                return defaultMarker(155.f);
+            case EVENT:
+                return defaultMarker(HUE_AZURE);
+            case EXTREME:
+                return defaultMarker(HUE_RED);
+            case CONTEST:
+                return defaultMarker(HUE_ORANGE);
+            case GROUP:
+                return defaultMarker(315f);
+
+        }
+        return defaultMarker(180f);
+    }
+
     public static int getMarkerResId(GeoCacheType type, GeoCacheStatus status) {
         switch (type) {
             case TRADITIONAL:
@@ -171,8 +203,9 @@ public class Utils {
         return new MarkerOptions()
                 .position(new LatLng(geoCache.la, geoCache.ln))
                 .title(geoCache.name)
-                .icon(BitmapDescriptorFactory.fromResource(
-                        getMarkerResId(geoCache.type, geoCache.status)));
+                .icon(getMarkerBitmapDescriptor(geoCache.type, geoCache.status));
+//                .icon(BitmapDescriptorFactory.fromResource(
+//                        getMarkerResId(geoCache.type, geoCache.status)));
     }
 
     public static boolean isBlank(String val) {

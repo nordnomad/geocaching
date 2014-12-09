@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:myapp="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/map_search"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto">
+    <!--<item android:id="@+id/map_search"
             android:icon="@android:drawable/ic_menu_search"
             android:title="Search"
             myapp:showAsAction="ifRoom"
-            myapp:actionViewClass="android.widget.SearchView"/>
+            myapp:actionViewClass="android.widget.SearchView"/>-->
 
-    <item android:id="@+id/map_save"
-            android:icon="@android:drawable/ic_menu_save"
-            myapp:showAsAction="ifRoom"
-
-            android:title="save"/>
+    <item
+        android:id="@+id/map_save"
+        android:icon="@android:drawable/ic_menu_save"
+        myapp:showAsAction="ifRoom"
+        android:title="Сохранить видимые кеши" />
 </menu>

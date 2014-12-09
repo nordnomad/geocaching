@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
             menuItems = new String[]{accounts[0].name, "Карта", "Избранное"/*, "Настройки"*/};
             menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             menuList = (ListView) findViewById(R.id.left_drawer);
-            menuList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, menuItems));
+            menuList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuItems));
             class DrawerItemClickListener implements ListView.OnItemClickListener {
                 @Override
                 public void onItemClick(AdapterView parent, View view, int position, long id) {
