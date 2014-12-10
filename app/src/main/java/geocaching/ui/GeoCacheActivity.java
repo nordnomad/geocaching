@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import geocaching.common.SlidingTabLayout;
 import geocaching.tasks.LoadCommentsTask;
 import geocaching.tasks.LoadInfoTask;
+import geocaching.tasks.LoadPhotoUrlsTask;
 import map.test.myapplication3.app.R;
 
 public class GeoCacheActivity extends Activity {
@@ -77,6 +78,7 @@ public class GeoCacheActivity extends Activity {
                 case 2:
                     view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
                     container.addView(view);
+                    new LoadPhotoUrlsTask(GeoCacheActivity.this).execute(geoCacheId);
                     return view;
             }
             return null;
