@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.Set;
 
 import geocaching.GeoCache;
+import geocaching.GoTo;
 import geocaching.MapWrapper;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
@@ -124,6 +125,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 if (markerInfo.getVisibility() == View.GONE) {
                     markerInfo.setVisibility(View.VISIBLE);
                 }
+
                 Location location = new Location("Test");
                 location.setLatitude(marker.getPosition().latitude);
                 location.setLongitude(marker.getPosition().longitude);
@@ -134,7 +136,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 textView.setText(marker.getTitle());
 
                 TextView distanceView = (TextView) markerInfo.findViewById(R.id.distanceLabel);
-                distanceView.setText(String.format("%.1f km", distanceTo / 1000.0));
+                distanceView.setText(String.format("%.1f км", distanceTo / 1000.0));
 
                 final GeoCache geoCache = googleMap.inverseMap().get(marker);
                 TextView geoCacheTypeView = (TextView) markerInfo.findViewById(R.id.geoCacheTypeView);
@@ -162,7 +164,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     }
                 });
 
-
                 deleteBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -187,6 +188,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     saveBtn.setVisibility(View.VISIBLE);
                     deleteBtn.setVisibility(View.GONE);
                 }
+
+                markerInfo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        GoTo.geoCacheActivity(getActivity(), geoCache.id);
+                    }
+                });
 
                 return true; // to prevent center marker on screen
             }

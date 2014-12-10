@@ -1,7 +1,6 @@
 package geocaching.ui;
 
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -9,15 +8,23 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import java.util.Arrays;
+
+import geocaching.GoTo;
 import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.FavouritesListAdapter;
 import map.test.myapplication3.app.R;
-
-import java.util.Arrays;
 
 public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -97,9 +104,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), GeoChacheActivity.class);
-                intent.putExtra("geoCacheId", id);
-                startActivity(intent);
+                GoTo.geoCacheActivity(getActivity(), id);
             }
         });
     }
