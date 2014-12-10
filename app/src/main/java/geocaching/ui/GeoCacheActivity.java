@@ -6,9 +6,10 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import geocaching.common.SlidingTabLayout;
+import geocaching.tasks.LoadCommentsTask;
+import geocaching.tasks.LoadInfoTask;
 import map.test.myapplication3.app.R;
 
 public class GeoCacheActivity extends Activity {
@@ -20,8 +21,7 @@ public class GeoCacheActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_cache);
-//        long geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
-//        new LoadInfoTask(this).execute(geoCacheId);
+
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -60,17 +60,26 @@ public class GeoCacheActivity extends Activity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            // Inflate a new layout from our resources
-            View view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.pager_item, container, false);
-            // Add the newly created View to the ViewPager
-            container.addView(view);
 
-            // Retrieve a TextView from the inflated View, and update it's text
-            TextView title = (TextView) view.findViewById(R.id.item_title);
-            title.setText(String.valueOf(position + 1));
-
-            // Return the View
-            return view;
+            View view;
+            long geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
+            switch (position) {
+                case 0:
+                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_info_tab, container, false);
+                    container.addView(view);
+                    new LoadInfoTask(GeoCacheActivity.this).execute(geoCacheId);
+                    return view;
+                case 1:
+                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
+                    container.addView(view);
+                    new LoadCommentsTask(GeoCacheActivity.this).execute(geoCacheId);
+                    return view;
+                case 2:
+                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
+                    container.addView(view);
+                    return view;
+            }
+            return null;
         }
 
         @Override

@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
@@ -20,22 +22,21 @@ import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.getInputSteamReader;
 
-public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
-
+public class LoadCommentsTask extends AsyncTask<Long, Void, JSONArray> {
     Activity ctx;
 
-    public LoadInfoTask(Activity ctx) {
-        this.ctx = ctx;
+    public LoadCommentsTask(Activity activity) {
+        ctx = activity;
     }
 
     @Override
-    protected JSONObject doInBackground(Long... params) {
+    protected JSONArray doInBackground(Long... params) {
         long geoCacheId = params[0];
         StringBuilder html = new StringBuilder();
         char[] buffer = new char[1024];
         BufferedReader in = null;
         try {
-            InputStreamReader inputStreamReader = getInputSteamReader(new URL(String.format(Const.INFO_URL, geoCacheId)));
+            InputStreamReader inputStreamReader = getInputSteamReader(new URL(String.format(Const.COMMENTS_URL, geoCacheId)));
             in = new BufferedReader(inputStreamReader);
             int size;
             while ((size = in.read(buffer)) != -1) {
@@ -57,40 +58,31 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
         resultHtml = resultHtml.replace("windows-1251", "UTF-8");
         resultHtml = resultHtml.replaceAll("\\r|\\n", "");
 
-        Document doc = Jsoup.parse(resultHtml);
-        Elements elements = doc.select("p>b");
+        JSONArray jsonArray = new JSONArray();
 
-        JSONObject jsonObject = new JSONObject();
+        Document doc = Jsoup.parse(resultHtml);
+        Elements dateElements = doc.select("b + i");
+        Elements userElements = doc.select("b > u");
         try {
-            jsonObject.put("name", getTextByIndex(elements, 0));
-            jsonObject.put("authorName", getTextByIndex(elements, 1));
-//            jsonObject.put("authorId", elements.get(1).text());
-            jsonObject.put("created", getTextByIndex(elements, 2));
-            jsonObject.put("updated", getTextByIndex(elements, 3));
-            jsonObject.put("coordinates", getTextByIndex(elements, 4));
-            jsonObject.put("country", getTextByIndex(elements, 5));
-            jsonObject.put("region", getTextByIndex(elements, 6));
-            jsonObject.put("city", getTextByIndex(elements, 7));
-            jsonObject.put("difficulty", getTextByIndex(elements, 8));
-            jsonObject.put("terrain", getTextByIndex(elements, 9));
+            for (int i = 0; i < dateElements.size(); i++) {
+                Element node = dateElements.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("date", node.text());
+                jsonObject.put("message", node.nextSibling().nextSibling().toString().trim());
+                jsonObject.put("user", userElements.get(i).text());
+                jsonArray.put(jsonObject);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return jsonObject;
+        return jsonArray;
     }
-
-    private static String getTextByIndex(Elements els, int idx) {
-        if (els.size() < idx) return "";
-        if (els.get(idx) != null) return els.get(idx).text();
-        return "";
-    }
-
 
     @Override
-    protected void onPostExecute(JSONObject s) {
+    protected void onPostExecute(JSONArray s) {
         super.onPostExecute(s);
-        TextView viewById = (TextView) ctx.findViewById(R.id.cachejson);
+        TextView viewById = (TextView) ctx.findViewById(R.id.commentsjson);
         try {
             viewById.setText(s.toString(2));
         } catch (JSONException e) {
