@@ -2,12 +2,14 @@ package geocaching.tasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
@@ -60,8 +62,20 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
         Document doc = Jsoup.parse(resultHtml);
         Elements elements = doc.select("p>b");
 
+        Elements textElements = doc.select("b u");
         JSONObject jsonObject = new JSONObject();
         try {
+            for (int i = 0; i < textElements.size(); i++) {
+                Element node = textElements.get(i).parent();
+                String result = "";
+                while (!node.nodeName().equalsIgnoreCase("hr")) {
+                    node = node.nextElementSibling();
+                    // TODO verify NPE, parse other 4 properties
+                    result += node.text();
+                }
+                jsonObject.put("prop_" + i, result);
+                Log.i("i", node.parent().nextSibling().nextSibling().toString());
+            }
             jsonObject.put("name", getTextByIndex(elements, 0));
             jsonObject.put("authorName", getTextByIndex(elements, 1));
 //            jsonObject.put("authorId", elements.get(1).text());
@@ -73,6 +87,12 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
             jsonObject.put("city", getTextByIndex(elements, 7));
             jsonObject.put("difficulty", getTextByIndex(elements, 8));
             jsonObject.put("terrain", getTextByIndex(elements, 9));
+
+            jsonObject.put("properties", getTextByIndex(elements, 9));
+            jsonObject.put("description", getTextByIndex(elements, 9));
+            jsonObject.put("environment", getTextByIndex(elements, 9));
+            jsonObject.put("contains", getTextByIndex(elements, 9));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
