@@ -2,7 +2,6 @@ package geocaching.tasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -10,6 +9,8 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
@@ -54,31 +55,57 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
                 }
             }
         }
-
         String resultHtml = html.toString();
         resultHtml = resultHtml.replace("windows-1251", "UTF-8");
         resultHtml = resultHtml.replaceAll("\\r|\\n", "");
+        return parseInfo(resultHtml);
+    }
 
-        Document doc = Jsoup.parse(resultHtml);
-        Elements elements = doc.select("p>b");
+    private static JSONObject parseInfo(String html) {
+        Document doc = Jsoup.parse(html);
 
         Elements textElements = doc.select("b u");
         JSONObject jsonObject = new JSONObject();
         try {
             for (int i = 0; i < textElements.size(); i++) {
-                Element node = textElements.get(i).parent();
-                String result = "";
-                while (!node.nodeName().equalsIgnoreCase("hr")) {
-                    node = node.nextElementSibling();
-                    // TODO verify NPE, parse other 4 properties
-                    result += node.text();
+                Node node = textElements.get(i).parent();
+                String key = "";
+                switch (((Element) node).text()) {
+                    case "Атрибуты":
+                        key = "attributes";
+                        break;
+                    case "Описание тайника":
+                        key = "description";
+                        break;
+                    case "Описание окружающей местности":
+                        key = "surroundingArea";
+                        break;
+                    case "Содержимое тайника":
+                        key = "content";
+                        break;
                 }
-                jsonObject.put("prop_" + i, result);
-                Log.i("i", node.parent().nextSibling().nextSibling().toString());
+                String result = "";
+                while (node != null && !node.nodeName().equalsIgnoreCase("hr")) {
+                    node = node.nextSibling();
+                    if (node != null) {
+                        if (node instanceof TextNode)
+                            result += ((TextNode) node).text();
+                        else
+                            result += ((Element) node).text();
+                    }
+                }
+                jsonObject.put(key, result);
             }
+
+            Elements elements = doc.select("p>b");
+
             jsonObject.put("name", getTextByIndex(elements, 0));
-            jsonObject.put("authorName", getTextByIndex(elements, 1));
-//            jsonObject.put("authorId", elements.get(1).text());
+
+            JSONObject authorObject = new JSONObject();
+            authorObject.put("name", getTextByIndex(elements, 1));
+            authorObject.put("id", doc.select("a[href~=profile.php]").get(0).attr("href").split("=")[1]);
+            jsonObject.put("author", authorObject);
+
             jsonObject.put("created", getTextByIndex(elements, 2));
             jsonObject.put("updated", getTextByIndex(elements, 3));
             jsonObject.put("coordinates", getTextByIndex(elements, 4));
@@ -87,16 +114,9 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
             jsonObject.put("city", getTextByIndex(elements, 7));
             jsonObject.put("difficulty", getTextByIndex(elements, 8));
             jsonObject.put("terrain", getTextByIndex(elements, 9));
-
-            jsonObject.put("properties", getTextByIndex(elements, 9));
-            jsonObject.put("description", getTextByIndex(elements, 9));
-            jsonObject.put("environment", getTextByIndex(elements, 9));
-            jsonObject.put("contains", getTextByIndex(elements, 9));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return jsonObject;
     }
 
@@ -105,7 +125,6 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
         if (els.get(idx) != null) return els.get(idx).text();
         return "";
     }
-
 
     @Override
     protected void onPostExecute(JSONObject s) {
