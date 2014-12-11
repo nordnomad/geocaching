@@ -61,6 +61,7 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
         return parseInfo(resultHtml);
     }
 
+    //TODO move to separate class, make same in other Load*Tasks
     private static JSONObject parseInfo(String html) {
         Document doc = Jsoup.parse(html);
 
