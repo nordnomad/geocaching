@@ -1,13 +1,8 @@
 package geocaching.tasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+import android.support.v7.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import geocaching.Const;
+import geocaching.ui.adapters.CommentsTabAdapter;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.getInputSteamReader;
@@ -72,9 +68,9 @@ public class LoadCommentsTask extends AsyncTask<Long, Void, JSONArray> {
             for (int i = 0; i < dateElements.size(); i++) {
                 Element node = dateElements.get(i);
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("date", node.text());
+                jsonObject.put("date", node.text().trim().replace("от ", ""));
                 jsonObject.put("message", node.nextSibling().nextSibling().toString().trim());
-                jsonObject.put("user", userElements.get(i).text());
+                jsonObject.put("user", userElements.get(i).text().trim());
                 jsonArray.put(jsonObject);
             }
         } catch (JSONException e) {
@@ -87,63 +83,9 @@ public class LoadCommentsTask extends AsyncTask<Long, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray s) {
         super.onPostExecute(s);
-        TextView listView = (TextView) ctx.findViewById(R.id.commentsjson);
-//        ListView listView = (ListView) ctx.findViewById(R.id.commentsList);
-//        listView.setAdapter(new CommentAdapter(ctx, s));
-//
-        try {
-            listView.setText(s.toString(2));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    class CommentAdapter extends BaseAdapter {
-        JSONArray jsonArray;
-        LayoutInflater inflater;
-
-        public CommentAdapter(Context context, JSONArray jsonArray) {
-            this.jsonArray = jsonArray;
-            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public int getCount() {
-            return jsonArray.length();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            try {
-                return jsonArray.get(i);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            View layout = ctx.getLayoutInflater().inflate(R.layout.comments_list_item, viewGroup);
-            JSONObject jsonObject = (JSONObject) getItem(i);
-            try {
-                TextView userView = (TextView) layout.findViewById(R.id.commentAuthorNameLabel);
-                userView.setText(jsonObject.getString("user"));
-
-                TextView dateView = (TextView) layout.findViewById(R.id.commentDateLabel);
-                dateView.setText(jsonObject.getString("date"));
-
-                TextView messageView = (TextView) layout.findViewById(R.id.commentMessageLabel);
-                messageView.setText(jsonObject.getString("message"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return layout;
-        }
+        RecyclerView.Adapter mAdapter = new CommentsTabAdapter(s);
+        RecyclerView mRecyclerView = (RecyclerView) ctx.findViewById(R.id.commentsList);
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 }
