@@ -2,7 +2,7 @@ package geocaching.tasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.TextView;
+import android.widget.GridView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import geocaching.Const;
+import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.getInputSteamReader;
@@ -68,10 +69,10 @@ public class LoadPhotoUrlsTask extends AsyncTask<Long, Void, JSONArray> {
                 String href = el.attr("href").trim();
                 if (href.contains("/caches/")) {
                     jsonObject.put("caches", href);
-                    jsonObject.put("thumbnail", href.replace("/caches/", "/caches/thumbnail/"));
+                    jsonObject.put("thumbnails", href.replace("/caches/", "/caches/thumbnails/"));
                 } else if (href.contains("/areas/")) {
                     jsonObject.put("areas", href);
-                    jsonObject.put("thumbnail", href.replace("/areas/", "/areas/thumbnail/"));
+                    jsonObject.put("thumbnails", href.replace("/areas/", "/areas/thumbnails/"));
                 }
                 jsonArray.put(jsonObject);
             }
@@ -84,11 +85,10 @@ public class LoadPhotoUrlsTask extends AsyncTask<Long, Void, JSONArray> {
     @Override
     protected void onPostExecute(JSONArray s) {
         super.onPostExecute(s);
-        TextView viewById = (TextView) ctx.findViewById(R.id.photosjson);
-        try {
-            viewById.setText(s.toString(2));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+        GridView gridView = (GridView) ctx.findViewById(R.id.gallery);
+        ImageGridAdapter gridAdapter = new ImageGridAdapter(ctx, s);
+        gridView.setAdapter(gridAdapter);
+        gridAdapter.notifyDataSetChanged();
     }
 }

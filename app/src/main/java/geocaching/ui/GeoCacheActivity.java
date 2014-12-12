@@ -8,6 +8,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import org.json.JSONArray;
 
@@ -16,6 +22,7 @@ import geocaching.tasks.LoadCommentsTask;
 import geocaching.tasks.LoadInfoTask;
 import geocaching.tasks.LoadPhotoUrlsTask;
 import geocaching.ui.adapters.CommentsTabAdapter;
+import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
 
 public class GeoCacheActivity extends Activity {
@@ -28,15 +35,21 @@ public class GeoCacheActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_cache);
 
-
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
 
-        // Give the SlidingTabLayout the ViewPager, this must be
-        // done AFTER the ViewPager has had it's PagerAdapter set.
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setViewPager(viewPager);
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .diskCacheSize(50 * 1024 * 1024) // 50 Mb
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .writeDebugLogs() // Remove for release app
+                .build();
+        ImageLoader.getInstance().init(config);
     }
 
     class GeoCachePagerAdapter extends PagerAdapter {
@@ -86,6 +99,8 @@ public class GeoCacheActivity extends Activity {
                     return view;
                 case 2:
                     view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
+                    GridView gridView = (GridView) view.findViewById(R.id.gallery);
+                    gridView.setAdapter(new ImageGridAdapter(GeoCacheActivity.this, new JSONArray()));
                     container.addView(view);
                     new LoadPhotoUrlsTask(GeoCacheActivity.this).execute(geoCacheId);
                     return view;
