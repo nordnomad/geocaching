@@ -2,6 +2,8 @@ package geocaching.tasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -16,8 +18,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import geocaching.Const;
+import geocaching.GoTo;
 import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
 
@@ -83,12 +88,35 @@ public class LoadPhotoUrlsTask extends AsyncTask<Long, Void, JSONArray> {
     }
 
     @Override
-    protected void onPostExecute(JSONArray s) {
+    protected void onPostExecute(final JSONArray s) {
         super.onPostExecute(s);
 
         GridView gridView = (GridView) ctx.findViewById(R.id.gallery);
         ImageGridAdapter gridAdapter = new ImageGridAdapter(ctx, s);
         gridView.setAdapter(gridAdapter);
         gridAdapter.notifyDataSetChanged();
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                GoTo.imagePagerActivity(ctx, urls(s));
+            }
+        });
+    }
+
+    private static List<String> urls(JSONArray jsonArray) {
+        List<String> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.has("areas")) {
+                    result.add(jsonObject.getString("areas"));
+                } else if (jsonObject.has("caches")) {
+                    result.add(jsonObject.getString("caches"));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

@@ -50,6 +50,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name="geocaching.ui.GeoCacheActivity" />
+        <activity android:name="geocaching.ui.ImagePagerActivity" />
         <activity android:name="geocaching.ui.CompassActivity" />
 
         <service android:name="geocaching.login.AuthService">

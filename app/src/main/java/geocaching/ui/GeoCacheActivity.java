@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -102,13 +101,7 @@ public class GeoCacheActivity extends Activity {
                     view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
                     GridView gridView = (GridView) view.findViewById(R.id.gallery);
                     gridView.setAdapter(new ImageGridAdapter(GeoCacheActivity.this, new JSONArray()));
-                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            //TODO implement navigation to Full image Activity
-                            //startImagePagerActivity(position);
-                        }
-                    });
+
                     container.addView(view);
                     new LoadPhotoUrlsTask(GeoCacheActivity.this).execute(geoCacheId);
                     return view;
