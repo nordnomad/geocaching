@@ -2,7 +2,6 @@ package geocaching.tasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +18,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import geocaching.Const;
-import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.getInputSteamReader;
 
@@ -130,11 +128,11 @@ public class LoadInfoTask extends AsyncTask<Long, Void, JSONObject> {
     @Override
     protected void onPostExecute(JSONObject s) {
         super.onPostExecute(s);
-        TextView viewById = (TextView) ctx.findViewById(R.id.cachejson);
-        try {
-            viewById.setText(s.toString(2));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        TextView viewById = (TextView) ctx.findViewById(R.id.cachejson);
+//        try {
+//            viewById.setText(s.toString(2));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 }

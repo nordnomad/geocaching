@@ -101,7 +101,6 @@ public class GeoCacheActivity extends Activity {
                     view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
                     GridView gridView = (GridView) view.findViewById(R.id.gallery);
                     gridView.setAdapter(new ImageGridAdapter(GeoCacheActivity.this, new JSONArray()));
-
                     container.addView(view);
                     new LoadPhotoUrlsTask(GeoCacheActivity.this).execute(geoCacheId);
                     return view;
