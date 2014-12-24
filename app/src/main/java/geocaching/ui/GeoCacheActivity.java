@@ -130,16 +130,24 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                                 location.setText(response.getString("coordinates"));
                                 TextView author = (TextView) view.findViewById(R.id.author);
                                 author.setText(response.getJSONObject("author").getString("name"));
+                                TextView descriptionText = (TextView) view.findViewById(R.id.descriptionText);
+                                descriptionText.setText(response.getString("description"));
+                                TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
+                                surroundingArea.setText(response.getString("surroundingArea"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             bar.setVisibility(View.GONE);
                             view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);
+                            view.findViewById(R.id.description).setVisibility(View.VISIBLE);
+                            view.findViewById(R.id.area).setVisibility(View.VISIBLE);
                         }
                     }, ctx));
                     return view;
                 case 1:
                     view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
+                    final ProgressBar commentsBar = (ProgressBar) view.findViewById(R.id.commentsLoading);
+                    commentsBar.setVisibility(View.VISIBLE);
                     final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
                     recyclerView.setHasFixedSize(true);
                     recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
@@ -151,6 +159,8 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                             RecyclerView.Adapter mAdapter = new CommentsTabAdapter(response);
                             recyclerView.setAdapter(mAdapter);
                             mAdapter.notifyDataSetChanged();
+                            commentsBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         }
                     }, ctx));
                     return view;
