@@ -7,7 +7,8 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/card_view"
+        android:id="@+id/infoCard"
+        android:visibility="gone"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +19,7 @@
 
         <LinearLayout
             android:orientation="vertical"
-        android:layout_width="match_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
@@ -38,7 +39,7 @@
                 <TextView
                     android:id="@+id/commentDateLabel"
                     android:textAppearance="?android:attr/textAppearanceListItem"
-                    android:text="Дата редактирования"
+                    android:text="Дата обновления"
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
@@ -48,19 +49,22 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp">
 
                 <TextView
+                    android:id="@+id/createDate"
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="01.11.2014" />
+                    android:text="" />
 
                 <TextView
+                    android:id="@+id/updateDate"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="11.12.2014"
+                    android:text=""
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
@@ -92,19 +96,22 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp">
 
                 <TextView
+                    android:id="@+id/country"
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Украина" />
+                    android:text="" />
 
                 <TextView
+                    android:id="@+id/city"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Харьков"
+                    android:text=""
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
@@ -136,19 +143,22 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp">
 
                 <TextView
+                    android:id="@+id/location"
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="N 50' 1.235' E 36' 15.133'" />
+                    android:text="" />
 
                 <TextView
+                    android:id="@+id/author"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="sheff4ik2010@yandex.ru"
+                    android:text=""
                     android:layout_width="0dp"
                     android:layout_weight=".5"
                     android:layout_height="wrap_content"
@@ -157,15 +167,22 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
+    <!--  <android.support.v7.widget.CardView
+          android:layout_gravity="center"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          card_view:contentPadding="8dp"
+          card_view:cardCornerRadius="4dp"
+          card_view:cardBackgroundColor="@color/background_material_light"
+          card_view:cardUseCompatPadding="true">
+
+      </android.support.v7.widget.CardView>-->
+
+    <ProgressBar
+        android:id="@+id/infoLoading"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        card_view:contentPadding="8dp"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardBackgroundColor="@color/background_material_light"
-        card_view:cardUseCompatPadding="true">
-
-    </android.support.v7.widget.CardView>
-
+        android:layout_gravity="center"
+        android:visibility="gone" />
 </LinearLayout>
+

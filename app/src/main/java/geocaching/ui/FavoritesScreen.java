@@ -104,7 +104,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                GoTo.geoCacheActivity(getActivity(), id);
+                GoTo.geoCacheActivity(getActivity(), id, "TODO name");
             }
         });
     }

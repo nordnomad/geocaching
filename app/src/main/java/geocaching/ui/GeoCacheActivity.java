@@ -1,40 +1,59 @@
 package geocaching.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
-import geocaching.tasks.LoadCommentsTask;
-import geocaching.tasks.LoadInfoTask;
-import geocaching.tasks.LoadPhotoUrlsTask;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
 
-public class GeoCacheActivity extends Activity {
+import static com.android.volley.Request.Method.GET;
+import static geocaching.Const.M.commentsUrl;
+import static geocaching.Const.M.imagesUrl;
+import static geocaching.Const.M.infoUrl;
+
+public class GeoCacheActivity extends ActionBarActivity implements Response.ErrorListener {
 
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
+    RequestQueue queue;
+    long geoCacheId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_cache);
-
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
 
@@ -50,6 +69,14 @@ public class GeoCacheActivity extends Activity {
                 .writeDebugLogs() // Remove for release app
                 .build();
         ImageLoader.getInstance().init(config);
+        queue = Volley.newRequestQueue(this);
+        geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
+        setTitle(getIntent().getStringExtra("name"));
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Toast.makeText(GeoCacheActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     class GeoCachePagerAdapter extends PagerAdapter {
@@ -79,30 +106,73 @@ public class GeoCacheActivity extends Activity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-
-            View view;
-            long geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
+            final GeoCacheActivity ctx = GeoCacheActivity.this;
+            final View view;
             switch (position) {
                 case 0:
-                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_info_tab, container, false);
+                    view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_info_tab, container, false);
+                    final ProgressBar bar = (ProgressBar) view.findViewById(R.id.infoLoading);
+                    bar.setVisibility(View.VISIBLE);
                     container.addView(view);
-                    new LoadInfoTask(GeoCacheActivity.this).execute(geoCacheId);
+                    queue.add(new JsonObjectRequest(GET, infoUrl(geoCacheId), null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                TextView createDate = (TextView) view.findViewById(R.id.createDate);
+                                createDate.setText(response.getString("created"));
+                                TextView updateDate = (TextView) view.findViewById(R.id.updateDate);
+                                updateDate.setText(response.getString("updated"));
+                                TextView country = (TextView) view.findViewById(R.id.country);
+                                country.setText(response.getString("country"));
+                                TextView city = (TextView) view.findViewById(R.id.city);
+                                city.setText(response.getString("city"));
+                                TextView location = (TextView) view.findViewById(R.id.location);
+                                location.setText(response.getString("coordinates"));
+                                TextView author = (TextView) view.findViewById(R.id.author);
+                                author.setText(response.getJSONObject("author").getString("name"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            bar.setVisibility(View.GONE);
+                            view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);
+                        }
+                    }, ctx));
                     return view;
                 case 1:
-                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
-                    RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
+                    view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
+                    final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
                     recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(GeoCacheActivity.this));
+                    recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
                     recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
                     container.addView(view);
-                    new LoadCommentsTask(GeoCacheActivity.this).execute(geoCacheId);
+                    queue.add(new JsonArrayRequest(commentsUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            RecyclerView.Adapter mAdapter = new CommentsTabAdapter(response);
+                            recyclerView.setAdapter(mAdapter);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    }, ctx));
                     return view;
                 case 2:
-                    view = GeoCacheActivity.this.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
-                    GridView gridView = (GridView) view.findViewById(R.id.gallery);
-                    gridView.setAdapter(new ImageGridAdapter(GeoCacheActivity.this, new JSONArray()));
+                    view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
+                    final GridView gridView = (GridView) view.findViewById(R.id.gallery);
+                    gridView.setAdapter(new ImageGridAdapter(ctx, new JSONArray()));
                     container.addView(view);
-                    new LoadPhotoUrlsTask(GeoCacheActivity.this).execute(geoCacheId);
+                    queue.add(new JsonArrayRequest(imagesUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(final JSONArray response) {
+                            ImageGridAdapter gridAdapter = new ImageGridAdapter(ctx, response);
+                            gridView.setAdapter(gridAdapter);
+                            gridAdapter.notifyDataSetChanged();
+                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    GoTo.imagePagerActivity(ctx, urls(response));
+                                }
+                            });
+                        }
+                    }, ctx));
                     return view;
             }
             return null;
@@ -112,6 +182,23 @@ public class GeoCacheActivity extends Activity {
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
         }
+    }
+
+    private static List<String> urls(JSONArray jsonArray) {
+        List<String> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.has("areas")) {
+                    result.add(jsonObject.getString("areas"));
+                } else if (jsonObject.has("caches")) {
+                    result.add(jsonObject.getString("caches"));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

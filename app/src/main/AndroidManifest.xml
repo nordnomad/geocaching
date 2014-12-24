@@ -49,7 +49,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name="geocaching.ui.GeoCacheActivity" />
+        <activity
+            android:name="geocaching.ui.GeoCacheActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity android:name="geocaching.ui.ImagePagerActivity" />
         <activity android:name="geocaching.ui.CompassActivity" />
 

@@ -192,7 +192,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 markerInfo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        GoTo.geoCacheActivity(getActivity(), geoCache.id);
+                        GoTo.geoCacheActivity(getActivity(), geoCache.id, geoCache.name);
                     }
                 });
 

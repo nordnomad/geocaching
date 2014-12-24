@@ -20,4 +20,23 @@ public interface Const {
     String caching_auth_st = "caching_auth_st";
     String geocaching = "geocaching";
 
+    static class M {
+        static String ROOT = "http://nordnomad.herokuapp.com/v1";
+        static String info = ROOT + "/info/%d";
+        static String comments = ROOT + "/comments/%d";
+        static String images = ROOT + "/images/%d";
+
+        public static String infoUrl(long id) {
+            return String.format(info, id);
+        }
+
+        public static String commentsUrl(long id) {
+            return String.format(comments, id);
+        }
+
+        public static String imagesUrl(long id) {
+            return String.format(images, id);
+        }
+    }
+
 }
