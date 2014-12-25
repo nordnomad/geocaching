@@ -1,7 +1,9 @@
 package geocaching.ui;
 
+import android.app.Service;
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -30,10 +32,13 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
 
     ListView listView;
 
+    LocationManager locationManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        locationManager = (LocationManager) getActivity().getSystemService(Service.LOCATION_SERVICE);
     }
 
     @Override
