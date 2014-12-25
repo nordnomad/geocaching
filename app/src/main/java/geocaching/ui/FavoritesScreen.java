@@ -1,7 +1,9 @@
 package geocaching.ui;
 
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -54,8 +56,21 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                ContentResolver resolver = getActivity().getContentResolver();
-                resolver.delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, null, null);
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Удалить все")
+                        .setMessage("Вы действительно хотите удалить все сохраненные тайники?")
+
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                ContentResolver resolver = getActivity().getContentResolver();
+                                resolver.delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, null, null);
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
                 return true;
             }
         });
