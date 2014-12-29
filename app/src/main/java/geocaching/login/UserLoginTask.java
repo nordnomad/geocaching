@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import geocaching.ui.MainActivity;
+import geocaching.ui.LoginActivity;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Const.ACCOUNT_TYPE;
@@ -48,9 +48,9 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
     String email;
     String password;
-    MainActivity context;
+    LoginActivity context;
 
-    public UserLoginTask(MainActivity context, String email, String password) {
+    public UserLoginTask(LoginActivity context, String email, String password) {
         this.email = email;
         this.password = password;
         this.context = context;
@@ -65,7 +65,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         HttpClient client = AndroidHttpClient.newInstance(USER_AGENT);
         HttpPost post = new HttpPost(LOGIN_URL);
-        List<NameValuePair> urlParameters = new ArrayList<>();
+        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
         urlParameters.add(new BasicNameValuePair(EMAIL_PARAM, email));
         urlParameters.add(new BasicNameValuePair(PASSWORD_PARAM, password));
         urlParameters.add(new BasicNameValuePair(LONGTERM_PARAM, LONGTERM_PARAM_VAL));
@@ -79,7 +79,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
             Log.d(getClass().getCanonicalName(), e.getMessage());
             return false;
         }
-        Map<String, String> tokens = new HashMap<>();
+        Map<String, String> tokens = new HashMap<String, String>();
         if (response.getStatusLine().getStatusCode() == 302) {
             Header[] geoCookie = response.getHeaders("Set-Cookie");
             for (Header header : geoCookie) {

@@ -2,9 +2,11 @@ package geocaching;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 
 import java.util.List;
 
+import geocaching.ui.CompassActivity;
 import geocaching.ui.ImagePagerActivity;
 
 public class GoTo {
@@ -18,6 +20,13 @@ public class GoTo {
     public static void imagePagerActivity(Context ctx, List<String> imageUrls) {
         Intent intent = new Intent(ctx, ImagePagerActivity.class);
         intent.putExtra("imageUrls", imageUrls.toArray(new String[imageUrls.size()]));
+        ctx.startActivity(intent);
+    }
+
+    public static void compassActivity(Context ctx, Location src, Location dest) {
+        Intent intent = new Intent(ctx, CompassActivity.class);
+        intent.putExtra("userLocation", new double[]{src.getLongitude(), src.getLatitude()});
+        intent.putExtra("objectLocation", new double[]{dest.getLongitude(), dest.getLatitude()});
         ctx.startActivity(intent);
     }
 }

@@ -28,13 +28,9 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value="geocaching.ui.MainActivity" />
-
         <activity
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:name="geocaching.ui.MainActivity"
+            android:name="geocaching.ui.LoginActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,6 +45,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name="geocaching.ui.MainActivity" />
         <activity
             android:name="geocaching.ui.GeoCacheActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />

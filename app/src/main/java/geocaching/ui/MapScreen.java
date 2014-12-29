@@ -179,6 +179,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), CompassActivity.class);
                         startActivity(intent);
+                        Location cacheLocation = new Location("");
+                        cacheLocation.setLatitude(geoCache.la);
+                        cacheLocation.setLongitude(geoCache.ln);
+                        GoTo.compassActivity(getActivity(), lastLocation, cacheLocation);
                     }
                 });
 

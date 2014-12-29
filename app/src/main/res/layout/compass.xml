@@ -13,12 +13,17 @@
             android:layout_marginTop="20dp"
             android:text="Heading: 0.0" />
 
-    <ImageView
-            android:id="@+id/imageViewCompass"
+    <!--<ImageView
+            android:id="@+id/compassView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvHeading"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/img_compass" />
+            android:src="@drawable/compass" />-->
+
+    <garin.artemiy.compassview.library.CompassView
+        android:id="@+id/compassView"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content" />
 
 </RelativeLayout>

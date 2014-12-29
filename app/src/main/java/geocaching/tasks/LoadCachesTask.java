@@ -26,7 +26,7 @@ import static geocaching.Utils.numberToStatus;
 import static geocaching.Utils.numberToType;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
-    List<GeoCache> caches = new ArrayList<>();
+    List<GeoCache> caches = new ArrayList<GeoCache>();
 
     MapWrapper map;
 
@@ -81,7 +81,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
 
 class GeoCachesHandler extends DefaultHandler {
 
-    public List<GeoCache> geoCaches = new ArrayList<>();
+    public List<GeoCache> geoCaches = new ArrayList<GeoCache>();
     String C = "c";
     String ID = "id";
     String CN = "cn";
