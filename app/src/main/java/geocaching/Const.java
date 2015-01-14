@@ -1,5 +1,9 @@
 package geocaching;
 
+import java.util.List;
+
+import static android.text.TextUtils.join;
+
 public interface Const {
     String PDA_GEOCACHING = "http://pda.geocaching.su";
     String LOGIN_URL = PDA_GEOCACHING + "/login.php";
@@ -25,6 +29,7 @@ public interface Const {
         static String info = ROOT + "/info/%d";
         static String comments = ROOT + "/comments/%d";
         static String images = ROOT + "/images/%d";
+        static String fullInfo = ROOT + "/fullInfo/%f_%f_%f_%f/%s";
 
         public static String infoUrl(long id) {
             return String.format(info, id);
@@ -36,6 +41,10 @@ public interface Const {
 
         public static String imagesUrl(long id) {
             return String.format(images, id);
+        }
+
+        public static String fullInfoUrl(double nLon, double sLon, double nLat, double shLat, List<Long> excludeIds) {
+            return String.format(fullInfo, nLon, sLon, nLat, shLat, join("_", excludeIds)).replace(",", ".");
         }
     }
 

@@ -19,10 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
-import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
 public class MainActivity extends ActionBarActivity {
@@ -34,9 +32,6 @@ public class MainActivity extends ActionBarActivity {
     DrawerLayout menuLayout;
     ListView menuList;
 
-    UserLoginTask authTask;
-    EditText emailView;
-    EditText passwordView;
     ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -47,59 +42,36 @@ public class MainActivity extends ActionBarActivity {
             accountAuthenticatorResponse.onRequestContinued();
         }
         Account[] accounts = AccountManager.get(this).getAccountsByType("com.geocaching");
-        if (accounts.length == 0) {
-//            setContentView(R.layout.activity_login);
-//            emailView = (EditText) findViewById(R.id.email);
-//            passwordView = (EditText) findViewById(R.id.password);
-//            passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//                @Override
-//                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-//                    if (id == R.id.login || id == EditorInfo.IME_NULL) {
-//                        attemptLogin();
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            });
-//            Button loginButton = (Button) findViewById(R.id.login_button);
-//            loginButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    attemptLogin();
-//                }
-//            });
-        } else {
-            setContentView(R.layout.activity_maps);
-            menuItems = new String[]{accounts[0].name, "Карта", "Избранное"/*, "Настройки"*/};
-            menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            menuList = (ListView) findViewById(R.id.left_drawer);
-            menuList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuItems));
-            class DrawerItemClickListener implements ListView.OnItemClickListener {
-                @Override
-                public void onItemClick(AdapterView parent, View view, int position, long id) {
-                    selectItem(position);
-                }
+        setContentView(R.layout.activity_maps);
+        menuItems = new String[]{accounts[0].name, "Карта", "Избранное"/*, "Настройки"*/};
+        menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        menuList = (ListView) findViewById(R.id.left_drawer);
+        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuItems));
+        class DrawerItemClickListener implements ListView.OnItemClickListener {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                selectItem(position);
             }
-            menuList.setOnItemClickListener(new DrawerItemClickListener());
+        }
+        menuList.setOnItemClickListener(new DrawerItemClickListener());
 
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-            drawerToggle = new ActionBarDrawerToggle(this, menuLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-                public void onDrawerClosed(View view) {
-                    supportInvalidateOptionsMenu();
-                }
-
-                public void onDrawerOpened(View drawerView) {
-                    getSupportActionBar().setTitle("Geocaching");
-                    supportInvalidateOptionsMenu();
-                }
-            };
-            menuLayout.setDrawerListener(drawerToggle);
-
-            if (savedInstanceState == null) {
-                selectItem(1);
+        drawerToggle = new ActionBarDrawerToggle(this, menuLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                supportInvalidateOptionsMenu();
             }
+
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle("Geocaching");
+                supportInvalidateOptionsMenu();
+            }
+        };
+        menuLayout.setDrawerListener(drawerToggle);
+
+        if (savedInstanceState == null) {
+            selectItem(1);
         }
     }
 

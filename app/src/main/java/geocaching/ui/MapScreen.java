@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -27,13 +33,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 
-import java.util.Set;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
+import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
@@ -41,24 +54,20 @@ import map.test.myapplication3.app.R;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import static geocaching.Const.M.fullInfoUrl;
 import static geocaching.Utils.geoCacheToContentValues;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     View markerInfo;
     GoogleApiClient gapiClient;
-    //    LocationRequest locationRequest;
     FragmentManager fragmentManager;
     Location lastLocation;
-    boolean isMoved = false;
+    RequestQueue queue;
 
     @Override
     public void onLocationChanged(Location l) {
         lastLocation = l;
-//        if (!isMoved) {
-//            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13.0f));
-//            isMoved = true;
-//        }
     }
 
     @Override
@@ -82,6 +91,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+        queue = Volley.newRequestQueue(getActivity());
     }
 
     @Override
@@ -249,12 +259,57 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         MenuItem item = menu.findItem(R.id.map_save);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Set<GeoCache> geoCaches = googleMap.markerGeoCaches.keySet();
-                for (GeoCache geoCache : geoCaches) {
-                    ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
+            public boolean onMenuItemClick(final MenuItem item) {
+                item.setActionView(R.layout.actionbar_save_progress);
+                item.expandActionView();
+
+//                Set<GeoCache> geoCaches = googleMap.markerGeoCaches.keySet();
+//                for (GeoCache geoCache : geoCaches) {
+//                    ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
+//                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
+//                }
+
+                Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null);
+                List<Long> excludedIds = new ArrayList<Long>();
+                while (cursor.moveToNext()) {
+                    excludedIds.add(cursor.getLong(0));
                 }
+
+                LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+                double nLat = bounds.northeast.latitude;
+                double nLon = bounds.northeast.longitude;
+                double sLat = bounds.southwest.latitude;
+                double sLon = bounds.southwest.longitude;
+
+                queue.add(new JsonArrayRequest(fullInfoUrl(nLon, sLon, nLat, sLat, excludedIds),
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                try {
+                                    for (int i = 0; i < response.length(); i++) {
+                                        JSONObject jsonObject = response.getJSONObject(i);
+                                        ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
+                                        // TODO implement json to content values converter
+//                                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(jsonObject));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                item.collapseActionView();
+                                item.setActionView(null);
+                                Toast.makeText(getActivity(), response.length() + " caches was saved", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        , new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        item.collapseActionView();
+                        item.setActionView(null);
+                        String message = TextUtils.isEmpty(error.getMessage()) ? "0 caches was saved" : error.getMessage();
+                        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                    }
+                }));
+
                 return true;
             }
         });
