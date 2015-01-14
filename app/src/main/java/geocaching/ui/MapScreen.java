@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,7 +47,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     View markerInfo;
     GoogleApiClient gapiClient;
-    LocationRequest locationRequest;
+    //    LocationRequest locationRequest;
     FragmentManager fragmentManager;
     Location lastLocation;
     boolean isMoved = false;
@@ -56,10 +55,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     @Override
     public void onLocationChanged(Location l) {
         lastLocation = l;
-        if (!isMoved) {
-            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13.0f));
-            isMoved = true;
-        }
+//        if (!isMoved) {
+//            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 13.0f));
+//            isMoved = true;
+//        }
     }
 
     @Override
@@ -114,16 +113,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onConnected(Bundle bundle) {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000); // Update location every second
-        LocationServices.FusedLocationApi.requestLocationUpdates(gapiClient, locationRequest, this);
-        googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
-            }
-        });
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(gapiClient);
+        if (lastLocation != null) {
+            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13.0f));
+        }
     }
 
     @Override
@@ -148,7 +141,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         googleMap.map.setMyLocationEnabled(true);
         googleMap.map.getUiSettings().setCompassEnabled(true);
         googleMap.map.getUiSettings().setZoomControlsEnabled(false);
-
+        googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
+            }
+        });
         googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {

@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import geocaching.GoTo;
 import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
@@ -60,8 +60,7 @@ public class LoginActivity extends Activity {
                 }
             });
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            GoTo.mainActivity(this);
         }
     }
 
@@ -71,7 +70,7 @@ public class LoginActivity extends Activity {
         return netInfo != null && netInfo.isConnected();
     }
 
-    public void attemptLogin() {
+    void attemptLogin() {
         if (!isOnline()) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             AlertDialog alertDialog = alertDialogBuilder

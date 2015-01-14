@@ -35,7 +35,7 @@ public class CompassActivity extends CompassSensorsActivity/* implements SensorE
         objLoc.setLatitude(ol[1]);
 
         compassView = (CompassView) findViewById(R.id.compassView);
-        compassView.initializeCompass(userLoc, objLoc, R.drawable.arrow);
+        compassView.initializeCompass(objLoc, userLoc, R.drawable.compass);
     }
 
    /* @Override

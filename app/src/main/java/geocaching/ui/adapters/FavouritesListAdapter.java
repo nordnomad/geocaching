@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import geocaching.GeoCacheStatus;
 import geocaching.GeoCacheType;
-import geocaching.Utils;
 import geocaching.db.DB;
 import map.test.myapplication3.app.R;
 
@@ -58,24 +57,6 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         GeoCacheStatus status = GeoCacheStatus.values()[cursor.getInt(statusIdx)];
 
         ImageView iconView = (ImageView) view.findViewById(R.id.favouritesGeoCacheIcon);
-        iconView.setImageResource(Utils.getMarkerResId(type, status));
-    }
-
-    @Override
-    public void onLocationChanged(Location newLocation) {
-        this.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
     private Location getLastLocation() {
@@ -105,4 +86,20 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         return null;
     }
 
+    @Override
+    public void onLocationChanged(Location newLocation) {
+        this.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 }
