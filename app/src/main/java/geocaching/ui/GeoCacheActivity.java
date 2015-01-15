@@ -54,6 +54,7 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_cache);
+        getSupportActionBar().setHomeButtonEnabled(true);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
 

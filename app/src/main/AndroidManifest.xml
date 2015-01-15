@@ -46,13 +46,29 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
+            android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name="geocaching.ui.MainActivity" />
+
         <activity
             android:name="geocaching.ui.GeoCacheActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:parentActivityName="geocaching.ui.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="geocaching.ui.MainActivity" />
+        </activity>
+
         <activity android:name="geocaching.ui.ImagePagerActivity" />
-        <activity android:name="geocaching.ui.CompassActivity" />
+
+        <activity
+            android:name="geocaching.ui.compass.CompassActivity"
+            android:parentActivityName="geocaching.ui.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="geocaching.ui.MainActivity" />
+        </activity>
 
         <service android:name="geocaching.login.AuthService">
             <intent-filter>

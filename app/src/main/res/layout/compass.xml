@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+    android:orientation="vertical"
                 android:background="#fff" >
 
     <TextView
-            android:id="@+id/tvHeading"
+        android:id="@+id/distance_compass_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_marginBottom="40dp"
             android:layout_marginTop="20dp"
-            android:text="Heading: 0.0" />
+        android:text="0.0" />
 
-    <!--<ImageView
-            android:id="@+id/compassView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvHeading"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/compass" />-->
-
-    <garin.artemiy.compassview.library.CompassView
+    <geocaching.ui.compass.CompassView
         android:id="@+id/compassView"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_width="match_parent" />
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight=".5"
+            android:layout_height="wrap_content"
+            android:text="My location" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight=".5"
+            android:layout_height="wrap_content"
+            android:text="My destination" />
+
+    </LinearLayout>
+
+</LinearLayout>

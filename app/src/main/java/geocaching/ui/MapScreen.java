@@ -49,6 +49,7 @@ import geocaching.MapWrapper;
 import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
+import geocaching.ui.compass.CompassActivity;
 import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;

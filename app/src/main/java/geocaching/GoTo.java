@@ -6,9 +6,9 @@ import android.location.Location;
 
 import java.util.List;
 
-import geocaching.ui.CompassActivity;
 import geocaching.ui.ImagePagerActivity;
 import geocaching.ui.MainActivity;
+import geocaching.ui.compass.CompassActivity;
 
 public class GoTo {
     public static void geoCacheActivity(Context ctx, long geoCacheId, String name) {

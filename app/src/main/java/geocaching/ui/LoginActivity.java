@@ -3,13 +3,13 @@ package geocaching.ui;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -23,7 +23,7 @@ import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.isBlank;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends ActionBarActivity {
     AccountAuthenticatorResponse accountAuthenticatorResponse;
     Bundle resultBundle;
     UserLoginTask authTask;
