@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -125,6 +126,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     public void onLocationChanged(Location location) {
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        Toast.makeText(this, "Location canged", Toast.LENGTH_SHORT).show();
         updateUI();
     }
 
