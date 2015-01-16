@@ -1,6 +1,7 @@
 package geocaching;
 
 import android.content.ContentValues;
+import android.location.Location;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,6 +24,22 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_YELL
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker;
 
 public class Utils {
+
+    // if distance(m)
+    // greater than this
+    // show (x/1000) km else x m
+    private static final int BIG_DISTANCE_VALUE = 1000; // distance in meters which mean "big distance"
+
+    private static final String SMALL_PRECISE_DISTANCE_NUMBER_FORMAT = "%.0f %s";
+    private static final String SMALL_NOT_PRECISE_DISTANCE_NUMBER_FORMAT = "≈%.0f %s";
+    private static final String BIG_PRECISE_DISTANCE_NUMBER_FORMAT = "%.1f %s";
+    private static final String BIG_NOT_PRECISE_DISTANCE_NUMBER_FORMAT = "≈%.1f %s";
+
+    private static final String BIG_DISTANCE_VALUE_NAME = "км";
+    private static final String SMALL_DISTANCE_VALUE_NAME = "м";
+    private static final float BIG_DISTANCE_COEFFICIENT = 0.001f; // how many small_distance_name units in big_distance_units
+    private static final float SMALL_DISTANCE_COEFFICIENT = 1f;
+
     public static BitmapDescriptor getMarkerBitmapDescriptor(GeoCacheType type, GeoCacheStatus status) {
         switch (type) {
             case TRADITIONAL:
@@ -221,5 +238,55 @@ public class Utils {
         cv.put(DB.Column.STATUS, geoCache.status.ordinal());
         cv.put(DB.Column.TYPE, geoCache.type.ordinal());
         return cv;
+    }
+
+    /**
+     * Formatting coordinate in accordance with standard
+     *
+     * @param location - coordinates
+     * @return formating string (for example: "60° 12,123' с.ш. | 30° 32,321'" в.д.)
+     */
+    public static String coordinateToString(Location location) {
+        Sexagesimal latitude = new Sexagesimal(location.getLatitude()).roundTo(3);
+        Sexagesimal longitude = new Sexagesimal(location.getLongitude()).roundTo(3);
+
+        String format;
+        if (latitude.degrees > 0) {
+            if (longitude.degrees > 0) {
+                format = "%d° %.3f\\' с.ш. \n %d° %.3f\\' в.д.";
+            } else {
+                format = "%d° %.3f\\' с.ш. \n %d° %.3f\\' з.д.";
+            }
+        } else {
+            if (longitude.degrees > 0) {
+                format = "%d° %.3f\\' ю.ш. \n %d° %.3f\\' в.д.";
+            } else {
+                format = "%d° %.3f\\' ю.ш. \n %d° %.3f\\' з.д.";
+            }
+        }
+        return String.format(format, latitude.degrees, latitude.minutes, longitude.degrees, longitude.minutes);
+    }
+
+    /**
+     * @param dist      distance (suggested to geocache in meters)
+     * @param isPrecise true, if distance value precise
+     * @return String of distance formatted value and measure
+     */
+    public static String distanceToString(float dist, boolean isPrecise) {
+        String textDistance;
+        if (isPrecise) {
+            if (dist >= BIG_DISTANCE_VALUE) {
+                textDistance = String.format(BIG_PRECISE_DISTANCE_NUMBER_FORMAT, dist * BIG_DISTANCE_COEFFICIENT, BIG_DISTANCE_VALUE_NAME);
+            } else {
+                textDistance = String.format(SMALL_PRECISE_DISTANCE_NUMBER_FORMAT, dist * SMALL_DISTANCE_COEFFICIENT, SMALL_DISTANCE_VALUE_NAME);
+            }
+        } else {
+            if (dist >= BIG_DISTANCE_VALUE) {
+                textDistance = String.format(BIG_NOT_PRECISE_DISTANCE_NUMBER_FORMAT, dist * BIG_DISTANCE_COEFFICIENT, BIG_DISTANCE_VALUE_NAME);
+            } else {
+                textDistance = String.format(SMALL_NOT_PRECISE_DISTANCE_NUMBER_FORMAT, dist * SMALL_DISTANCE_COEFFICIENT, SMALL_DISTANCE_VALUE_NAME);
+            }
+        }
+        return textDistance;
     }
 }

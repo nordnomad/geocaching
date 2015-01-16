@@ -27,14 +27,13 @@
             android:id="@+id/my_location_view"
             android:layout_width="0dp"
             android:layout_weight=".5"
-            android:layout_height="wrap_content"
-            android:text="My location" />
+            android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/cache_location_view"
             android:layout_width="0dp"
             android:layout_weight=".5"
-            android:layout_height="wrap_content"
-            android:text="My destination" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

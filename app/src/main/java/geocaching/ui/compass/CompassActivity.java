@@ -21,6 +21,8 @@ import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallba
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static geocaching.Utils.coordinateToString;
+import static geocaching.Utils.distanceToString;
 
 public class CompassActivity extends CompassSensorsActivity implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     protected static final String TAG = "location-updates-sample";
@@ -36,6 +38,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     CompassView compassView;
     TextView distanceView;
     TextView myLocationView;
+    TextView cacheLocationView;
 
     GoogleApiClient gapiClient;
     LocationRequest locationRequest;
@@ -51,12 +54,15 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         getSupportActionBar().setHomeButtonEnabled(true);
         distanceView = (TextView) findViewById(R.id.distance_compass_view);
         myLocationView = (TextView) findViewById(R.id.my_location_view);
+        cacheLocationView = (TextView) findViewById(R.id.cache_location_view);
+
         compassView = (CompassView) findViewById(R.id.compassView);
 
         double[] ol = getIntent().getDoubleArrayExtra("objectLocation");
         if (ol != null) {
             geoCacheLocation.setLongitude(ol[0]);
             geoCacheLocation.setLatitude(ol[1]);
+            cacheLocationView.setText(coordinateToString(geoCacheLocation));
         }
         requestingLocationUpdates = false;
         lastUpdateTime = "";
@@ -110,9 +116,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     }
 
     private void updateUI() {
-        //TODO implement
-        distanceView.setText(String.format("%s м", geoCacheLocation.distanceTo(currentLocation)));
-        myLocationView.setText(String.format("%s", currentLocation));
+        distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
+        myLocationView.setText(coordinateToString(currentLocation));
         compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.arrow);
     }
 
@@ -184,7 +189,6 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     @Override
     public void onBackPressed() {
-//        GoTo.mainActivity(this);
         NavUtils.navigateUpFromSameTask(this);
         finish();
     }
