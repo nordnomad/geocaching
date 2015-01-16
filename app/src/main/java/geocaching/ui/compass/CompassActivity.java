@@ -2,6 +2,7 @@ package geocaching.ui.compass;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -34,6 +35,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     CompassView compassView;
     TextView distanceView;
+    TextView myLocationView;
+
     GoogleApiClient gapiClient;
     LocationRequest locationRequest;
     Location currentLocation;
@@ -47,6 +50,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         setContentView(R.layout.compass);
         getSupportActionBar().setHomeButtonEnabled(true);
         distanceView = (TextView) findViewById(R.id.distance_compass_view);
+        myLocationView = (TextView) findViewById(R.id.my_location_view);
         compassView = (CompassView) findViewById(R.id.compassView);
 
         double[] ol = getIntent().getDoubleArrayExtra("objectLocation");
@@ -108,7 +112,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     private void updateUI() {
         //TODO implement
         distanceView.setText(String.format("%s м", geoCacheLocation.distanceTo(currentLocation)));
-        compassView.initializeCompass(geoCacheLocation, currentLocation, R.drawable.arrow);
+        myLocationView.setText(String.format("%s", currentLocation));
+        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.arrow);
     }
 
     @Override
@@ -175,5 +180,12 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         savedInstanceState.putParcelable(LOCATION_KEY, currentLocation);
         savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, lastUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+//        GoTo.mainActivity(this);
+        NavUtils.navigateUpFromSameTask(this);
+        finish();
     }
 }

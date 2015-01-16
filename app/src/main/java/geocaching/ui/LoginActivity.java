@@ -61,6 +61,7 @@ public class LoginActivity extends ActionBarActivity {
             });
         } else {
             GoTo.mainActivity(this);
+            finish();
         }
     }
 
