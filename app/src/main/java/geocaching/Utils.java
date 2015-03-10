@@ -252,9 +252,9 @@ public class Utils {
         cv.put(DB.Column.STATUS, geoCache.getInt("st"));
         cv.put(DB.Column.TYPE, geoCache.getInt("ct"));
 
-        cv.put(DB.Column.DESCR, geoCache.getInt("info"));
-        cv.put(DB.Column.PHOTOS, geoCache.getInt("images"));
-        cv.put(DB.Column.COMMENTS, geoCache.getInt("comments"));
+        cv.put(DB.Column.DESCR, geoCache.getString("info"));
+        cv.put(DB.Column.PHOTOS, geoCache.getString("images"));
+        cv.put(DB.Column.COMMENTS, geoCache.getString("comments"));
         return cv;
     }
 

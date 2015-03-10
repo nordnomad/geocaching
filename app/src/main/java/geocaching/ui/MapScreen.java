@@ -1,9 +1,11 @@
 package geocaching.ui;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -159,6 +161,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
             }
         });
         googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 marker.showInfoWindow();
@@ -257,6 +260,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem item = menu.findItem(R.id.map_save);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public boolean onMenuItemClick(final MenuItem item) {
                 item.setActionView(R.layout.actionbar_save_progress);
@@ -285,10 +289,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
+                                ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
                                 try {
                                     for (int i = 0; i < response.length(); i++) {
                                         JSONObject jsonObject = response.getJSONObject(i);
-                                        ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
                                         resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
                                     }
                                 } catch (JSONException e) {
