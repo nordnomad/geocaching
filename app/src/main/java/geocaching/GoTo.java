@@ -11,7 +11,7 @@ import geocaching.ui.MainActivity;
 import geocaching.ui.compass.CompassActivity;
 
 public class GoTo {
-    public static void geoCacheActivity(Context ctx, long geoCacheId, String name) {
+    public static void geoCacheActivity(Context ctx, long geoCacheId, CharSequence name) {
         Intent intent = new Intent(ctx, geocaching.ui.GeoCacheActivity.class);
         intent.putExtra("geoCacheId", geoCacheId);
         intent.putExtra("name", name);

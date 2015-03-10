@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.Arrays;
 
@@ -124,7 +125,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                GoTo.geoCacheActivity(getActivity(), id, "TODO name");
+                TextView nameView = (TextView) view.findViewById(R.id.favouritesGeoCacheText);
+                GoTo.geoCacheActivity(getActivity(), id, nameView.getText());
             }
         });
     }
