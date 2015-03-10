@@ -7,6 +7,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -237,6 +240,21 @@ public class Utils {
         cv.put(DB.Column.LON, geoCache.ln);
         cv.put(DB.Column.STATUS, geoCache.status.ordinal());
         cv.put(DB.Column.TYPE, geoCache.type.ordinal());
+        return cv;
+    }
+
+    public static ContentValues jsonGeoCacheToContentValues(JSONObject geoCache) throws JSONException {
+        ContentValues cv = new ContentValues();
+        cv.put(DB.Column._ID, geoCache.getString("id"));
+        cv.put(DB.Column.NAME, geoCache.getString("n"));
+        cv.put(DB.Column.LAT, geoCache.getDouble("la"));
+        cv.put(DB.Column.LON, geoCache.getDouble("ln"));
+        cv.put(DB.Column.STATUS, geoCache.getInt("st"));
+        cv.put(DB.Column.TYPE, geoCache.getInt("ct"));
+
+        cv.put(DB.Column.DESCR, geoCache.getInt("info"));
+        cv.put(DB.Column.PHOTOS, geoCache.getInt("images"));
+        cv.put(DB.Column.COMMENTS, geoCache.getInt("comments"));
         return cv;
     }
 

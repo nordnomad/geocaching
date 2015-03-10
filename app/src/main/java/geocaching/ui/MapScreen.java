@@ -2,7 +2,6 @@ package geocaching.ui;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -49,7 +49,6 @@ import geocaching.MapWrapper;
 import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
-import geocaching.ui.compass.CompassActivity;
 import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
@@ -57,6 +56,7 @@ import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallba
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static geocaching.Const.M.fullInfoUrl;
 import static geocaching.Utils.geoCacheToContentValues;
+import static geocaching.Utils.jsonGeoCacheToContentValues;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -186,8 +186,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 findBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), CompassActivity.class);
-                        startActivity(intent);
                         Location cacheLocation = new Location("");
                         cacheLocation.setLatitude(geoCache.la);
                         cacheLocation.setLongitude(geoCache.ln);
@@ -219,12 +217,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 });
 
                 ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                Cursor countCursor = resolver.query(
-                        ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
-                        new String[]{"count(*) AS count"}, null, null, null);
-
-                countCursor.moveToFirst();
-                int count = countCursor.getInt(0);
+                int count = 0;
+                try (Cursor countCursor = resolver.query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
+                        new String[]{"count(*) AS count"}, null, null, null)) {
+                    countCursor.moveToFirst();
+                    count = countCursor.getInt(0);
+                }
                 if (count > 0) {
                     deleteBtn.setVisibility(View.VISIBLE);
                     saveBtn.setVisibility(View.GONE);
@@ -270,18 +268,19 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 //                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
 //                }
 
-                Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null);
                 List<Long> excludedIds = new ArrayList<Long>();
-                while (cursor.moveToNext()) {
-                    excludedIds.add(cursor.getLong(0));
+                try (Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null)) {
+                    while (cursor.moveToNext()) {
+                        excludedIds.add(cursor.getLong(0));
+                    }
                 }
-
+                if (excludedIds.isEmpty()) excludedIds.add(0l);
                 LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
                 double nLat = bounds.northeast.latitude;
                 double nLon = bounds.northeast.longitude;
                 double sLat = bounds.southwest.latitude;
                 double sLon = bounds.southwest.longitude;
-
+                DefaultRetryPolicy policy = new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
                 queue.add(new JsonArrayRequest(fullInfoUrl(nLon, sLon, nLat, sLat, excludedIds),
                         new Response.Listener<JSONArray>() {
                             @Override
@@ -290,8 +289,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                     for (int i = 0; i < response.length(); i++) {
                                         JSONObject jsonObject = response.getJSONObject(i);
                                         ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                                        // TODO implement json to content values converter
-//                                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(jsonObject));
+                                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -309,7 +307,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         String message = TextUtils.isEmpty(error.getMessage()) ? "0 caches was saved" : error.getMessage();
                         Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
                     }
-                }));
+                }).setRetryPolicy(policy));
 
                 return true;
             }
