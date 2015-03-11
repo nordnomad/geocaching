@@ -1,5 +1,9 @@
 package geocaching.ui;
 
+import android.annotation.TargetApi;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -34,6 +38,8 @@ import java.util.List;
 
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
+import geocaching.db.DB;
+import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
@@ -50,9 +56,29 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
     RequestQueue queue;
     long geoCacheId;
 
+    JSONObject infoObject;
+    JSONArray commentsArray;
+    JSONArray photosArray;
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
+        setTitle(getIntent().getStringExtra("name"));
+        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
+            try {
+                cursor.moveToFirst();
+                int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
+                infoObject = new JSONObject(cursor.getString(infoIndex));
+                int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
+                commentsArray = new JSONArray(cursor.getString(commentsIndex));
+                int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
+                photosArray = new JSONArray(cursor.getString(photosIndex));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         setContentView(R.layout.activity_geo_cache);
         getSupportActionBar().setHomeButtonEnabled(true);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -71,8 +97,6 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                 .build();
         ImageLoader.getInstance().init(config);
         queue = Volley.newRequestQueue(this);
-        geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
-        setTitle(getIntent().getStringExtra("name"));
     }
 
     @Override
@@ -105,6 +129,7 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
             return "Ошибка";
         }
 
+        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             final GeoCacheActivity ctx = GeoCacheActivity.this;
@@ -115,35 +140,16 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                     final ProgressBar bar = (ProgressBar) view.findViewById(R.id.infoLoading);
                     bar.setVisibility(View.VISIBLE);
                     container.addView(view);
-                    queue.add(new JsonObjectRequest(GET, infoUrl(geoCacheId), null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                TextView createDate = (TextView) view.findViewById(R.id.createDate);
-                                createDate.setText(response.getString("created"));
-                                TextView updateDate = (TextView) view.findViewById(R.id.updateDate);
-                                updateDate.setText(response.getString("updated"));
-                                TextView country = (TextView) view.findViewById(R.id.country);
-                                country.setText(response.getString("country"));
-                                TextView city = (TextView) view.findViewById(R.id.city);
-                                city.setText(response.getString("city"));
-                                TextView location = (TextView) view.findViewById(R.id.location);
-                                location.setText(response.getString("coordinates"));
-                                TextView author = (TextView) view.findViewById(R.id.author);
-                                author.setText(response.getJSONObject("author").getString("name"));
-                                TextView descriptionText = (TextView) view.findViewById(R.id.descriptionText);
-                                descriptionText.setText(response.getString("description"));
-                                TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
-                                surroundingArea.setText(response.getString("surroundingArea"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                    if (infoObject == null) {
+                        queue.add(new JsonObjectRequest(GET, infoUrl(geoCacheId), null, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                setDataToInfoTab(response, view, bar);
                             }
-                            bar.setVisibility(View.GONE);
-                            view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);
-                            view.findViewById(R.id.description).setVisibility(View.VISIBLE);
-                            view.findViewById(R.id.area).setVisibility(View.VISIBLE);
-                        }
-                    }, ctx));
+                        }, ctx));
+                    } else {
+                        setDataToInfoTab(infoObject, view, bar);
+                    }
                     return view;
                 case 1:
                     view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
@@ -154,39 +160,82 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                     recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
                     recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
                     container.addView(view);
-                    queue.add(new JsonArrayRequest(commentsUrl(geoCacheId), new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray response) {
-                            RecyclerView.Adapter mAdapter = new CommentsTabAdapter(response);
-                            recyclerView.setAdapter(mAdapter);
-                            mAdapter.notifyDataSetChanged();
-                            commentsBar.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        }
-                    }, ctx));
+                    if (commentsArray == null) {
+                        queue.add(new JsonArrayRequest(commentsUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                setDataToCommentsTab(response, recyclerView, commentsBar);
+                            }
+                        }, ctx));
+                    } else {
+                        setDataToCommentsTab(commentsArray, recyclerView, commentsBar);
+                    }
                     return view;
                 case 2:
                     view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
                     final GridView gridView = (GridView) view.findViewById(R.id.gallery);
                     gridView.setAdapter(new ImageGridAdapter(ctx, new JSONArray()));
                     container.addView(view);
+                    if (photosArray == null) {
                     queue.add(new JsonArrayRequest(imagesUrl(geoCacheId), new Response.Listener<JSONArray>() {
                         @Override
                         public void onResponse(final JSONArray response) {
-                            ImageGridAdapter gridAdapter = new ImageGridAdapter(ctx, response);
-                            gridView.setAdapter(gridAdapter);
-                            gridAdapter.notifyDataSetChanged();
-                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    GoTo.imagePagerActivity(ctx, urls(response));
-                                }
-                            });
+                            setDataToPhotoTab(response, ctx, gridView);
                         }
                     }, ctx));
+                    } else {
+                        setDataToPhotoTab(photosArray, ctx, gridView);
+                    }
                     return view;
             }
             return null;
+        }
+
+        private void setDataToPhotoTab(final JSONArray response, final GeoCacheActivity ctx, GridView gridView) {
+            ImageGridAdapter gridAdapter = new ImageGridAdapter(ctx, response);
+            gridView.setAdapter(gridAdapter);
+            gridAdapter.notifyDataSetChanged();
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    GoTo.imagePagerActivity(ctx, urls(response));
+                }
+            });
+        }
+
+        private void setDataToCommentsTab(JSONArray response, RecyclerView recyclerView, ProgressBar commentsBar) {
+            RecyclerView.Adapter mAdapter = new CommentsTabAdapter(response);
+            recyclerView.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
+            commentsBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
+        private void setDataToInfoTab(JSONObject response, View view, ProgressBar bar) {
+            try {
+                TextView createDate = (TextView) view.findViewById(R.id.createDate);
+                createDate.setText(response.getString("created"));
+                TextView updateDate = (TextView) view.findViewById(R.id.updateDate);
+                updateDate.setText(response.getString("updated"));
+                TextView country = (TextView) view.findViewById(R.id.country);
+                country.setText(response.getString("country"));
+                TextView city = (TextView) view.findViewById(R.id.city);
+                city.setText(response.getString("city"));
+                TextView location = (TextView) view.findViewById(R.id.location);
+                location.setText(response.getString("coordinates"));
+                TextView author = (TextView) view.findViewById(R.id.author);
+                author.setText(response.getJSONObject("author").getString("name"));
+                TextView descriptionText = (TextView) view.findViewById(R.id.descriptionText);
+                descriptionText.setText(response.getString("description"));
+                TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
+                surroundingArea.setText(response.getString("surroundingArea"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            bar.setVisibility(View.GONE);
+            view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.description).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.area).setVisibility(View.VISIBLE);
         }
 
         @Override
