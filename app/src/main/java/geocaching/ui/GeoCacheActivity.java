@@ -51,8 +51,6 @@ import static geocaching.Const.M.infoUrl;
 
 public class GeoCacheActivity extends ActionBarActivity implements Response.ErrorListener {
 
-    private SlidingTabLayout slidingTabLayout;
-    private ViewPager viewPager;
     RequestQueue queue;
     long geoCacheId;
 
@@ -81,10 +79,10 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
         }
         setContentView(R.layout.activity_geo_cache);
         getSupportActionBar().setHomeButtonEnabled(true);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
 
-        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setViewPager(viewPager);
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
@@ -177,12 +175,12 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
                     gridView.setAdapter(new ImageGridAdapter(ctx, new JSONArray()));
                     container.addView(view);
                     if (photosArray == null) {
-                    queue.add(new JsonArrayRequest(imagesUrl(geoCacheId), new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(final JSONArray response) {
-                            setDataToPhotoTab(response, ctx, gridView);
-                        }
-                    }, ctx));
+                        queue.add(new JsonArrayRequest(imagesUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(final JSONArray response) {
+                                setDataToPhotoTab(response, ctx, gridView);
+                            }
+                        }, ctx));
                     } else {
                         setDataToPhotoTab(photosArray, ctx, gridView);
                     }

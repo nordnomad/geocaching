@@ -43,7 +43,7 @@ public class Utils {
     private static final float BIG_DISTANCE_COEFFICIENT = 0.001f; // how many small_distance_name units in big_distance_units
     private static final float SMALL_DISTANCE_COEFFICIENT = 1f;
 
-    public static BitmapDescriptor getMarkerBitmapDescriptor(GeoCacheType type, GeoCacheStatus status) {
+    public static BitmapDescriptor getMarkerBitmapDescriptor(GeoCacheType type) {
         switch (type) {
             case TRADITIONAL:
                 return defaultMarker(100f);
@@ -223,7 +223,7 @@ public class Utils {
         return new MarkerOptions()
                 .position(new LatLng(geoCache.la, geoCache.ln))
                 .title(geoCache.name)
-                .icon(getMarkerBitmapDescriptor(geoCache.type, geoCache.status));
+                .icon(getMarkerBitmapDescriptor(geoCache.type));
 //                .icon(BitmapDescriptorFactory.fromResource(
 //                        getMarkerResId(geoCache.type, geoCache.status)));
     }

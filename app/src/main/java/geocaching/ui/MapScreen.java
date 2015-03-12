@@ -220,7 +220,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 });
 
                 ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                int count = 0;
+                int count;
                 try (Cursor countCursor = resolver.query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
                         new String[]{"count(*) AS count"}, null, null, null)) {
                     countCursor.moveToFirst();
