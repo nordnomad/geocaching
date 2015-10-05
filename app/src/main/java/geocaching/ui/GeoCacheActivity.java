@@ -64,19 +64,19 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
         super.onCreate(savedInstanceState);
         geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
         setTitle(getIntent().getStringExtra("name"));
-        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
-            try {
-                cursor.moveToFirst();
-                int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
-                infoObject = new JSONObject(cursor.getString(infoIndex));
-                int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
-                commentsArray = new JSONArray(cursor.getString(commentsIndex));
-                int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
-                photosArray = new JSONArray(cursor.getString(photosIndex));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+//        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
+//            try {
+//                cursor.moveToFirst();
+//                int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
+//                infoObject = new JSONObject(cursor.getString(infoIndex));
+//                int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
+//                commentsArray = new JSONArray(cursor.getString(commentsIndex));
+//                int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
+//                photosArray = new JSONArray(cursor.getString(photosIndex));
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
         setContentView(R.layout.activity_geo_cache);
         getSupportActionBar().setHomeButtonEnabled(true);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);

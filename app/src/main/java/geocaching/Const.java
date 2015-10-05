@@ -24,7 +24,7 @@ public interface Const {
     String caching_auth_st = "caching_auth_st";
     String geocaching = "geocaching";
 
-    static class M {
+    class M {
         static String ROOT = "http://nordnomad.herokuapp.com/v1";
         static String info = ROOT + "/info/%d";
         static String comments = ROOT + "/comments/%d";
