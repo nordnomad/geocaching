@@ -119,7 +119,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     private void updateUI() {
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
         myLocationView.setText(coordinateToString(currentLocation));
-        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.arrow);
+//        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.arrow);
     }
 
     @Override
