@@ -47,18 +47,20 @@ public class MainActivity extends AppCompatActivity
             accountAuthenticatorResponse.onRequestContinued();
         }
         Account[] accounts = AccountManager.get(this).getAccountsByType("com.geocaching");
+
+
         setContentView(R.layout.activity_maps);
         menuItems = new String[]{accounts[0].name, "Карта", "Избранное"/*, "Настройки"*/};
         menuLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        menuList = (ListView) findViewById(R.id.left_drawer);
-        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuItems));
-        class DrawerItemClickListener implements ListView.OnItemClickListener {
-            @Override
-            public void onItemClick(AdapterView parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        }
-        menuList.setOnItemClickListener(new DrawerItemClickListener());
+//        menuList = (ListView) findViewById(R.id.left_drawer);
+//        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuItems));
+//        class DrawerItemClickListener implements ListView.OnItemClickListener {
+//            @Override
+//            public void onItemClick(AdapterView parent, View view, int position, long id) {
+//                selectItem(position);
+//            }
+//        }
+//        menuList.setOnItemClickListener(new DrawerItemClickListener());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -116,9 +118,9 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment).commit();
-            menuList.setItemChecked(position, true);
-            getSupportActionBar().setTitle(menuItems[position]);
-            menuLayout.closeDrawer(menuList);
+//            menuList.setItemChecked(position, true);
+//            getSupportActionBar().setTitle(menuItems[position]);
+//            menuLayout.closeDrawer(menuList);
         } else {
             Log.e(getLocalClassName(), "Error. Fragment is not created");
         }
