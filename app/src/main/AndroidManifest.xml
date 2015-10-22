@@ -47,7 +47,7 @@
         </activity>
         <activity
             android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme.NoActionBar"
             android:name="geocaching.ui.MainActivity" />
 
         <activity

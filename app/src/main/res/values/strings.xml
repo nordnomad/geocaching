@@ -6,14 +6,11 @@
     <string name="google_maps_key">AIzaSyDY9dZoM97iLvz3zMEK888i7-IYZmBZ7SA</string>
     <!--work-->
     <string name="google_maps_key1">AIzaSyDrUZAVli4nCCodCrie5loG2hWPThcKdIk</string>
-    <!--home-->
-    <string name="drawer_open">open</string>
-    <string name="drawer_close">close</string>
 
-    <array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-    </array>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="drawer_menu_map">Карта</string>
 </resources>
