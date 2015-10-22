@@ -13,18 +13,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import map.test.myapplication3.app.R;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     AccountAuthenticatorResponse accountAuthenticatorResponse;
-    Bundle resultBundle;
-    ActionBar actionBar = getSupportActionBar();
+    ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,43 +58,6 @@ public class MainActivity extends AppCompatActivity
             accountAuthenticatorResponse.onRequestContinued();
         }
         return AccountManager.get(this).getAccountsByType("com.geocaching")[0].name;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (drawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        switch (item.getItemId()) {
-//            case R.id.action_search:
-//                menuLayout.isDrawerOpen(item.getActionView());
-//                Toast.makeText(this, "Settings selected", LENGTH_LONG).show();
-//                return true;
-//
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_screen_action_bar, menu);
-        return true;
-    }
-
-    @Override
-    public void finish() {
-        if (accountAuthenticatorResponse != null) {
-            // send the result bundle back if set, otherwise send an error.
-            if (resultBundle != null) {
-                accountAuthenticatorResponse.onResult(resultBundle);
-            } else {
-                accountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
-            }
-            accountAuthenticatorResponse = null;
-        }
-        super.finish();
     }
 
     @Override
