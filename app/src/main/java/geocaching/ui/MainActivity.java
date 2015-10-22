@@ -20,7 +20,6 @@ import map.test.myapplication3.app.R;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    AccountAuthenticatorResponse accountAuthenticatorResponse;
     ActionBar actionBar;
 
     @Override
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private String getUserName() {
-        accountAuthenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        AccountAuthenticatorResponse accountAuthenticatorResponse = getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (accountAuthenticatorResponse != null) {
             accountAuthenticatorResponse.onRequestContinued();
         }
