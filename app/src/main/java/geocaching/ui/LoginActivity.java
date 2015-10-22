@@ -9,7 +9,7 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -23,7 +23,7 @@ import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.isBlank;
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends AppCompatActivity {
     AccountAuthenticatorResponse accountAuthenticatorResponse;
     Bundle resultBundle;
     UserLoginTask authTask;
@@ -120,6 +120,7 @@ public class LoginActivity extends ActionBarActivity {
         resultBundle = result;
     }
 
+    @Override
     public void finish() {
         if (accountAuthenticatorResponse != null) {
             // send the result bundle back if set, otherwise send an error.
