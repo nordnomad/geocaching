@@ -1,13 +1,13 @@
 package geocaching.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import geocaching.ui.adapters.ImagePagerAdapter;
 import map.test.myapplication3.app.R;
 
-public class ImagePagerActivity extends Activity {
+public class ImagePagerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

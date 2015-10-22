@@ -51,22 +51,16 @@
 
         <activity
             android:name="geocaching.ui.GeoCacheActivity"
-            android:parentActivityName="geocaching.ui.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="geocaching.ui.MainActivity" />
+            android:parentActivityName="geocaching.ui.MainActivity">
         </activity>
 
-        <activity android:name="geocaching.ui.ImagePagerActivity" />
+        <activity
+            android:name="geocaching.ui.ImagePagerActivity"
+            android:parentActivityName="geocaching.ui.GeoCacheActivity" />
 
         <activity
             android:name="geocaching.ui.compass.CompassActivity"
-            android:parentActivityName="geocaching.ui.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="geocaching.ui.MainActivity" />
+            android:parentActivityName="geocaching.ui.MainActivity">
         </activity>
 
         <service android:name="geocaching.login.AuthService">

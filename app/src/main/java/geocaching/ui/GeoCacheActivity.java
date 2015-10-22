@@ -1,13 +1,11 @@
 package geocaching.ui;
 
 import android.annotation.TargetApi;
-import android.content.ContentUris;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -38,8 +36,6 @@ import java.util.List;
 
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
-import geocaching.db.DB;
-import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
@@ -49,7 +45,7 @@ import static geocaching.Const.M.commentsUrl;
 import static geocaching.Const.M.imagesUrl;
 import static geocaching.Const.M.infoUrl;
 
-public class GeoCacheActivity extends ActionBarActivity implements Response.ErrorListener {
+public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
 
     RequestQueue queue;
     long geoCacheId;
@@ -78,7 +74,6 @@ public class GeoCacheActivity extends ActionBarActivity implements Response.Erro
 //            }
 //        }
         setContentView(R.layout.activity_geo_cache);
-        getSupportActionBar().setHomeButtonEnabled(true);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
 
