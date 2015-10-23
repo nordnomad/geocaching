@@ -49,6 +49,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
 
     RequestQueue queue;
     long geoCacheId;
+    String geoCacheName;
 
     JSONObject infoObject;
     JSONArray commentsArray;
@@ -59,7 +60,8 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
-        setTitle(getIntent().getStringExtra("name"));
+        geoCacheName = getIntent().getStringExtra("name");
+        setTitle(geoCacheName);
 //        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
 //            try {
 //                cursor.moveToFirst();
@@ -191,7 +193,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    GoTo.imagePagerActivity(ctx, urls(response));
+                    GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
                 }
             });
         }

@@ -18,8 +18,10 @@ public class GoTo {
         ctx.startActivity(intent);
     }
 
-    public static void imagePagerActivity(Context ctx, List<String> imageUrls) {
+    public static void imagePagerActivity(Context ctx, long geoCacheId, String name, List<String> imageUrls) {
         Intent intent = new Intent(ctx, ImagePagerActivity.class);
+        intent.putExtra("geoCacheId", geoCacheId);
+        intent.putExtra("name", name);
         intent.putExtra("imageUrls", imageUrls.toArray(new String[imageUrls.size()]));
         ctx.startActivity(intent);
     }
