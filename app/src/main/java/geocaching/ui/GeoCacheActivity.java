@@ -1,6 +1,8 @@
 package geocaching.ui;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -34,7 +36,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
@@ -193,7 +194,12 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
+                    // TODO decide open images by own activity or standart one
+//                    GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse(urls(response).get(0)), "image/*");
+                    startActivity(intent);
                 }
             });
         }
