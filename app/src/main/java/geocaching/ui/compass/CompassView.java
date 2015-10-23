@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.GeomagneticField;
 import android.location.Location;
@@ -112,6 +113,26 @@ public class CompassView extends ImageView {
 
             compassView.startAnimation(rotateAnimation);
         }
+    }
+
+    // TODO draw direction to geoCache
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+//        ShapeDrawable drawable = new ShapeDrawable(new OvalShape());
+//
+//        drawable.getPaint().setColor(Color.GRAY);
+//        Paint paint = new Paint();
+//        paint.setColor(Color.RED);
+//        Path path = new Path();
+//        path.moveTo(50, 70);
+//        path.lineTo(500, 700);
+//        canvas.drawLine(canvas.getWidth() / 2, canvas.getHeight() / 2, canvas.getWidth() / 2, 0, paint);
+//        Matrix matrix = new Matrix();
+//        matrix.setRotate(45, canvas.getWidth() / 2, canvas.getHeight() / 2);
+//        canvas.setMatrix(matrix);
+//        Bitmap bitmap = directionBitmap;
+        //        canvas.drawCircle(canvas.getWidth()/2, canvas.getHeight()/2, 50, paint);
     }
 
     private class CustomAnimationListener implements Animation.AnimationListener {

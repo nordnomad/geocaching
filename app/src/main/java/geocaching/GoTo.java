@@ -26,8 +26,10 @@ public class GoTo {
         ctx.startActivity(intent);
     }
 
-    public static void compassActivity(Context ctx, Location src, Location dest) {
+    public static void compassActivity(Context ctx, long geoCacheId, String name, Location src, Location dest) {
         Intent intent = new Intent(ctx, CompassActivity.class);
+        intent.putExtra("geoCacheId", geoCacheId);
+        intent.putExtra("name", name);
         intent.putExtra("userLocation", new double[]{src.getLongitude(), src.getLatitude()});
         intent.putExtra("objectLocation", new double[]{dest.getLongitude(), dest.getLatitude()});
         ctx.startActivity(intent);

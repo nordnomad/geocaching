@@ -52,13 +52,13 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compass);
-        getSupportActionBar().setHomeButtonEnabled(true);
         distanceView = (TextView) findViewById(R.id.distance_compass_view);
         myLocationView = (TextView) findViewById(R.id.my_location_view);
         cacheLocationView = (TextView) findViewById(R.id.cache_location_view);
 
         compassView = (CompassView) findViewById(R.id.compassView);
 
+        setTitle(getIntent().getStringExtra("name"));
         double[] ol = getIntent().getDoubleArrayExtra("objectLocation");
         if (ol != null) {
             geoCacheLocation.setLongitude(ol[0]);
@@ -119,7 +119,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     private void updateUI() {
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
         myLocationView.setText(coordinateToString(currentLocation));
-//        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.arrow);
+        compassView.initializeCompass(currentLocation, currentLocation, R.drawable.img_compass);
+//        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
     }
 
     @Override
