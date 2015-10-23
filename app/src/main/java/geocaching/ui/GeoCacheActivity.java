@@ -198,7 +198,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
 //                    GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse(urls(response).get(0)), "image/*");
+                    intent.setDataAndType(Uri.parse(urls(response).get(position)), "image/*");
                     startActivity(intent);
                 }
             });
