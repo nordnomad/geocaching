@@ -114,17 +114,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (googleMap != null) {
-            fragmentManager.beginTransaction()
-                    .remove(getChildFragmentManager().findFragmentById(R.id.map))
-                    .commit();
-            googleMap = null;
-        }
-    }
-
-    @Override
     public void onConnected(Bundle bundle) {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(gapiClient);
         if (lastLocation != null) {
@@ -146,7 +135,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         if (googleMap == null) {
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             googleMap = new MapWrapper(mapFragment.getMap());
-            if (googleMap != null) setUpMap();
+            setUpMap();
         }
     }
 
@@ -220,11 +209,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 });
 
                 ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                int count;
+                int count = 0;
                 try (Cursor countCursor = resolver.query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
                         new String[]{"count(*) AS count"}, null, null, null)) {
-                    countCursor.moveToFirst();
-                    count = countCursor.getInt(0);
+                    if (countCursor != null) {
+                        countCursor.moveToFirst();
+                        count = countCursor.getInt(0);
+                    }
                 }
                 if (count > 0) {
                     deleteBtn.setVisibility(View.VISIBLE);
@@ -272,10 +263,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 //                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
 //                }
 
-                List<Long> excludedIds = new ArrayList<Long>();
+                List<Long> excludedIds = new ArrayList<>();
                 try (Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null)) {
-                    while (cursor.moveToNext()) {
-                        excludedIds.add(cursor.getLong(0));
+                    if (cursor != null) {
+                        while (cursor.moveToNext()) {
+                            excludedIds.add(cursor.getLong(0));
+                        }
                     }
                 }
                 if (excludedIds.isEmpty()) excludedIds.add(0l);
