@@ -7,7 +7,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -16,6 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import geocaching.ui.views.ZoomImageView;
 import map.test.myapplication3.app.R;
 
 public class ImagePagerAdapter extends PagerAdapter {
@@ -43,7 +43,7 @@ public class ImagePagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup view, int position) {
         View imageLayout = inflater.inflate(R.layout.image_pager_item, view, false);
         assert imageLayout != null;
-        ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
+        ZoomImageView imageView = (ZoomImageView) imageLayout.findViewById(R.id.image);
         final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
