@@ -111,24 +111,29 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     protected void startLocationUpdates() {
         FusedLocationApi.requestLocationUpdates(gapiClient, locationRequest, this);
+        Toast.makeText(this, "startLocationUpdates", Toast.LENGTH_SHORT).show();
     }
 
     protected void stopLocationUpdates() {
-        if (gapiClient.isConnected())
+        if (gapiClient.isConnected()) {
             FusedLocationApi.removeLocationUpdates(gapiClient, this);
+            Toast.makeText(this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateUI() {
+        Toast.makeText(this, "updateUI", Toast.LENGTH_SHORT).show();
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
         accuracyView.setText("+/- " + distanceToString(currentLocation.getAccuracy(), true));
         myLocationView.setText(coordinateToString(currentLocation));
-        //TODO why I need here 2 ponts? may be remove geoCacheLocation
+        //TODO why I need here 2 points? may be remove geoCacheLocation
         compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
 //        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        Toast.makeText(this, "onLocationChanged", Toast.LENGTH_SHORT).show();
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         Toast.makeText(this, "Location canged", Toast.LENGTH_SHORT).show();
@@ -139,6 +144,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     public void onStart() {
         super.onStart();
         gapiClient.connect();
+        Toast.makeText(this, "gapiClient.connect()", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -146,11 +152,13 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         super.onStop();
         if (gapiClient.isConnected()) {
             gapiClient.disconnect();
+            Toast.makeText(this, "Compass gapiClient.disconnect();", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        Toast.makeText(this, "onConnected", Toast.LENGTH_SHORT).show();
         Log.i(TAG, "Connected to GoogleApiClient");
         if (currentLocation == null) {
             currentLocation = FusedLocationApi.getLastLocation(gapiClient);

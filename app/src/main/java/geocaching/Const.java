@@ -44,7 +44,11 @@ public interface Const {
         }
 
         public static String fullInfoUrl(double nLon, double sLon, double nLat, double shLat, List<Long> excludeIds) {
-            return String.format(fullInfo, nLon, sLon, nLat, shLat, join("_", excludeIds)).replace(",", ".");
+            if(excludeIds == null || excludeIds.isEmpty()) {
+                return String.format(fullInfo, nLon, sLon, nLat, shLat, "0").replace(",", ".");
+            } else {
+                return String.format(fullInfo, nLon, sLon, nLat, shLat, join("_", excludeIds)).replace(",", ".");
+            }
         }
     }
 

@@ -29,7 +29,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -56,6 +55,8 @@ import map.test.myapplication3.app.R;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import static com.google.android.gms.location.LocationServices.API;
+import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 import static geocaching.Const.M.fullInfoUrl;
 import static geocaching.Utils.geoCacheToContentValues;
 import static geocaching.Utils.jsonGeoCacheToContentValues;
@@ -70,6 +71,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onLocationChanged(Location l) {
+        Toast.makeText(getActivity(), "onLocationChanged", Toast.LENGTH_SHORT).show();
         lastLocation = l;
     }
 
@@ -77,11 +79,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onStart() {
         super.onStart();
         gapiClient.connect();
+        Toast.makeText(getActivity(), "gapiClient.connect();", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop() {
         gapiClient.disconnect();
+        Toast.makeText(getActivity(), "MapScreen gapiClient.disconnect();", Toast.LENGTH_SHORT).show();
         super.onStop();
     }
 
@@ -90,7 +94,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         gapiClient = new Builder(getActivity())
-                .addApi(LocationServices.API)
+                .addApi(API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
@@ -115,20 +119,21 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onConnected(Bundle bundle) {
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(gapiClient);
+        lastLocation = FusedLocationApi.getLastLocation(gapiClient);
         if (lastLocation != null) {
             googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13.0f));
         }
+        Toast.makeText(getActivity(), "onConnected", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Toast.makeText(getActivity(), "onConnectionSuspended", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(getActivity(), "Failed.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "onConnectionFailed.", Toast.LENGTH_SHORT).show();
     }
 
     private void setUpMapIfNeeded() {
