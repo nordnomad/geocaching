@@ -271,15 +271,15 @@ public class Utils {
         String format;
         if (latitude.degrees > 0) {
             if (longitude.degrees > 0) {
-                format = "%d° %.3f\\' с.ш. \n%d° %.3f\\' в.д.";
+                format = "%d° %.3f\' с.ш. \n%d° %.3f\' в.д.";
             } else {
-                format = "%d° %.3f\\' с.ш. \n%d° %.3f\\' з.д.";
+                format = "%d° %.3f\' с.ш. \n%d° %.3f\' з.д.";
             }
         } else {
             if (longitude.degrees > 0) {
-                format = "%d° %.3f\\' ю.ш. \n%d° %.3f\\' в.д.";
+                format = "%d° %.3f\' ю.ш. \n%d° %.3f\' в.д.";
             } else {
-                format = "%d° %.3f\\' ю.ш. \n%d° %.3f\\' з.д.";
+                format = "%d° %.3f\' ю.ш. \n%d° %.3f\' з.д.";
             }
         }
         return String.format(format, latitude.degrees, latitude.minutes, longitude.degrees, longitude.minutes);

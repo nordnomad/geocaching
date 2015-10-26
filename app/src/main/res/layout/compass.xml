@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="#ffffff"
     android:orientation="vertical">
 
     <TextView
@@ -11,23 +11,23 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
+        android:gravity="center"
         android:text="1,0km"
-        android:textSize="60dp"
         android:textAllCaps="true"
-        android:gravity="center" />
+        android:textSize="60dp" />
 
     <TextView
         android:id="@+id/accuracy_compass_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/distance_compass_view"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="0dp"
-        android:text="1,0km"
-        android:textSize="20dp"
-        android:textAllCaps="true"
         android:gravity="center"
-        android:layout_below="@id/distance_compass_view"
-        android:textIsSelectable="false" />
+        android:text="1,0km"
+        android:textAllCaps="true"
+        android:textIsSelectable="false"
+        android:textSize="20dp" />
 
     <geocaching.ui.compass.CompassView
         android:id="@+id/compassView"
@@ -35,24 +35,64 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/accuracy_compass_view" />
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/location_lables"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/compassView">
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/compassView"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/my_location_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="start|center_vertical"
+            android:orientation="vertical">
+            <!--android:layout_weight=".5"-->
 
-        <TextView
-            android:id="@+id/cache_location_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My location"
+                android:textAllCaps="true"
+                android:textSize="13dp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/my_location_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textSize="17dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:gravity="start|center_vertical"
+            android:orientation="vertical">
+            <!--android:layout_weight=".5"-->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My destination"
+                android:textAllCaps="true"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/cache_location_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textSize="17dp" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
