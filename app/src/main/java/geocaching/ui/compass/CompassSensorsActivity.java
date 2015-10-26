@@ -6,10 +6,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Surface;
 
-public abstract class CompassSensorsActivity extends ActionBarActivity implements SensorEventListener {
+public abstract class CompassSensorsActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
     private Sensor magneticFieldSensor;
@@ -36,8 +36,8 @@ public abstract class CompassSensorsActivity extends ActionBarActivity implement
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(this, magneticFieldSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, magneticFieldSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override

@@ -9,14 +9,31 @@
         android:id="@+id/distance_compass_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:layout_marginTop="20dp" />
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:text="1,0km"
+        android:textSize="60dp"
+        android:textAllCaps="true"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/accuracy_compass_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="0dp"
+        android:text="1,0km"
+        android:textSize="20dp"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:layout_below="@id/distance_compass_view"
+        android:textIsSelectable="false" />
 
     <geocaching.ui.compass.CompassView
         android:id="@+id/compassView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/distance_compass_view" />
+        android:layout_below="@id/accuracy_compass_view" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -38,6 +38,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     CompassView compassView;
     TextView distanceView;
+    TextView accuracyView;
     TextView myLocationView;
     TextView cacheLocationView;
 
@@ -53,6 +54,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compass);
         distanceView = (TextView) findViewById(R.id.distance_compass_view);
+        accuracyView = (TextView) findViewById(R.id.accuracy_compass_view);
         myLocationView = (TextView) findViewById(R.id.my_location_view);
         cacheLocationView = (TextView) findViewById(R.id.cache_location_view);
 
@@ -118,8 +120,10 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     private void updateUI() {
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
+        accuracyView.setText("+/- " + distanceToString(currentLocation.getAccuracy(), true));
         myLocationView.setText(coordinateToString(currentLocation));
-        compassView.initializeCompass(currentLocation, currentLocation, R.drawable.img_compass);
+        //TODO why I need here 2 ponts? may be remove geoCacheLocation
+        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
 //        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
     }
 
