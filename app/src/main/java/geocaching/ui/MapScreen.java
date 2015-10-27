@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,7 +72,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     @Override
     public void onLocationChanged(Location l) {
-        Toast.makeText(getActivity(), "onLocationChanged", Toast.LENGTH_SHORT).show();
         lastLocation = l;
     }
 
@@ -79,13 +79,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onStart() {
         super.onStart();
         gapiClient.connect();
-        Toast.makeText(getActivity(), "gapiClient.connect();", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop() {
-        gapiClient.disconnect();
-        Toast.makeText(getActivity(), "MapScreen gapiClient.disconnect();", Toast.LENGTH_SHORT).show();
+        if (gapiClient.isConnected()) {
+            gapiClient.disconnect();
+        }
         super.onStop();
     }
 
@@ -123,16 +123,18 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         if (lastLocation != null) {
             googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13.0f));
         }
-        Toast.makeText(getActivity(), "onConnected", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         Toast.makeText(getActivity(), "onConnectionSuspended", Toast.LENGTH_SHORT).show();
+        Log.i(getActivity().getLocalClassName(), "Connection suspended");
+        gapiClient.connect();
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(getActivity().getLocalClassName(), "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
         Toast.makeText(getActivity(), "onConnectionFailed.", Toast.LENGTH_SHORT).show();
     }
 

@@ -14,7 +14,6 @@ import com.google.android.gms.location.LocationRequest;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Set;
 
 import map.test.myapplication3.app.R;
 
@@ -26,15 +25,10 @@ import static geocaching.Utils.coordinateToString;
 import static geocaching.Utils.distanceToString;
 
 public class CompassActivity extends CompassSensorsActivity implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
-    protected static final String TAG = "location-updates-sample";
+    protected static final String TAG = "location-updates";
+
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-
-    // Keys for storing activity state in the Bundle.
-    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
-    protected final static String LOCATION_KEY = "location-key";
-    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
 
     CompassView compassView;
     TextView distanceView;
@@ -45,7 +39,6 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     GoogleApiClient gapiClient;
     LocationRequest locationRequest;
     Location currentLocation;
-    Boolean requestingLocationUpdates;
     String lastUpdateTime;
     Location geoCacheLocation = new Location("geoCacheLocation");
 
@@ -67,29 +60,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
             geoCacheLocation.setLatitude(ol[1]);
             cacheLocationView.setText(coordinateToString(geoCacheLocation));
         }
-        requestingLocationUpdates = false;
         lastUpdateTime = "";
-
-        // Update values using data stored in the Bundle.
-        updateValuesFromBundle(savedInstanceState);
         buildGoogleApiClient();
-    }
-
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(TAG, "Updating values from bundle");
-        if (savedInstanceState != null) {
-            Set<String> savedKeys = savedInstanceState.keySet();
-            if (savedKeys.contains(REQUESTING_LOCATION_UPDATES_KEY)) {
-                requestingLocationUpdates = savedInstanceState.getBoolean(REQUESTING_LOCATION_UPDATES_KEY);
-            }
-            if (savedKeys.contains(LOCATION_KEY)) {
-                currentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
-            }
-            if (savedKeys.contains(LAST_UPDATED_TIME_STRING_KEY)) {
-                lastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
-            }
-            updateUI();
-        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -111,20 +83,17 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     protected void startLocationUpdates() {
         FusedLocationApi.requestLocationUpdates(gapiClient, locationRequest, this);
-        Toast.makeText(this, "startLocationUpdates", Toast.LENGTH_SHORT).show();
     }
 
     protected void stopLocationUpdates() {
         if (gapiClient.isConnected()) {
             FusedLocationApi.removeLocationUpdates(gapiClient, this);
-            Toast.makeText(this, "stopLocationUpdates", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateUI() {
-        Toast.makeText(this, "updateUI", Toast.LENGTH_SHORT).show();
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
-        accuracyView.setText("+/- " + distanceToString(currentLocation.getAccuracy(), true));
+        accuracyView.setText(String.format("+/- %s", distanceToString(currentLocation.getAccuracy(), true)));
         myLocationView.setText(coordinateToString(currentLocation));
         //TODO why I need here 2 points? may be remove geoCacheLocation
         compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
@@ -133,10 +102,8 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(this, "onLocationChanged", Toast.LENGTH_SHORT).show();
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        Toast.makeText(this, "Location canged", Toast.LENGTH_SHORT).show();
         updateUI();
     }
 
@@ -144,30 +111,25 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     public void onStart() {
         super.onStart();
         gapiClient.connect();
-        Toast.makeText(this, "gapiClient.connect()", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
         if (gapiClient.isConnected()) {
             gapiClient.disconnect();
-            Toast.makeText(this, "Compass gapiClient.disconnect();", Toast.LENGTH_SHORT).show();
         }
+        super.onStop();
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Toast.makeText(this, "onConnected", Toast.LENGTH_SHORT).show();
         Log.i(TAG, "Connected to GoogleApiClient");
         if (currentLocation == null) {
             currentLocation = FusedLocationApi.getLastLocation(gapiClient);
             lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             updateUI();
         }
-        if (requestingLocationUpdates) {
-            startLocationUpdates();
-        }
+        startLocationUpdates();
     }
 
     @Override
@@ -179,7 +141,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     @Override
     public void onResume() {
         super.onResume();
-        if (gapiClient.isConnected() && !requestingLocationUpdates) {
+        if (gapiClient.isConnected()) {
             startLocationUpdates();
         }
     }
@@ -193,13 +155,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-    }
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, requestingLocationUpdates);
-        savedInstanceState.putParcelable(LOCATION_KEY, currentLocation);
-        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, lastUpdateTime);
-        super.onSaveInstanceState(savedInstanceState);
+        Toast.makeText(this, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
