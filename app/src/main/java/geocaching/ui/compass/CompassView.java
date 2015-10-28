@@ -23,7 +23,7 @@ import map.test.myapplication3.app.BuildConfig;
 
 public class CompassView extends ImageView {
 
-    private static final int FAST_ANIMATION_DURATION = 200;
+    private static final int FAST_ANIMATION_DURATION = 600;
     private static final int DEGREES_360 = 360;
     private static final float CENTER = 0.5f;
 
@@ -35,13 +35,11 @@ public class CompassView extends ImageView {
     private int drawableResource;
     private float lastRotation;
 
-    @SuppressWarnings("unused")
     public CompassView(Context context) {
         super(context);
         init(context);
     }
 
-    @SuppressWarnings("unused")
     public CompassView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
@@ -78,12 +76,8 @@ public class CompassView extends ImageView {
 
         float azimuth = ((CompassSensorsActivity) context).getAzimuth();
         azimuth -= geomagneticField.getDeclination();
-        //TODO refactor
-        float bearTo = userLocation.bearingTo(userLocation);
-//        float bearTo = userLocation.bearingTo(objectLocation);
-        if (bearTo < 0) bearTo = bearTo + DEGREES_360;
 
-        float rotation = bearTo - azimuth;
+        float rotation = -azimuth;
         if (rotation < 0) rotation = rotation + DEGREES_360;
 
         rotateImageView(this, drawableResource, rotation);
@@ -91,30 +85,24 @@ public class CompassView extends ImageView {
         if (BuildConfig.DEBUG) Log.d("compass-logs", String.valueOf(rotation));
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void rotateImageView(ImageView compassView, int drawable, float currentRotate) {
         if (directionBitmap == null) {
-
             directionBitmap = BitmapFactory.decodeResource(getResources(), drawable);
             Animation fadeInAnimation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
             fadeInAnimation.setAnimationListener(new CustomAnimationListener());
             compassView.startAnimation(fadeInAnimation);
             compassView.setImageDrawable(new BitmapDrawable(getResources(), directionBitmap));
             compassView.setScaleType(ImageView.ScaleType.CENTER);
-
         } else {
             currentRotate = currentRotate % DEGREES_360;
-            int animationDuration = FAST_ANIMATION_DURATION;
-
             RotateAnimation rotateAnimation = new RotateAnimation(lastRotation, currentRotate,
                     Animation.RELATIVE_TO_SELF, CENTER, Animation.RELATIVE_TO_SELF, CENTER);
             rotateAnimation.setInterpolator(new LinearInterpolator());
-            rotateAnimation.setDuration(animationDuration);
+            rotateAnimation.setDuration(FAST_ANIMATION_DURATION);
             rotateAnimation.setFillAfter(true);
             rotateAnimation.setAnimationListener(new CustomAnimationListener());
 
             lastRotation = currentRotate;
-
             compassView.startAnimation(rotateAnimation);
         }
     }
