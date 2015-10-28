@@ -95,9 +95,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
         accuracyView.setText(String.format("+/- %s", distanceToString(currentLocation.getAccuracy(), true)));
         myLocationView.setText(coordinateToString(currentLocation));
-        //TODO why I need here 2 points? may be remove geoCacheLocation
-        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
-//        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.img_compass);
+        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.compass_background);
     }
 
     @Override

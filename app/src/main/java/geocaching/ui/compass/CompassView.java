@@ -114,8 +114,9 @@ public class CompassView extends ImageView {
         paint.setAntiAlias(true);
         int ch = canvas.getHeight();
         int cw = canvas.getWidth();
-        canvas.rotate(userLocation.bearingTo(objectLocation), cw / 2, ch / 2);
-
+        if (userLocation != null) {
+            canvas.rotate(userLocation.bearingTo(objectLocation), cw / 2, ch / 2);
+        }
         Path path = new Path();
         path.setFillType(Path.FillType.EVEN_ODD);
         path.moveTo(cw / 2, 0);
@@ -130,40 +131,41 @@ public class CompassView extends ImageView {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        canvas.drawColor(Color.WHITE);
         Paint paint = new Paint();
         paint.setStrokeWidth(10);
         paint.setColor(Color.BLUE);
         paint.setTextSize(80);
-        canvas.drawText("N", canvas.getWidth() / 2 - 28, 114, paint);
-        canvas.rotate(90, canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawText("E", canvas.getWidth() / 2 - 25, 114, paint);
-        canvas.rotate(90, canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawText("S", canvas.getWidth() / 2 - 27, 114, paint);
-        canvas.rotate(90, canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawText("W", canvas.getWidth() / 2 - 33, 114, paint);
+        int cW = canvas.getWidth();
+        int cH = canvas.getHeight();
+        canvas.drawText("N", cW / 2 - 28, 114, paint);
+        canvas.rotate(90, cW / 2, cH / 2);
+        canvas.drawText("E", cW / 2 - 25, 114, paint);
+        canvas.rotate(90, cW / 2, cH / 2);
+        canvas.drawText("S", cW / 2 - 27, 114, paint);
+        canvas.rotate(90, cW / 2, cH / 2);
+        canvas.drawText("W", cW / 2 - 33, 114, paint);
         canvas.restore();
 
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, 200, paint);
+        canvas.drawCircle(cW / 2, cH / 2, 200, paint);
 
         paint.setStrokeWidth(5);
         for (int i = 0; i < 36; i++) {
-            canvas.rotate(10, canvas.getWidth() / 2, canvas.getHeight() / 2);
-            canvas.drawLine(canvas.getWidth() / 2, 20, canvas.getWidth() / 2, 0, paint);
+            canvas.rotate(10, cW / 2, cH / 2);
+            canvas.drawLine(cW / 2, 20, cW / 2, 0, paint);
         }
         canvas.restore();
 
         paint.setStrokeWidth(30);
         for (int i = 0; i < 4; i++) {
-            canvas.rotate(90, canvas.getWidth() / 2, canvas.getHeight() / 2);
-            canvas.drawLine(canvas.getWidth() / 2, 40, canvas.getWidth() / 2, 0, paint);
+            canvas.rotate(90, cW / 2, cH / 2);
+            canvas.drawLine(cW / 2, 40, cW / 2, 0, paint);
         }
         canvas.restore();
 
-        canvas.drawLine(canvas.getWidth() / 2, 130, canvas.getWidth() / 2, canvas.getHeight() - 130, paint);
-        canvas.rotate(90, canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.drawLine(canvas.getWidth() / 2, 130, canvas.getWidth() / 2, canvas.getHeight() - 130, paint);
+        canvas.drawLine(cW / 2, 130, cW / 2, cH - 130, paint);
+        canvas.rotate(90, cW / 2, cH / 2);
+        canvas.drawLine(cW / 2, 130, cW / 2, cH - 130, paint);
         canvas.restore();
         drawTriangle(canvas);
 

@@ -32,14 +32,14 @@
     <geocaching.ui.compass.CompassView
         android:id="@+id/compassView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:layout_below="@id/accuracy_compass_view" />
 
     <RelativeLayout
         android:id="@+id/location_lables"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@id/compassView"
         android:layout_centerInParent="true"
         android:layout_marginLeft="20dp"
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:gravity="start|center_vertical"
             android:orientation="vertical">
             <!--android:layout_weight=".5"-->
