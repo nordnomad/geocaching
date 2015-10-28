@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -126,7 +127,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView nameView = (TextView) view.findViewById(R.id.favouritesGeoCacheText);
-                GoTo.geoCacheActivity(getActivity(), id, nameView.getText());
+                Location loc = (Location) view.getTag();
+                GoTo.geoCacheActivity(getActivity(), id, nameView.getText(), loc.getLongitude(), loc.getLatitude());
             }
         });
     }

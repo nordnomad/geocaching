@@ -47,8 +47,9 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         loc.setLongitude(cursor.getDouble(cursor.getColumnIndex(DB.Column.LON)));
 
         TextView distanceView = (TextView) view.findViewById(R.id.favouritesGeoCacheDist);
-        distanceView.setText(String.format("%.1f км", lnl.distanceTo(loc) / 1000.0));
-
+        double distance = lnl != null ? lnl.distanceTo(loc) / 1000.0 : 0;
+        distanceView.setText(String.format("%.1f км", distance));
+        view.setTag(loc);
 
         int typeIdx = cursor.getColumnIndex(DB.Column.TYPE);
         cursor.getInt(typeIdx);

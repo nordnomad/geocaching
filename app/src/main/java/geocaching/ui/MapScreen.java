@@ -188,7 +188,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         Location cacheLocation = new Location("");
                         cacheLocation.setLatitude(geoCache.la);
                         cacheLocation.setLongitude(geoCache.ln);
-                        GoTo.compassActivity(getActivity(), geoCache.id, geoCache.name, lastLocation, cacheLocation);
+                        GoTo.compassActivity(getActivity(), geoCache.id, geoCache.name, cacheLocation);
                     }
                 });
 
@@ -235,7 +235,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 markerInfo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        GoTo.geoCacheActivity(getActivity(), geoCache.id, geoCache.name);
+                        GoTo.geoCacheActivity(getActivity(), geoCache);
                     }
                 });
 

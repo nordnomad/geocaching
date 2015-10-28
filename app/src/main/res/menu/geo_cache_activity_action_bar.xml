@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/find_cache"
+        android:icon="@android:drawable/ic_menu_compass"
+        myapp:showAsAction="ifRoom"
+        android:title="Искать" />
+</menu>

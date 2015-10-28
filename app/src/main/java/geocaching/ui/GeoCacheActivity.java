@@ -2,6 +2,7 @@ package geocaching.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,6 +39,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
@@ -51,6 +55,8 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     RequestQueue queue;
     long geoCacheId;
     String geoCacheName;
+    double longitude;
+    double latitude;
 
     JSONObject infoObject;
     JSONArray commentsArray;
@@ -60,8 +66,10 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        geoCacheId = getIntent().getLongExtra("geoCacheId", 0);
+        geoCacheId = getIntent().getIntExtra("geoCacheId", 0);
         geoCacheName = getIntent().getStringExtra("name");
+        longitude = getIntent().getDoubleExtra("longitude", 0);
+        latitude = getIntent().getDoubleExtra("latitude", 0);
         setTitle(geoCacheName);
 //        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
 //            try {
@@ -93,6 +101,23 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                 .build();
         ImageLoader.getInstance().init(config);
         queue = Volley.newRequestQueue(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.geo_cache_activity_action_bar, menu);
+        MenuItem item = menu.findItem(R.id.find_cache);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Location cacheLocation = new Location("");
+                cacheLocation.setLatitude(latitude);
+                cacheLocation.setLongitude(longitude);
+                GoTo.compassActivity(GeoCacheActivity.this, geoCacheId, geoCacheName, cacheLocation);
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
