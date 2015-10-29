@@ -74,9 +74,8 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         setTitle(geoCache.name);
 
         try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null, null, null)) {
-            if (cursor != null) {
+            if (cursor != null && cursor.moveToFirst()) {
                 try {
-                    cursor.moveToFirst();
                     int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
                     infoObject = new JSONObject(cursor.getString(infoIndex));
                     int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
