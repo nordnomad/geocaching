@@ -55,7 +55,7 @@ import static com.android.volley.Request.Method.GET;
 import static geocaching.Const.M.commentsUrl;
 import static geocaching.Const.M.imagesUrl;
 import static geocaching.Const.M.infoUrl;
-import static geocaching.Utils.geoCacheToContentValues;
+import static geocaching.Utils.jsonGeoCacheToContentValues;
 import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
@@ -128,7 +128,21 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
-                resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("id", geoCache.id);
+                    jsonObject.put("n", geoCache.name);
+                    jsonObject.put("ln", geoCache.ln);
+                    jsonObject.put("la", geoCache.la);
+                    jsonObject.put("st", geoCache.status.ordinal());
+                    jsonObject.put("ct", geoCache.type.ordinal());
+                    jsonObject.put("info", infoObject);
+                    jsonObject.put("images", photosArray);
+                    jsonObject.put("comments", commentsArray);
+                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 removeCacheItem.setVisible(true);
                 saveCacheItem.setVisible(false);
                 return true;

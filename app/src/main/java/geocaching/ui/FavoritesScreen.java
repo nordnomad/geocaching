@@ -37,7 +37,7 @@ import static geocaching.db.DBUtil.isFavouriteListEmpty;
 public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ListView listView;
-    LocationManager locationManager;
+    LocationManager locationManager; // TODO replace with gApi
     MenuItem removeCacheItem;
 
     @Override
@@ -80,6 +80,12 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             }
         });
         removeCacheItem.setVisible(!isFavouriteListEmpty(getActivity()));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
