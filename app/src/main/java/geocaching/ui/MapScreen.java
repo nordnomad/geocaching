@@ -255,12 +255,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 item.setActionView(R.layout.actionbar_save_progress);
                 item.expandActionView();
 
-//                Set<GeoCache> geoCaches = googleMap.markerGeoCaches.keySet();
-//                for (GeoCache geoCache : geoCaches) {
-//                    ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-//                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
-//                }
-
                 List<Long> excludedIds = new ArrayList<>();
                 try (Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null)) {
                     if (cursor != null) {

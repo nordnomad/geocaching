@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +45,7 @@ import java.util.List;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
+import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
@@ -64,25 +66,28 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     JSONArray commentsArray;
     JSONArray photosArray;
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         geoCache = getIntent().getParcelableExtra("geoCache");
         setTitle(geoCache.name);
 
-//        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
-//            try {
-//                cursor.moveToFirst();
-//                int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
-//                infoObject = new JSONObject(cursor.getString(infoIndex));
-//                int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
-//                commentsArray = new JSONArray(cursor.getString(commentsIndex));
-//                int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
-//                photosArray = new JSONArray(cursor.getString(photosIndex));
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null, null, null)) {
+            if (cursor != null) {
+                try {
+                    cursor.moveToFirst();
+                    int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
+                    infoObject = new JSONObject(cursor.getString(infoIndex));
+                    int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
+                    commentsArray = new JSONArray(cursor.getString(commentsIndex));
+                    int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
+                    photosArray = new JSONArray(cursor.getString(photosIndex));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         setContentView(R.layout.activity_geo_cache);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCachePagerAdapter());
