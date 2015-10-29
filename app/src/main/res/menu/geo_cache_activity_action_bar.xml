@@ -6,4 +6,16 @@
         android:icon="@android:drawable/ic_menu_compass"
         myapp:showAsAction="ifRoom"
         android:title="Искать" />
+    <item
+        android:id="@+id/save_cache"
+        android:icon="@android:drawable/ic_menu_save"
+        myapp:showAsAction="ifRoom"
+        android:visible="false"
+        android:title="Сохранить" />
+    <item
+        android:id="@+id/remove_cache"
+        android:icon="@android:drawable/ic_menu_delete"
+        myapp:showAsAction="ifRoom"
+        android:visible="false"
+        android:title="Удалил" />
 </menu>

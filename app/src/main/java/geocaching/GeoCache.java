@@ -1,5 +1,9 @@
 package geocaching;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Class for parsing data from geocaching.su and put it in the List of GeoCache. Parse XML file is as follows:
  * <p/>
@@ -19,7 +23,7 @@ package geocaching;
  * </pre>
  */
 
-public class GeoCache {
+public class GeoCache implements Parcelable {
     public int id;
     public int cn;
     public String name;
@@ -43,4 +47,44 @@ public class GeoCache {
     public int hashCode() {
         return id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        Bundle src = new Bundle();
+        src.putInt("id", this.id);
+        src.putString("name", this.name);
+        src.putDouble("la", this.la);
+        src.putDouble("ln", this.ln);
+        src.putInt("status", this.status.ordinal());
+        src.putInt("type", this.type.ordinal());
+        dest.writeBundle(src);
+    }
+
+    public GeoCache() {
+    }
+
+    public GeoCache(Parcel in) {
+        Bundle data = in.readBundle();
+        this.id = data.getInt("id");
+        this.name = data.getString("name");
+        this.la = data.getDouble("la");
+        this.ln = data.getDouble("ln");
+        this.status = GeoCacheStatus.values()[data.getInt("status")];
+        this.type = GeoCacheType.values()[data.getInt("type")];
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public GeoCache createFromParcel(Parcel in) {
+            return new GeoCache(in);
+        }
+
+        public GeoCache[] newArray(int size) {
+            return new GeoCache[size];
+        }
+    };
 }

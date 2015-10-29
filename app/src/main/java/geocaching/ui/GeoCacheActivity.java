@@ -1,7 +1,10 @@
 package geocaching.ui;
 
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -39,8 +42,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
+import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.CommentsTabAdapter;
 import geocaching.ui.adapters.ImageGridAdapter;
 import map.test.myapplication3.app.R;
@@ -49,15 +54,12 @@ import static com.android.volley.Request.Method.GET;
 import static geocaching.Const.M.commentsUrl;
 import static geocaching.Const.M.imagesUrl;
 import static geocaching.Const.M.infoUrl;
+import static geocaching.Utils.geoCacheToContentValues;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
 
     RequestQueue queue;
-    long geoCacheId;
-    String geoCacheName;
-    double longitude;
-    double latitude;
-
+    GeoCache geoCache;
     JSONObject infoObject;
     JSONArray commentsArray;
     JSONArray photosArray;
@@ -66,11 +68,9 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        geoCacheId = getIntent().getIntExtra("geoCacheId", 0);
-        geoCacheName = getIntent().getStringExtra("name");
-        longitude = getIntent().getDoubleExtra("longitude", 0);
-        latitude = getIntent().getDoubleExtra("latitude", 0);
-        setTitle(geoCacheName);
+        geoCache = getIntent().getParcelableExtra("geoCache");
+        setTitle(geoCache.name);
+
 //        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null, null, null)) {
 //            try {
 //                cursor.moveToFirst();
@@ -103,20 +103,60 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         queue = Volley.newRequestQueue(this);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.geo_cache_activity_action_bar, menu);
-        MenuItem item = menu.findItem(R.id.find_cache);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        MenuItem findCacheItem = menu.findItem(R.id.find_cache);
+        findCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Location cacheLocation = new Location("");
-                cacheLocation.setLatitude(latitude);
-                cacheLocation.setLongitude(longitude);
-                GoTo.compassActivity(GeoCacheActivity.this, geoCacheId, geoCacheName, cacheLocation);
-                return false;
+                cacheLocation.setLatitude(geoCache.la);
+                cacheLocation.setLongitude(geoCache.ln);
+                GoTo.compassActivity(GeoCacheActivity.this, geoCache.id, geoCache.name, cacheLocation);
+                return true;
             }
         });
+        final MenuItem saveCacheItem = menu.findItem(R.id.save_cache);
+        final MenuItem removeCacheItem = menu.findItem(R.id.remove_cache);
+
+        saveCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
+                resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
+                removeCacheItem.setVisible(true);
+                saveCacheItem.setVisible(false);
+                return true;
+            }
+        });
+        removeCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
+                resolver.delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null);
+                removeCacheItem.setVisible(false);
+                saveCacheItem.setVisible(true);
+                return true;
+            }
+        });
+
+        int count = 0;
+        try (Cursor countCursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
+                new String[]{"count(*) AS count"}, null, null, null)) {
+            if (countCursor != null) {
+                countCursor.moveToFirst();
+                count = countCursor.getInt(0);
+            }
+        }
+        if (count > 0) {
+            removeCacheItem.setVisible(true);
+            saveCacheItem.setVisible(false);
+        } else {
+            saveCacheItem.setVisible(true);
+            removeCacheItem.setVisible(false);
+        }
         return true;
     }
 
@@ -162,7 +202,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     bar.setVisibility(View.VISIBLE);
                     container.addView(view);
                     if (infoObject == null) {
-                        queue.add(new JsonObjectRequest(GET, infoUrl(geoCacheId), null, new Response.Listener<JSONObject>() {
+                        queue.add(new JsonObjectRequest(GET, infoUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 setDataToInfoTab(response, view, bar);
@@ -182,7 +222,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
                     container.addView(view);
                     if (commentsArray == null) {
-                        queue.add(new JsonArrayRequest(commentsUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                        queue.add(new JsonArrayRequest(commentsUrl(geoCache.id), new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
                                 setDataToCommentsTab(response, recyclerView, commentsBar);
@@ -198,7 +238,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     gridView.setAdapter(new ImageGridAdapter(ctx, new JSONArray()));
                     container.addView(view);
                     if (photosArray == null) {
-                        queue.add(new JsonArrayRequest(imagesUrl(geoCacheId), new Response.Listener<JSONArray>() {
+                        queue.add(new JsonArrayRequest(imagesUrl(geoCache.id), new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(final JSONArray response) {
                                 setDataToPhotoTab(response, ctx, gridView);

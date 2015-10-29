@@ -13,10 +13,7 @@ import geocaching.ui.compass.CompassActivity;
 public class GoTo {
     public static void geoCacheActivity(Context ctx, GeoCache geoCache) {
         Intent intent = new Intent(ctx, geocaching.ui.GeoCacheActivity.class);
-        intent.putExtra("geoCacheId", geoCache.id);
-        intent.putExtra("name", geoCache.name);
-        intent.putExtra("longitude", geoCache.ln);
-        intent.putExtra("latitude", geoCache.la);
+        intent.putExtra("geoCache", geoCache);
         ctx.startActivity(intent);
     }
 
@@ -26,6 +23,9 @@ public class GoTo {
         geoCache.name = String.valueOf(name);
         geoCache.ln = ln;
         geoCache.la = la;
+        //TODO remove hardcode
+        geoCache.status = GeoCacheStatus.ACTIVE_CHECKPOINT;
+        geoCache.type = GeoCacheType.TRADITIONAL;
         geoCacheActivity(ctx, geoCache);
     }
 

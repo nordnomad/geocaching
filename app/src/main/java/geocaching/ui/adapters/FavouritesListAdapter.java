@@ -22,6 +22,7 @@ import map.test.myapplication3.app.R;
 public class FavouritesListAdapter extends CursorAdapter implements LocationListener {
 
     LayoutInflater inflater;
+    // TODO refactor to gapi
     LocationManager locationManager;
 
     public FavouritesListAdapter(Context context, Cursor c, int flags) {
@@ -60,6 +61,7 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         ImageView iconView = (ImageView) view.findViewById(R.id.favouritesGeoCacheIcon);
     }
 
+    //TODO refactor
     private Location getLastLocation() {
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
