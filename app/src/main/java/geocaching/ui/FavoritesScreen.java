@@ -1,12 +1,15 @@
 package geocaching.ui;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -35,8 +38,8 @@ import map.test.myapplication3.app.R;
 public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ListView listView;
-
     LocationManager locationManager;
+    MenuItem removeCacheItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,8 +57,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.favourites_list_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        MenuItem item = menu.findItem(R.id.favourites_delete);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        removeCacheItem = menu.findItem(R.id.favourites_delete);
+        removeCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 new AlertDialog.Builder(getActivity())
@@ -66,6 +69,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
                             public void onClick(DialogInterface dialog, int id) {
                                 ContentResolver resolver = getActivity().getContentResolver();
                                 resolver.delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, null, null);
+                                removeCacheItem.setVisible(!isFavouriteListEmpty(getActivity()));
                                 dialog.dismiss();
                             }
                         }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -76,6 +80,20 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
                 return true;
             }
         });
+        removeCacheItem.setVisible(!isFavouriteListEmpty(getActivity()));
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private static boolean isFavouriteListEmpty(Context ctx) {
+        int count = 0;
+        try (Cursor countCursor = ctx.getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI,
+                new String[]{"count(*) AS count"}, null, null, null)) {
+            if (countCursor != null) {
+                countCursor.moveToFirst();
+                count = countCursor.getInt(0);
+            }
+        }
+        return count == 0;
     }
 
     @Override
@@ -111,6 +129,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
                     case R.id.item_delete:
                         String where = "_id IN " + Arrays.toString(getListView().getCheckedItemIds()).replace("[", "(").replace("]", ")");
                         getActivity().getContentResolver().delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, where, null);
+                        removeCacheItem.setVisible(!isFavouriteListEmpty(getActivity()));
                         mode.finish();
                         return true;
                 }
