@@ -61,6 +61,7 @@ import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 import static geocaching.Const.M.fullInfoUrl;
 import static geocaching.Utils.geoCacheToContentValues;
 import static geocaching.Utils.jsonGeoCacheToContentValues;
+import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -214,17 +215,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         deleteBtn.setVisibility(View.GONE);
                     }
                 });
-
-                ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                int count = 0;
-                try (Cursor countCursor = resolver.query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
-                        new String[]{"count(*) AS count"}, null, null, null)) {
-                    if (countCursor != null) {
-                        countCursor.moveToFirst();
-                        count = countCursor.getInt(0);
-                    }
-                }
-                if (count > 0) {
+                if (isGeoCacheInFavouriteList(MapScreen.this.getActivity(), geoCache.id)) {
                     deleteBtn.setVisibility(View.VISIBLE);
                     saveBtn.setVisibility(View.GONE);
                 } else {

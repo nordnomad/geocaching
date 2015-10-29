@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -55,6 +54,7 @@ import static geocaching.Const.M.commentsUrl;
 import static geocaching.Const.M.imagesUrl;
 import static geocaching.Const.M.infoUrl;
 import static geocaching.Utils.geoCacheToContentValues;
+import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
 
@@ -64,7 +64,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     JSONArray commentsArray;
     JSONArray photosArray;
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,16 +140,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                 return true;
             }
         });
-
-        int count = 0;
-        try (Cursor countCursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id),
-                new String[]{"count(*) AS count"}, null, null, null)) {
-            if (countCursor != null) {
-                countCursor.moveToFirst();
-                count = countCursor.getInt(0);
-            }
-        }
-        if (count > 0) {
+        if (isGeoCacheInFavouriteList(this, geoCache.id)) {
             removeCacheItem.setVisible(true);
             saveCacheItem.setVisible(false);
         } else {
@@ -190,7 +180,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             return "Ошибка";
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             final GeoCacheActivity ctx = GeoCacheActivity.this;

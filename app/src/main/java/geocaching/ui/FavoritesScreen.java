@@ -1,15 +1,12 @@
 package geocaching.ui;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -34,6 +31,8 @@ import geocaching.GoTo;
 import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.FavouritesListAdapter;
 import map.test.myapplication3.app.R;
+
+import static geocaching.db.DBUtil.isFavouriteListEmpty;
 
 public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -81,19 +80,6 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             }
         });
         removeCacheItem.setVisible(!isFavouriteListEmpty(getActivity()));
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private static boolean isFavouriteListEmpty(Context ctx) {
-        int count = 0;
-        try (Cursor countCursor = ctx.getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI,
-                new String[]{"count(*) AS count"}, null, null, null)) {
-            if (countCursor != null) {
-                countCursor.moveToFirst();
-                count = countCursor.getInt(0);
-            }
-        }
-        return count == 0;
     }
 
     @Override
