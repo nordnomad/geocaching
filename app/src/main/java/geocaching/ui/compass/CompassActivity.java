@@ -2,8 +2,8 @@ package geocaching.ui.compass;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -157,8 +157,10 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     }
 
     @Override
-    public void onBackPressed() {
-        NavUtils.navigateUpFromSameTask(this);
-        finish();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return true;
     }
 }
