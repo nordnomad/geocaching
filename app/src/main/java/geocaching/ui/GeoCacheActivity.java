@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -24,9 +25,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -39,9 +42,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
@@ -55,6 +63,7 @@ import static com.android.volley.Request.Method.GET;
 import static geocaching.Const.M.commentsUrl;
 import static geocaching.Const.M.imagesUrl;
 import static geocaching.Const.M.infoUrl;
+import static geocaching.Utils.isBlank;
 import static geocaching.Utils.jsonGeoCacheToContentValues;
 import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
@@ -65,6 +74,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     JSONObject infoObject;
     JSONArray commentsArray;
     JSONArray photosArray;
+    DefaultRetryPolicy retryPolicy;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -104,6 +114,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                 .build();
         ImageLoader.getInstance().init(config);
         queue = Volley.newRequestQueue(this);
+        retryPolicy = new DefaultRetryPolicy(2000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -123,7 +134,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         });
         final MenuItem saveCacheItem = menu.findItem(R.id.save_cache);
         final MenuItem removeCacheItem = menu.findItem(R.id.remove_cache);
-
         saveCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -140,6 +150,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     jsonObject.put("images", photosArray);
                     jsonObject.put("comments", commentsArray);
                     resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
+                    savePhotos(photosArray);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -168,9 +179,44 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         return true;
     }
 
+    private void savePhotos(JSONArray photosArray) throws JSONException {
+        for (int i = 0; i < photosArray.length(); i++) {
+            final String imageUrl = photosArray.getJSONObject(i).getString("thumbnails");
+            ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
+                @Override
+                public void onResponse(Bitmap response) {
+                    String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
+                    File file = new ExternalStorageManager(GeoCacheActivity.this).getPhotoFile(fileName, geoCache.id);
+                    FileOutputStream fOut = null;
+                    try {
+                        fOut = new FileOutputStream(file);
+                        response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (fOut != null) {
+                            try {
+                                fOut.flush();
+                                fOut.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }, 0, 0, null, null);
+            queue.add(imageRequest);
+
+        }
+    }
+
     @Override
     public void onErrorResponse(VolleyError error) {
-        Toast.makeText(GeoCacheActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+        String message = error.getMessage();
+        if (isBlank(message)) {
+            message = error.getClass().getName();
+        }
+        Toast.makeText(GeoCacheActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     class GeoCachePagerAdapter extends PagerAdapter {
@@ -209,12 +255,15 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     bar.setVisibility(View.VISIBLE);
                     container.addView(view);
                     if (infoObject == null) {
-                        queue.add(new JsonObjectRequest(GET, infoUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
+                        JsonObjectRequest request = new JsonObjectRequest(GET, infoUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
+                                infoObject = response;
                                 setDataToInfoTab(response, view, bar);
                             }
-                        }, ctx));
+                        }, ctx);
+                        request.setRetryPolicy(retryPolicy);
+                        queue.add(request);
                     } else {
                         setDataToInfoTab(infoObject, view, bar);
                     }
@@ -229,12 +278,15 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
                     container.addView(view);
                     if (commentsArray == null) {
-                        queue.add(new JsonArrayRequest(commentsUrl(geoCache.id), new Response.Listener<JSONArray>() {
+                        JsonArrayRequest request = new JsonArrayRequest(commentsUrl(geoCache.id), new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
+                                commentsArray = response;
                                 setDataToCommentsTab(response, recyclerView, commentsBar);
                             }
-                        }, ctx));
+                        }, ctx);
+                        request.setRetryPolicy(retryPolicy);
+                        queue.add(request);
                     } else {
                         setDataToCommentsTab(commentsArray, recyclerView, commentsBar);
                     }
@@ -245,12 +297,15 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     gridView.setAdapter(new ImageGridAdapter(ctx, new JSONArray()));
                     container.addView(view);
                     if (photosArray == null) {
-                        queue.add(new JsonArrayRequest(imagesUrl(geoCache.id), new Response.Listener<JSONArray>() {
+                        JsonArrayRequest request = new JsonArrayRequest(imagesUrl(geoCache.id), new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(final JSONArray response) {
+                                photosArray = response;
                                 setDataToPhotoTab(response, ctx, gridView);
                             }
-                        }, ctx));
+                        }, ctx);
+                        request.setRetryPolicy(retryPolicy);
+                        queue.add(request);
                     } else {
                         setDataToPhotoTab(photosArray, ctx, gridView);
                     }
