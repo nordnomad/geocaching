@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,6 +76,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     JSONArray commentsArray;
     JSONArray photosArray;
     DefaultRetryPolicy retryPolicy;
+    ExternalStorageManager esm;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -115,6 +117,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         ImageLoader.getInstance().init(config);
         queue = Volley.newRequestQueue(this);
         retryPolicy = new DefaultRetryPolicy(2000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        esm = new ExternalStorageManager(this);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -152,7 +155,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
                     savePhotos(photosArray);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(GeoCacheActivity.class.getName(), e.getMessage(), e);
                 }
                 removeCacheItem.setVisible(true);
                 saveCacheItem.setVisible(false);
@@ -181,32 +184,13 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
 
     private void savePhotos(JSONArray photosArray) throws JSONException {
         for (int i = 0; i < photosArray.length(); i++) {
-            final String imageUrl = photosArray.getJSONObject(i).getString("thumbnails");
-            ImageRequest imageRequest = new ImageRequest(imageUrl, new Response.Listener<Bitmap>() {
-                @Override
-                public void onResponse(Bitmap response) {
-                    String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
-                    File file = new ExternalStorageManager(GeoCacheActivity.this).getPhotoFile(fileName, geoCache.id);
-                    FileOutputStream fOut = null;
-                    try {
-                        fOut = new FileOutputStream(file);
-                        response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (fOut != null) {
-                            try {
-                                fOut.flush();
-                                fOut.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }, 0, 0, null, null);
-            queue.add(imageRequest);
-
+            JSONObject photoObject = photosArray.getJSONObject(i);
+            String cachesUrl = photoObject.has("caches") ? photoObject.getString("caches") : "";
+            if (!isBlank(cachesUrl))
+                queue.add(new ImageRequest(cachesUrl, new BitmapResponseListener(cachesUrl), 0, 0, null, null));
+            String areasUrl = photoObject.has("areas") ? photoObject.getString("areas") : "";
+            if (!isBlank(areasUrl))
+                queue.add(new ImageRequest(areasUrl, new BitmapResponseListener(areasUrl), 0, 0, null, null));
         }
     }
 
@@ -389,4 +373,33 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         return result;
     }
 
+    private class BitmapResponseListener implements Response.Listener<Bitmap> {
+        private final String imageUrl;
+
+        public BitmapResponseListener(String imageUrl) {
+            this.imageUrl = imageUrl;
+        }
+
+        @Override
+        public void onResponse(Bitmap response) {
+            String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
+            File file = esm.getPhotoFile(fileName, geoCache.id);
+            FileOutputStream fOut = null;
+            try {
+                fOut = new FileOutputStream(file);
+                response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                if (fOut != null) {
+                    try {
+                        fOut.flush();
+                        fOut.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 }
