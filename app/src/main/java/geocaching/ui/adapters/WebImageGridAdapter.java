@@ -20,11 +20,11 @@ import org.json.JSONException;
 
 import map.test.myapplication3.app.R;
 
-public class ImageGridAdapter extends BaseAdapter {
+public class WebImageGridAdapter extends BaseAdapter {
     LayoutInflater inflater;
     JSONArray imageUrls;
 
-    public ImageGridAdapter(Activity ctx, JSONArray imageUrls) {
+    public WebImageGridAdapter(Activity ctx, JSONArray imageUrls) {
         inflater = LayoutInflater.from(ctx);
         this.imageUrls = imageUrls;
     }

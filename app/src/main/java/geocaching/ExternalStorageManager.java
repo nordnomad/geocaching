@@ -9,8 +9,8 @@ import android.util.Log;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ExternalStorageManager {
 
@@ -130,7 +130,7 @@ public class ExternalStorageManager {
         fileOrDirectory.delete();
     }
 
-    public Collection<Uri> getPhotos(int cacheId) {
+    public List<Uri> getPhotos(int cacheId) {
         final File imagesDirectory = getPhotosDirectory(cacheId);
         final File[] photoFiles = imagesDirectory.listFiles(imageFilter);
         final LinkedList<Uri> photosUrls = new LinkedList<>();
