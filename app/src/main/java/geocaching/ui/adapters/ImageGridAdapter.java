@@ -64,7 +64,7 @@ public class ImageGridAdapter extends BaseAdapter {
 //                .showImageOnLoading(R.drawable.ic_launcher)
 //                .showImageForEmptyUri(R.drawable.ic_launcher)
 //                .showImageOnFail(R.drawable.ic_launcher)
-                .cacheInMemory(true)
+//                .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .considerExifParams(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
