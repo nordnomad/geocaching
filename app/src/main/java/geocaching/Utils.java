@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import geocaching.db.DB;
@@ -306,5 +309,22 @@ public class Utils {
             }
         }
         return textDistance;
+    }
+
+    public static List<String> urls(JSONArray jsonArray) {
+        List<String> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.has("areas")) {
+                    result.add(jsonObject.getString("areas"));
+                } else if (jsonObject.has("caches")) {
+                    result.add(jsonObject.getString("caches"));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

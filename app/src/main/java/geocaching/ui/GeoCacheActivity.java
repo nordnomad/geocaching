@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import geocaching.ExternalStorageManager;
@@ -49,6 +48,7 @@ import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.isBlank;
 import static geocaching.Utils.jsonGeoCacheToContentValues;
+import static geocaching.Utils.urls;
 import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
@@ -181,23 +181,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             message = error.getClass().getName();
         }
         Toast.makeText(GeoCacheActivity.this, message, Toast.LENGTH_LONG).show();
-    }
-
-    public static List<String> urls(JSONArray jsonArray) {
-        List<String> result = new ArrayList<>();
-        try {
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.has("areas")) {
-                    result.add(jsonObject.getString("areas"));
-                } else if (jsonObject.has("caches")) {
-                    result.add(jsonObject.getString("caches"));
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     private class BitmapResponseListener implements Response.Listener<Bitmap> {

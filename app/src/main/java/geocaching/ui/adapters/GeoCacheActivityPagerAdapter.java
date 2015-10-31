@@ -132,10 +132,9 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         // TODO decide open images by own activity or standart one
-//                    GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
+                        // GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
                         Intent intent = new Intent();
                         intent.setAction(Intent.ACTION_VIEW);
-//                        final Adapter adapter = ;
                         intent.setDataAndType((Uri) (parent.getAdapter().getItem(position)), "image/*");
                         ctx.startActivity(intent);
                     }

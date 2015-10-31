@@ -2,6 +2,7 @@ package geocaching.ui.adapters;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import org.json.JSONException;
 
 import map.test.myapplication3.app.R;
 
+import static geocaching.Utils.urls;
+
 public class WebImageGridAdapter extends BaseAdapter {
     LayoutInflater inflater;
     JSONArray imageUrls;
@@ -35,8 +38,8 @@ public class WebImageGridAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
-        return null;
+    public Uri getItem(int position) {
+        return Uri.parse(urls(imageUrls).get(position));
     }
 
     @Override
