@@ -37,7 +37,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Дата создания"
+                        android:text="@string/gc_info_create_date"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
 
                     <TextView
@@ -46,7 +46,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Дата обновления"
+                        android:text="@string/gc_info_update_date"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
 
@@ -85,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Страна"
+                        android:text="@string/gc_info_counry"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
 
                     <TextView
@@ -93,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Город"
+                        android:text="@string/gc_info_city"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
 
@@ -132,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Координаты"
+                        android:text="@string/gc_info_coordinates"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
 
                     <TextView
@@ -140,7 +140,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:layout_weight=".5"
-                        android:text="Автор"
+                        android:text="@string/gc_info_author"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
 
@@ -190,7 +190,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Описание окружающей местности"
+                    android:text="@string/gc_info_area"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black" />
 
@@ -222,21 +222,21 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:paddingStart="0dp"
-                    android:paddingEnd="0dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="  Описание тайника"
                     android:background="@android:color/holo_green_light"
+                    android:paddingEnd="0dp"
+                    android:paddingStart="0dp"
+                    android:text="@string/gc_info_description"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@android:color/black" />
 
                 <TextView
-                    android:layout_margin="8dp"
                     android:id="@+id/descriptionText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center_vertical"
+                    android:layout_margin="8dp"
                     android:text=""
                     android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>

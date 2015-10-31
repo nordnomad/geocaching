@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        android:contentDescription="contentDescription" />
+        android:contentDescription="@string/image_pager_item_gc_image" />
 
     <ProgressBar
         android:id="@+id/loading"

@@ -63,19 +63,6 @@
                     android:background="#ff1892ff"
                     android:id="@+id/geoCacheTypeView" />
 
-                <!--<TextView-->
-                <!--android:text="Действующий"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textAppearance="?android:attr/textAppearanceSmallInverse"-->
-                <!--android:gravity="center_vertical"-->
-                <!--android:layout_marginEnd="10dip"-->
-                <!--android:paddingLeft="5dip"-->
-                <!--android:paddingRight="5dip"-->
-                <!--android:textSize="12sp"-->
-                <!--android:minHeight="10dip"-->
-                <!--android:background="#ff1892ff" />-->
-
                 <TextView
                     android:id="@+id/distanceLabel"
                     android:text="10 км"

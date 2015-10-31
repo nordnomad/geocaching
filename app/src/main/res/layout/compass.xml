@@ -12,9 +12,8 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:gravity="center"
-        android:text="1,0km"
         android:textAllCaps="true"
-        android:textSize="60dp" />
+        android:textSize="60sp" />
 
     <TextView
         android:id="@+id/accuracy_compass_view"
@@ -24,10 +23,9 @@
         android:layout_marginBottom="20dp"
         android:layout_marginTop="0dp"
         android:gravity="center"
-        android:text="1,0km"
         android:textAllCaps="true"
         android:textIsSelectable="false"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <geocaching.ui.compass.CompassView
         android:id="@+id/compassView"
@@ -58,16 +56,16 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My location"
+                android:text="@string/compass_my_location"
                 android:textAllCaps="true"
-                android:textSize="13dp" />
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/my_location_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -77,21 +75,20 @@
             android:layout_gravity="end"
             android:gravity="start|center_vertical"
             android:orientation="vertical">
-            <!--android:layout_weight=".5"-->
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My destination"
+                android:text="@string/compass_my_destination"
                 android:textAllCaps="true"
-                android:textSize="13dp" />
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/cache_location_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:textSize="17dp" />
+                android:textSize="17sp" />
         </LinearLayout>
     </RelativeLayout>
 

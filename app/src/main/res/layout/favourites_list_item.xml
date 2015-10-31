@@ -10,6 +10,7 @@
         android:id="@+id/favouritesGeoCacheIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/favourietes_list_item_gc_icon"
         android:paddingBottom="16dip"
         android:paddingLeft="16dip"
         android:paddingRight="16dip"
