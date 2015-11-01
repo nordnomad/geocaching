@@ -1,6 +1,7 @@
 package geocaching.ui.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class CommentsTabAdapter extends RecyclerView.Adapter<CommentsTabAdapter.
             holder.dateView.setText(jo.getString("date"));
             holder.userView.setText(jo.getString("user"));
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(CommentsTabAdapter.class.getName(), e.getMessage(), e);
             holder.messageView.setText("error");
         }
 

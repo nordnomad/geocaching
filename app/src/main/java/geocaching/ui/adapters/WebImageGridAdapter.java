@@ -3,6 +3,7 @@ package geocaching.ui.adapters;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,7 @@ public class WebImageGridAdapter extends BaseAdapter {
         try {
             imageUrl = imageUrls.getJSONObject(position).getString("thumbnails");
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(WebImageGridAdapter.class.getName(), e.getMessage(), e);
         }
 
         ImageLoader.getInstance().displayImage(imageUrl, holder.imageView, options, new SimpleImageLoadingListener() {

@@ -25,4 +25,7 @@
     <string name="favourites_screen">No data</string>
     <string name="favourietes_list_item_gc_icon">Geocache icon</string>
     <string name="image_pager_item_gc_image">Geocache image</string>
+    <string name="gc_activity_tab_information">Information</string>
+    <string name="gc_activity_tab_comments">Comments</string>
+    <string name="gc_activity_tab_photos">Photos</string>
 </resources>

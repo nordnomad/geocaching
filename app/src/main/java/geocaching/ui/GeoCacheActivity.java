@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -31,12 +30,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 
+import geocaching.BitmapResponseListener;
 import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
@@ -61,6 +57,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     public DefaultRetryPolicy retryPolicy;
     public ExternalStorageManager esm;
     public List<Uri> photos;
+    public boolean loaded;
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
@@ -80,7 +77,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     photosArray = new JSONArray(cursor.getString(photosIndex));
                     photos = esm.getPhotos(geoCache.id);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(GeoCacheActivity.class.getName(), e.getMessage(), e);
                 }
             }
         }
@@ -105,7 +102,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
 
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.geo_cache_activity_action_bar, menu);
@@ -125,6 +121,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         saveCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                if (!loaded) return true;
                 ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -154,6 +151,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                 resolver.delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null);
                 removeCacheItem.setVisible(false);
                 saveCacheItem.setVisible(true);
+                esm.deletePhotos(geoCache.id);
                 return true;
             }
         });
@@ -167,10 +165,10 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         return true;
     }
 
-    private void savePhotos(JSONArray photosArray) throws JSONException {
+    private void savePhotos(JSONArray photosArray) {
         final List<String> urls = urls(photosArray);
         for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(url), 0, 0, null, null));
+            queue.add(new ImageRequest(url, new BitmapResponseListener(this, url, geoCache), 0, 0, null, null));
         }
     }
 
@@ -183,33 +181,4 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         Toast.makeText(GeoCacheActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
-    private class BitmapResponseListener implements Response.Listener<Bitmap> {
-        private final String imageUrl;
-
-        public BitmapResponseListener(String imageUrl) {
-            this.imageUrl = imageUrl;
-        }
-
-        @Override
-        public void onResponse(Bitmap response) {
-            String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
-            File file = esm.getPhotoFile(fileName, geoCache.id);
-            FileOutputStream fOut = null;
-            try {
-                fOut = new FileOutputStream(file);
-                response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                if (fOut != null) {
-                    try {
-                        fOut.flush();
-                        fOut.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
 }

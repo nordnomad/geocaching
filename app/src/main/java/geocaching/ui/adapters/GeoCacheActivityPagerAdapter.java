@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,6 +33,10 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
 
     private final GeoCacheActivity ctx;
 
+    boolean infoLoaded;
+    boolean commentsLoaded;
+    boolean photosLoaded;
+
     public GeoCacheActivityPagerAdapter(GeoCacheActivity ctx) {
         this.ctx = ctx;
     }
@@ -50,11 +55,11 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Information";
+                return ctx.getString(R.string.gc_activity_tab_information);
             case 1:
-                return "Comments";
+                return ctx.getString(R.string.gc_activity_tab_comments);
             case 2:
-                return "Photos";
+                return ctx.getString(R.string.gc_activity_tab_photos);
         }
         return "Error";
     }
@@ -74,6 +79,8 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
                         public void onResponse(JSONObject response) {
                             ctx.infoObject = response;
                             setDataToInfoTab(response, view, bar);
+                            infoLoaded = true;
+                            if (photosLoaded && commentsLoaded) ctx.loaded = true;
                         }
                     }, ctx);
                     request.setRetryPolicy(ctx.retryPolicy);
@@ -97,6 +104,8 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
                         public void onResponse(JSONArray response) {
                             ctx.commentsArray = response;
                             setDataToCommentsTab(response, recyclerView, commentsBar);
+                            commentsLoaded = true;
+                            if (photosLoaded && infoLoaded) ctx.loaded = true;
                         }
                     }, ctx);
                     request.setRetryPolicy(ctx.retryPolicy);
@@ -110,16 +119,16 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
                 final GridView gridView = (GridView) view.findViewById(R.id.gallery);
                 if (ctx.photos != null && !ctx.photos.isEmpty()) {
                     gridView.setAdapter(new FileImageGridAdapter(ctx, ctx.photos));
-                    container.addView(view);
                 } else {
                     gridView.setAdapter(new WebImageGridAdapter(ctx, new JSONArray()));
-                    container.addView(view);
                     if (ctx.photosArray == null) {
                         JsonArrayRequest request = new JsonArrayRequest(imagesUrl(ctx.geoCache.id), new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(final JSONArray response) {
                                 ctx.photosArray = response;
                                 setDataToPhotoTab(response, ctx, gridView);
+                                photosLoaded = true;
+                                if (infoLoaded && commentsLoaded) ctx.loaded = true;
                             }
                         }, ctx);
                         request.setRetryPolicy(ctx.retryPolicy);
@@ -128,6 +137,7 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
                         setDataToPhotoTab(ctx.photosArray, ctx, gridView);
                     }
                 }
+                container.addView(view);
                 gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -178,7 +188,7 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
             TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
             surroundingArea.setText(response.getString("surroundingArea"));
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(GeoCacheActivityPagerAdapter.class.getName(), e.getMessage(), e);
         }
         bar.setVisibility(View.GONE);
         view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);

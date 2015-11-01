@@ -4,8 +4,19 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-import static geocaching.db.DB.Column.*;
+import static geocaching.db.DB.Column.COMMENTS;
+import static geocaching.db.DB.Column.DESCR;
+import static geocaching.db.DB.Column.ID;
+import static geocaching.db.DB.Column.LAT;
+import static geocaching.db.DB.Column.LON;
+import static geocaching.db.DB.Column.NAME;
+import static geocaching.db.DB.Column.PHOTOS;
+import static geocaching.db.DB.Column.STATUS;
+import static geocaching.db.DB.Column.TYPE;
+import static geocaching.db.DB.Column.USER_NOTES;
+import static geocaching.db.DB.Column._ID;
 
 public class DB extends SQLiteOpenHelper {
 
@@ -48,7 +59,7 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(SQL_CREATE_DATABASE_TABLE);
             db.setTransactionSuccessful();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Log.e(DB.class.getName(), e.getMessage(), e);
         } finally {
             db.endTransaction();
         }
@@ -62,7 +73,7 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(SQL_CREATE_DATABASE_TABLE);
             db.setTransactionSuccessful();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Log.e(DB.class.getName(), e.getMessage(), e);
         } finally {
             db.endTransaction();
         }

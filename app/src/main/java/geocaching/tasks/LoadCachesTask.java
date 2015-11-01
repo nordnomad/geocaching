@@ -1,6 +1,7 @@
 package geocaching.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -27,7 +28,7 @@ import static geocaching.Utils.numberToStatus;
 import static geocaching.Utils.numberToType;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
-    List<GeoCache> caches = new ArrayList<GeoCache>();
+    List<GeoCache> caches = new ArrayList<>();
 
     MapWrapper map;
 
@@ -52,7 +53,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
             parser.parse(geoCacheXml, cachesHandler);
             caches = cachesHandler.geoCaches;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LoadCachesTask.class.getName(), e.getMessage(), e);
         }
         return null;
     }
@@ -79,7 +80,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
 
 class GeoCachesHandler extends DefaultHandler {
 
-    public List<GeoCache> geoCaches = new ArrayList<GeoCache>();
+    public List<GeoCache> geoCaches = new ArrayList<>();
     String C = "c";
     String ID = "id";
     String CN = "cn";
@@ -139,6 +140,7 @@ class GeoCachesHandler extends DefaultHandler {
         try {
             result = Double.parseDouble(coordinate);
         } catch (NumberFormatException e) {
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
         return result;
     }
@@ -151,6 +153,7 @@ class GeoCachesHandler extends DefaultHandler {
         try {
             defaultValue = Integer.parseInt(number);
         } catch (NumberFormatException e) {
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
         return defaultValue;
     }

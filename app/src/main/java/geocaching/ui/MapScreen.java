@@ -25,7 +25,9 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -45,6 +47,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import geocaching.BitmapResponseListener;
+import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
@@ -53,14 +57,16 @@ import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
+import static com.android.volley.Request.Method.GET;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static geocaching.Const.M.fullGeoCacheUrl;
 import static geocaching.Const.M.fullInfoUrl;
-import static geocaching.Utils.geoCacheToContentValues;
 import static geocaching.Utils.jsonGeoCacheToContentValues;
+import static geocaching.Utils.urls;
 import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
@@ -70,6 +76,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     FragmentManager fragmentManager;
     Location lastLocation;
     RequestQueue queue;
+    ExternalStorageManager esm;
 
     @Override
     public void onLocationChanged(Location l) {
@@ -100,6 +107,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .addOnConnectionFailedListener(this)
                 .build();
         queue = Volley.newRequestQueue(getActivity());
+        esm = new ExternalStorageManager(getActivity());
     }
 
     @Override
@@ -199,8 +207,25 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheToContentValues(geoCache));
+                        final ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
+                        JsonObjectRequest request = new JsonObjectRequest(GET, fullGeoCacheUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                try {
+                                    jsonObject.put("id", geoCache.id);
+                                    jsonObject.put("n", geoCache.name);
+                                    jsonObject.put("ln", geoCache.ln);
+                                    jsonObject.put("la", geoCache.la);
+                                    jsonObject.put("st", geoCache.status.ordinal());
+                                    jsonObject.put("ct", geoCache.type.ordinal());
+                                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
+                                    savePhotos(jsonObject.getJSONArray("images"), geoCache);
+                                } catch (JSONException e) {
+                                    Log.e(MapScreen.class.getName(), e.getMessage(), e);
+                                }
+                            }
+                        }, null);
+                        MapScreen.this.queue.add(request);
                         deleteBtn.setVisibility(View.VISIBLE);
                         saveBtn.setVisibility(View.GONE);
                     }
@@ -211,6 +236,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     public void onClick(View v) {
                         ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
                         resolver.delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null);
+                        esm.deletePhotos(geoCache.id);
                         saveBtn.setVisibility(View.VISIBLE);
                         deleteBtn.setVisibility(View.GONE);
                     }
@@ -241,6 +267,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 }
             }
         });
+    }
+
+    private void savePhotos(JSONArray photosArray, GeoCache geoCache) {
+        final List<String> urls = urls(photosArray);
+        for (String url : urls) {
+            queue.add(new ImageRequest(url, new BitmapResponseListener(getActivity(), url, geoCache), 0, 0, null, null));
+        }
     }
 
     @Override
@@ -281,7 +314,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                         resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Log.e(MapScreen.class.getName(), e.getMessage(), e);
                                 }
                                 item.collapseActionView();
                                 item.setActionView(null);

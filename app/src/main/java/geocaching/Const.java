@@ -29,6 +29,7 @@ public interface Const {
         static String info = ROOT + "/info/%d";
         static String comments = ROOT + "/comments/%d";
         static String images = ROOT + "/images/%d";
+        static String fullGeoCache = ROOT + "/fullGeoCache/%d";
         static String fullInfo = ROOT + "/fullInfo/%f_%f_%f_%f/%s";
 
         public static String infoUrl(long id) {
@@ -41,6 +42,10 @@ public interface Const {
 
         public static String imagesUrl(long id) {
             return String.format(images, id);
+        }
+
+        public static String fullGeoCacheUrl(long id) {
+            return String.format(fullGeoCache, id);
         }
 
         public static String fullInfoUrl(double nLon, double sLon, double nLat, double shLat, List<Long> excludeIds) {

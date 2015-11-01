@@ -2,6 +2,7 @@ package geocaching;
 
 import android.content.ContentValues;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
@@ -323,7 +324,7 @@ public class Utils {
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(Utils.class.getName(), e.getMessage(), e);
         }
         return result;
     }
