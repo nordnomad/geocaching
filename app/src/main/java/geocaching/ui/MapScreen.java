@@ -219,7 +219,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                     jsonObject.put("st", geoCache.status.ordinal());
                                     jsonObject.put("ct", geoCache.type.ordinal());
                                     resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
-                                    savePhotos(jsonObject.getJSONArray("images"), geoCache);
+                                    savePhotos(jsonObject.getJSONArray("images"), geoCache.id);
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);
                                 }
@@ -269,10 +269,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         });
     }
 
-    private void savePhotos(JSONArray photosArray, GeoCache geoCache) {
+    private void savePhotos(JSONArray photosArray, int geoCacheId) {
         final List<String> urls = urls(photosArray);
         for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(getActivity(), url, geoCache), 0, 0, null, null));
+            queue.add(new ImageRequest(url, new BitmapResponseListener(getActivity(), url, geoCacheId), 0, 0, null, null));
         }
     }
 
@@ -312,6 +312,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                     for (int i = 0; i < response.length(); i++) {
                                         JSONObject jsonObject = response.getJSONObject(i);
                                         resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
+                                        savePhotos(jsonObject.getJSONArray("images"), jsonObject.getInt("id"));
                                     }
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);

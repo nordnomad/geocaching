@@ -12,20 +12,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class BitmapResponseListener implements Response.Listener<Bitmap> {
-    private final String imageUrl;
-    private final ExternalStorageManager esm;
-    private GeoCache geoCache;
+    private String imageUrl;
+    private ExternalStorageManager esm;
+    private int geoCacheId;
 
-    public BitmapResponseListener(Context ctx, String imageUrl, GeoCache geoCache) {
+    public BitmapResponseListener(Context ctx, String imageUrl, int geoCacheId) {
         esm = new ExternalStorageManager(ctx);
         this.imageUrl = imageUrl;
-        this.geoCache = geoCache;
+        this.geoCacheId = geoCacheId;
     }
 
     @Override
     public void onResponse(Bitmap response) {
         String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
-        File file = esm.getPhotoFile(fileName, geoCache.id);
+        File file = esm.getPhotoFile(fileName, geoCacheId);
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);

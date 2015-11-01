@@ -168,7 +168,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
     private void savePhotos(JSONArray photosArray) {
         final List<String> urls = urls(photosArray);
         for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(this, url, geoCache), 0, 0, null, null));
+            queue.add(new ImageRequest(url, new BitmapResponseListener(this, url, geoCache.id), 0, 0, null, null));
         }
     }
 
