@@ -25,6 +25,7 @@ import geocaching.GeoCache;
 import geocaching.GeoCacheInfo;
 import geocaching.GoTo;
 import geocaching.NetworkRequestManager;
+import geocaching.Utils;
 import geocaching.common.SlidingTabLayout;
 import geocaching.ui.adapters.GeoCacheActivityPagerAdapter;
 import map.test.myapplication3.app.R;
@@ -93,21 +94,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         saveCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("id", geoCache.id);
-                    jsonObject.put("n", geoCache.name);
-                    jsonObject.put("ln", geoCache.ln);
-                    jsonObject.put("la", geoCache.la);
-                    jsonObject.put("st", geoCache.status.ordinal());
-                    jsonObject.put("ct", geoCache.type.ordinal());
-                    jsonObject.put("info", geoCacheInfo.info);
-                    jsonObject.put("images", geoCacheInfo.webPhotoUrls);
-                    jsonObject.put("comments", geoCacheInfo.comments);
-                    cpm.saveGeoCacheFullInfo(jsonObject);
-                } catch (JSONException e) {
-                    Log.e(GeoCacheActivity.class.getName(), e.getMessage(), e);
-                }
+                cpm.saveGeoCacheFullInfo(Utils.merge(geoCache, geoCacheInfo));
                 removeCacheItem.setVisible(true);
                 saveCacheItem.setVisible(false);
                 return true;

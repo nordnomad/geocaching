@@ -56,63 +56,75 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
     }
 
     @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        container.removeView((View) object);
+    }
+
+    @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        final View view;
         switch (position) {
             case 0:
-                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_info_tab, container, false);
-                final ProgressBar bar = (ProgressBar) view.findViewById(R.id.infoLoading);
-                bar.setVisibility(View.VISIBLE);
-                container.addView(view);
-                if (geoCache != null && geoCache.info != null) {
-                    setDataToInfoTab(geoCache.info, view, bar);
-                }
-                return view;
+                return instantiateInfoTab(container);
             case 1:
-                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_comment_tab, container, false);
-                final ProgressBar commentsBar = (ProgressBar) view.findViewById(R.id.commentsLoading);
-                commentsBar.setVisibility(View.VISIBLE);
-                container.addView(view);
-                RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-                recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
-                if (geoCache != null && geoCache.comments != null) {
-                    setDataToCommentsTab(geoCache.comments, recyclerView, commentsBar);
-                }
-                return view;
+                return instantiateCommentsTab(container);
             case 2:
-                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_foto_tab, container, false);
-                final GridView gridView = (GridView) view.findViewById(R.id.gallery);
-                if (geoCache != null && geoCache.filePhotoUrls != null && !geoCache.filePhotoUrls.isEmpty()) {
-                    gridView.setAdapter(new FileImageGridAdapter(ctx, geoCache.filePhotoUrls));
-                } else {
-                    gridView.setAdapter(new WebImageGridAdapter(ctx, new JSONArray()));
-                    if (geoCache != null && geoCache.webPhotoUrls != null) {
-                        setDataToPhotoTab(geoCache.webPhotoUrls, ctx, gridView);
-                    }
-                }
-                container.addView(view);
-                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        // TODO decide open images by own activity or standart one
-                        // GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.setDataAndType((Uri) (parent.getAdapter().getItem(position)), "image/*");
-                        ctx.startActivity(intent);
-                    }
-                });
-                return view;
+                return instantiatePhotosTab(container);
         }
         return null;
     }
 
-    private void setDataToPhotoTab(JSONArray response, Context ctx, GridView gridView) {
-        WebImageGridAdapter gridAdapter = new WebImageGridAdapter(ctx, response);
-        gridView.setAdapter(gridAdapter);
-        gridAdapter.notifyDataSetChanged();
+    private View instantiatePhotosTab(ViewGroup container) {
+        View view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_foto_tab, container, false);
+        GridView gridView = (GridView) view.findViewById(R.id.gallery);
+        if (geoCache.filePhotoUrls != null && !geoCache.filePhotoUrls.isEmpty()) {
+            gridView.setAdapter(new FileImageGridAdapter(ctx, geoCache.filePhotoUrls));
+        } else {
+            gridView.setAdapter(new WebImageGridAdapter(ctx, new JSONArray()));
+            if (geoCache.webPhotoUrls != null) {
+                WebImageGridAdapter gridAdapter = new WebImageGridAdapter(ctx, geoCache.webPhotoUrls);
+                gridView.setAdapter(gridAdapter);
+                gridAdapter.notifyDataSetChanged();
+            }
+        }
+        container.addView(view);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO decide open images by own activity or standart one
+                // GoTo.imagePagerActivity(ctx, geoCacheId, geoCacheName, urls(response));
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType((Uri) (parent.getAdapter().getItem(position)), "image/*");
+                ctx.startActivity(intent);
+            }
+        });
+        return view;
+    }
+
+    private View instantiateCommentsTab(ViewGroup container) {
+        View view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_comment_tab, container, false);
+        ProgressBar commentsBar = (ProgressBar) view.findViewById(R.id.commentsLoading);
+        commentsBar.setVisibility(View.VISIBLE);
+        container.addView(view);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+        recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
+        if (geoCache.comments != null) {
+            setDataToCommentsTab(geoCache.comments, recyclerView, commentsBar);
+        }
+        return view;
+    }
+
+    private View instantiateInfoTab(ViewGroup container) {
+        View view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_info_tab, container, false);
+        ProgressBar bar = (ProgressBar) view.findViewById(R.id.infoLoading);
+        bar.setVisibility(View.VISIBLE);
+        container.addView(view);
+        if (geoCache.info != null) {
+            setDataToInfoTab(geoCache.info, view, bar);
+        }
+        return view;
     }
 
     private void setDataToCommentsTab(JSONArray response, RecyclerView recyclerView, ProgressBar commentsBar) {
@@ -148,10 +160,5 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
         view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);
         view.findViewById(R.id.description).setVisibility(View.VISIBLE);
         view.findViewById(R.id.area).setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView((View) object);
     }
 }

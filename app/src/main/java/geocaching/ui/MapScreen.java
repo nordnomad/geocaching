@@ -41,6 +41,7 @@ import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
 import geocaching.NetworkRequestManager;
+import geocaching.Utils;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
@@ -195,17 +196,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
-                                        try {
-                                            jsonObject.put("id", geoCache.id);
-                                            jsonObject.put("n", geoCache.name);
-                                            jsonObject.put("ln", geoCache.ln);
-                                            jsonObject.put("la", geoCache.la);
-                                            jsonObject.put("st", geoCache.status.ordinal());
-                                            jsonObject.put("ct", geoCache.type.ordinal());
-                                            cpm.saveGeoCacheFullInfo(jsonObject);
-                                        } catch (JSONException e) {
-                                            Log.e(MapScreen.class.getName(), e.getMessage(), e);
-                                        }
+                                        cpm.saveGeoCacheFullInfo(Utils.merge(geoCache, jsonObject));
                                     }
                                 }, new Response.ErrorListener() {
                                     @Override

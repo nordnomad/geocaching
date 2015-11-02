@@ -328,4 +328,36 @@ public class Utils {
         }
         return result;
     }
+
+    public static JSONObject merge(GeoCache geoCache, JSONObject resultObject) {
+        try {
+            resultObject.put("id", geoCache.id);
+            resultObject.put("n", geoCache.name);
+            resultObject.put("ln", geoCache.ln);
+            resultObject.put("la", geoCache.la);
+            resultObject.put("st", geoCache.status.ordinal());
+            resultObject.put("ct", geoCache.type.ordinal());
+        } catch (JSONException e) {
+            Log.e(Utils.class.getName(), e.getMessage(), e);
+        }
+        return resultObject;
+    }
+
+    public static JSONObject merge(GeoCache geoCache, GeoCacheInfo geoCacheInfo) {
+        JSONObject resultObject = new JSONObject();
+        try {
+            resultObject.put("id", geoCache.id);
+            resultObject.put("n", geoCache.name);
+            resultObject.put("ln", geoCache.ln);
+            resultObject.put("la", geoCache.la);
+            resultObject.put("st", geoCache.status.ordinal());
+            resultObject.put("ct", geoCache.type.ordinal());
+            resultObject.put("info", geoCacheInfo.info);
+            resultObject.put("images", geoCacheInfo.webPhotoUrls);
+            resultObject.put("comments", geoCacheInfo.comments);
+        } catch (JSONException e) {
+            Log.e(Utils.class.getName(), e.getMessage(), e);
+        }
+        return resultObject;
+    }
 }
