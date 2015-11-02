@@ -1,12 +1,7 @@
 package geocaching.ui;
 
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +14,6 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,55 +26,45 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import geocaching.BitmapResponseListener;
+import geocaching.ContentProviderManager;
 import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
+import geocaching.GeoCacheInfo;
 import geocaching.GoTo;
 import geocaching.common.SlidingTabLayout;
-import geocaching.db.DB;
-import geocaching.db.GeoCacheProvider;
 import geocaching.ui.adapters.GeoCacheActivityPagerAdapter;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.isBlank;
-import static geocaching.Utils.jsonGeoCacheToContentValues;
-import static geocaching.Utils.urls;
-import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener {
 
     public RequestQueue queue;
+    public ContentProviderManager cpm;
+    public ExternalStorageManager esm;
+
     public GeoCache geoCache;
     public JSONObject infoObject;
     public JSONArray commentsArray;
     public JSONArray photosArray;
     public DefaultRetryPolicy retryPolicy;
-    public ExternalStorageManager esm;
     public List<Uri> photos;
     public boolean loaded;
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         geoCache = getIntent().getParcelableExtra("geoCache");
         setTitle(geoCache.name);
         esm = new ExternalStorageManager(this);
-        try (Cursor cursor = getContentResolver().query(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                try {
-                    int infoIndex = cursor.getColumnIndex(DB.Column.DESCR);
-                    infoObject = new JSONObject(cursor.getString(infoIndex));
-                    int commentsIndex = cursor.getColumnIndex(DB.Column.COMMENTS);
-                    commentsArray = new JSONArray(cursor.getString(commentsIndex));
-                    int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
-                    photosArray = new JSONArray(cursor.getString(photosIndex));
-                    photos = esm.getPhotos(geoCache.id);
-                } catch (JSONException e) {
-                    Log.e(GeoCacheActivity.class.getName(), e.getMessage(), e);
-                }
-            }
-        }
+        cpm = new ContentProviderManager(this);
+
+        GeoCacheInfo geoCacheInfo = cpm.findGeoCache(geoCache.id);
+        infoObject = geoCacheInfo.info;
+        commentsArray = geoCacheInfo.comments;
+        photosArray = geoCacheInfo.webPhotoUrls;
+        photos = geoCacheInfo.filePhotoUrls;
+
         setContentView(R.layout.activity_geo_cache);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new GeoCacheActivityPagerAdapter(this));
@@ -122,7 +106,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (!loaded) return true;
-                ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("id", geoCache.id);
@@ -134,8 +117,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
                     jsonObject.put("info", infoObject);
                     jsonObject.put("images", photosArray);
                     jsonObject.put("comments", commentsArray);
-                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
-                    savePhotos(photosArray);
+                    cpm.saveGeoCacheFullInfo(jsonObject);
                 } catch (JSONException e) {
                     Log.e(GeoCacheActivity.class.getName(), e.getMessage(), e);
                 }
@@ -147,15 +129,13 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         removeCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                ContentResolver resolver = GeoCacheActivity.this.getContentResolver();
-                resolver.delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null);
+                cpm.deleteGeoCache(geoCache.id);
                 removeCacheItem.setVisible(false);
                 saveCacheItem.setVisible(true);
-                esm.deletePhotos(geoCache.id);
                 return true;
             }
         });
-        if (isGeoCacheInFavouriteList(this, geoCache.id)) {
+        if (cpm.isGeoCacheInFavouriteList(geoCache.id)) {
             removeCacheItem.setVisible(true);
             saveCacheItem.setVisible(false);
         } else {
@@ -163,13 +143,6 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
             removeCacheItem.setVisible(false);
         }
         return true;
-    }
-
-    private void savePhotos(JSONArray photosArray) {
-        final List<String> urls = urls(photosArray);
-        for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(this, url, geoCache.id), 0, 0, null, null));
-        }
     }
 
     @Override

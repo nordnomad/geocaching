@@ -1,11 +1,6 @@
 package geocaching.ui;
 
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.database.Cursor;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,7 +20,6 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -44,16 +38,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import geocaching.BitmapResponseListener;
+import geocaching.ContentProviderManager;
 import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
-import geocaching.db.DB;
-import geocaching.db.GeoCacheProvider;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
@@ -65,9 +56,6 @@ import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 import static geocaching.Const.M.fullGeoCacheUrl;
 import static geocaching.Const.M.fullInfoUrl;
-import static geocaching.Utils.jsonGeoCacheToContentValues;
-import static geocaching.Utils.urls;
-import static geocaching.db.DBUtil.isGeoCacheInFavouriteList;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -77,6 +65,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     Location lastLocation;
     RequestQueue queue;
     ExternalStorageManager esm;
+    ContentProviderManager cpm;
 
     @Override
     public void onLocationChanged(Location l) {
@@ -108,6 +97,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .build();
         queue = Volley.newRequestQueue(getActivity());
         esm = new ExternalStorageManager(getActivity());
+        cpm = new ContentProviderManager(getActivity());
     }
 
     @Override
@@ -166,7 +156,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
             }
         });
         googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 marker.showInfoWindow();
@@ -207,7 +196,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
                         JsonObjectRequest request = new JsonObjectRequest(GET, fullGeoCacheUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
@@ -218,8 +206,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                                     jsonObject.put("la", geoCache.la);
                                     jsonObject.put("st", geoCache.status.ordinal());
                                     jsonObject.put("ct", geoCache.type.ordinal());
-                                    resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
-                                    savePhotos(jsonObject.getJSONArray("images"), geoCache.id);
+                                    cpm.saveGeoCacheFullInfo(jsonObject);
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);
                                 }
@@ -234,14 +221,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 deleteBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
-                        resolver.delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCache.id), null, null);
-                        esm.deletePhotos(geoCache.id);
+                        cpm.deleteGeoCache(geoCache.id);
                         saveBtn.setVisibility(View.VISIBLE);
                         deleteBtn.setVisibility(View.GONE);
                     }
                 });
-                if (isGeoCacheInFavouriteList(MapScreen.this.getActivity(), geoCache.id)) {
+                if (cpm.isGeoCacheInFavouriteList(geoCache.id)) {
                     deleteBtn.setVisibility(View.VISIBLE);
                     saveBtn.setVisibility(View.GONE);
                 } else {
@@ -269,34 +254,19 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         });
     }
 
-    private void savePhotos(JSONArray photosArray, int geoCacheId) {
-        final List<String> urls = urls(photosArray);
-        for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(getActivity(), url, geoCacheId), 0, 0, null, null));
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.map_screen_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem item = menu.findItem(R.id.map_save);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public boolean onMenuItemClick(final MenuItem item) {
                 item.setActionView(R.layout.actionbar_save_progress);
                 item.expandActionView();
 
-                List<Long> excludedIds = new ArrayList<>();
-                try (Cursor cursor = getActivity().getContentResolver().query(GeoCacheProvider.GEO_CACHE_CONTENT_URI, new String[]{DB.Column._ID}, null, null, null)) {
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            excludedIds.add(cursor.getLong(0));
-                        }
-                    }
-                }
-                if (excludedIds.isEmpty()) excludedIds.add(0l);
+                List<Long> excludedIds = cpm.idsOfStoredGeoCaches();
+
                 LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
                 double nLat = bounds.northeast.latitude;
                 double nLon = bounds.northeast.longitude;
@@ -307,12 +277,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
-                                ContentResolver resolver = MapScreen.this.getActivity().getContentResolver();
                                 try {
                                     for (int i = 0; i < response.length(); i++) {
                                         JSONObject jsonObject = response.getJSONObject(i);
-                                        resolver.insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(jsonObject));
-                                        savePhotos(jsonObject.getJSONArray("images"), jsonObject.getInt("id"));
+                                        cpm.saveGeoCacheFullInfo(jsonObject);
                                     }
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);
