@@ -7,12 +7,6 @@ import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,18 +19,17 @@ import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 
 import static geocaching.Utils.jsonGeoCacheToContentValues;
-import static geocaching.Utils.urls;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class ContentProviderManager {
 
     Context ctx;
-    RequestQueue queue;
     ExternalStorageManager esm;
+    NetworkRequestManager nrm;
 
     public ContentProviderManager(Context ctx) {
         this.ctx = ctx;
-        queue = Volley.newRequestQueue(ctx);
+        nrm = new NetworkRequestManager(ctx);
         esm = new ExternalStorageManager(ctx);
     }
 
@@ -56,21 +49,9 @@ public class ContentProviderManager {
     public void saveGeoCacheFullInfo(JSONObject geoCache) {
         try {
             ctx.getContentResolver().insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(geoCache));
-            savePhotos(geoCache.getJSONArray("images"), geoCache.getInt("id"));
+            nrm.savePhotos(geoCache.getJSONArray("images"), geoCache.getInt("id"));
         } catch (JSONException e) {
             Log.e(getClass().getName(), e.getMessage(), e);
-        }
-    }
-
-    private void savePhotos(JSONArray photosArray, int geoCacheId) {
-        final List<String> urls = urls(photosArray);
-        for (String url : urls) {
-            queue.add(new ImageRequest(url, new BitmapResponseListener(ctx, url, geoCacheId), 0, 0, null, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError e) {
-                    Log.e(getClass().getName(), e.getMessage(), e);
-                }
-            }));
         }
     }
 

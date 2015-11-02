@@ -28,4 +28,5 @@
     <string name="gc_activity_tab_information">Information</string>
     <string name="gc_activity_tab_comments">Comments</string>
     <string name="gc_activity_tab_photos">Photos</string>
+    <string name="gc_activity_tab_error">Error</string>
 </resources>

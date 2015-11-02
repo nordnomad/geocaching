@@ -1,6 +1,6 @@
 package geocaching.ui.adapters;
 
-import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +18,7 @@ public class FileImageGridAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private final List<Uri> photos;
 
-    public FileImageGridAdapter(Activity ctx, List<Uri> photos) {
+    public FileImageGridAdapter(Context ctx, List<Uri> photos) {
         inflater = LayoutInflater.from(ctx);
         this.photos = photos;
     }

@@ -16,13 +16,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -45,17 +40,15 @@ import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
+import geocaching.NetworkRequestManager;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
-import static com.android.volley.Request.Method.GET;
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
-import static geocaching.Const.M.fullGeoCacheUrl;
-import static geocaching.Const.M.fullInfoUrl;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -63,9 +56,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     GoogleApiClient gapiClient;
     FragmentManager fragmentManager;
     Location lastLocation;
-    RequestQueue queue;
+
     ExternalStorageManager esm;
     ContentProviderManager cpm;
+    NetworkRequestManager nrm;
 
     @Override
     public void onLocationChanged(Location l) {
@@ -95,9 +89,10 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-        queue = Volley.newRequestQueue(getActivity());
+
         esm = new ExternalStorageManager(getActivity());
         cpm = new ContentProviderManager(getActivity());
+        nrm = new NetworkRequestManager(getActivity());
     }
 
     @Override
@@ -196,23 +191,29 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        JsonObjectRequest request = new JsonObjectRequest(GET, fullGeoCacheUrl(geoCache.id), null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                try {
-                                    jsonObject.put("id", geoCache.id);
-                                    jsonObject.put("n", geoCache.name);
-                                    jsonObject.put("ln", geoCache.ln);
-                                    jsonObject.put("la", geoCache.la);
-                                    jsonObject.put("st", geoCache.status.ordinal());
-                                    jsonObject.put("ct", geoCache.type.ordinal());
-                                    cpm.saveGeoCacheFullInfo(jsonObject);
-                                } catch (JSONException e) {
-                                    Log.e(MapScreen.class.getName(), e.getMessage(), e);
-                                }
-                            }
-                        }, null);
-                        MapScreen.this.queue.add(request);
+                        nrm.loadGeoCacheFullInfo(geoCache.id,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject jsonObject) {
+                                        try {
+                                            jsonObject.put("id", geoCache.id);
+                                            jsonObject.put("n", geoCache.name);
+                                            jsonObject.put("ln", geoCache.ln);
+                                            jsonObject.put("la", geoCache.la);
+                                            jsonObject.put("st", geoCache.status.ordinal());
+                                            jsonObject.put("ct", geoCache.type.ordinal());
+                                            cpm.saveGeoCacheFullInfo(jsonObject);
+                                        } catch (JSONException e) {
+                                            Log.e(MapScreen.class.getName(), e.getMessage(), e);
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError e) {
+                                        //TODO implement error handling
+                                        Log.e(getClass().getName(), e.getMessage(), e);
+                                    }
+                                });
                         deleteBtn.setVisibility(View.VISIBLE);
                         saveBtn.setVisibility(View.GONE);
                     }
@@ -272,15 +273,13 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 double nLon = bounds.northeast.longitude;
                 double sLat = bounds.southwest.latitude;
                 double sLon = bounds.southwest.longitude;
-                DefaultRetryPolicy policy = new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-                queue.add(new JsonArrayRequest(fullInfoUrl(nLon, sLon, nLat, sLat, excludedIds),
+                nrm.loadGeoCachesOnMap(nLon, sLon, nLat, sLat, excludedIds,
                         new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
                                 try {
                                     for (int i = 0; i < response.length(); i++) {
-                                        JSONObject jsonObject = response.getJSONObject(i);
-                                        cpm.saveGeoCacheFullInfo(jsonObject);
+                                        cpm.saveGeoCacheFullInfo(response.getJSONObject(i));
                                     }
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);
@@ -291,14 +290,14 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                             }
                         }
                         , new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        item.collapseActionView();
-                        item.setActionView(null);
-                        String message = TextUtils.isEmpty(error.getMessage()) ? "0 caches was saved" : error.getMessage();
-                        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                    }
-                }).setRetryPolicy(policy));
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                item.collapseActionView();
+                                item.setActionView(null);
+                                String message = TextUtils.isEmpty(error.getMessage()) ? "0 caches was saved" : error.getMessage();
+                                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+                            }
+                        });
 
                 return true;
             }

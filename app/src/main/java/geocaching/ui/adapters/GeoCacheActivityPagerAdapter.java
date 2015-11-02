@@ -1,11 +1,13 @@
 package geocaching.ui.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,32 +15,21 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import geocaching.ui.GeoCacheActivity;
+import geocaching.GeoCacheInfo;
 import map.test.myapplication3.app.R;
-
-import static com.android.volley.Request.Method.GET;
-import static geocaching.Const.M.commentsUrl;
-import static geocaching.Const.M.imagesUrl;
-import static geocaching.Const.M.infoUrl;
 
 public class GeoCacheActivityPagerAdapter extends PagerAdapter {
 
-    private final GeoCacheActivity ctx;
+    Context ctx;
+    GeoCacheInfo geoCache;
 
-    boolean infoLoaded;
-    boolean commentsLoaded;
-    boolean photosLoaded;
-
-    public GeoCacheActivityPagerAdapter(GeoCacheActivity ctx) {
+    public GeoCacheActivityPagerAdapter(Context ctx, GeoCacheInfo geoCache) {
         this.ctx = ctx;
+        this.geoCache = geoCache;
     }
 
     @Override
@@ -61,7 +52,7 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
             case 2:
                 return ctx.getString(R.string.gc_activity_tab_photos);
         }
-        return "Error";
+        return ctx.getString(R.string.gc_activity_tab_error);
     }
 
     @Override
@@ -69,72 +60,36 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
         final View view;
         switch (position) {
             case 0:
-                view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_info_tab, container, false);
+                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_info_tab, container, false);
                 final ProgressBar bar = (ProgressBar) view.findViewById(R.id.infoLoading);
                 bar.setVisibility(View.VISIBLE);
                 container.addView(view);
-                if (ctx.infoObject == null) {
-                    JsonObjectRequest request = new JsonObjectRequest(GET, infoUrl(ctx.geoCache.id), null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            ctx.infoObject = response;
-                            setDataToInfoTab(response, view, bar);
-                            infoLoaded = true;
-                            if (photosLoaded && commentsLoaded) ctx.loaded = true;
-                        }
-                    }, ctx);
-                    request.setRetryPolicy(ctx.retryPolicy);
-                    ctx.queue.add(request);
-                } else {
-                    setDataToInfoTab(ctx.infoObject, view, bar);
+                if (geoCache != null && geoCache.info != null) {
+                    setDataToInfoTab(geoCache.info, view, bar);
                 }
                 return view;
             case 1:
-                view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_comment_tab, container, false);
+                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_comment_tab, container, false);
                 final ProgressBar commentsBar = (ProgressBar) view.findViewById(R.id.commentsLoading);
                 commentsBar.setVisibility(View.VISIBLE);
-                final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
+                container.addView(view);
+                RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.commentsList);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
                 recyclerView.setAdapter(new CommentsTabAdapter(new JSONArray()));
-                container.addView(view);
-                if (ctx.commentsArray == null) {
-                    JsonArrayRequest request = new JsonArrayRequest(commentsUrl(ctx.geoCache.id), new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray response) {
-                            ctx.commentsArray = response;
-                            setDataToCommentsTab(response, recyclerView, commentsBar);
-                            commentsLoaded = true;
-                            if (photosLoaded && infoLoaded) ctx.loaded = true;
-                        }
-                    }, ctx);
-                    request.setRetryPolicy(ctx.retryPolicy);
-                    ctx.queue.add(request);
-                } else {
-                    setDataToCommentsTab(ctx.commentsArray, recyclerView, commentsBar);
+                if (geoCache != null && geoCache.comments != null) {
+                    setDataToCommentsTab(geoCache.comments, recyclerView, commentsBar);
                 }
                 return view;
             case 2:
-                view = ctx.getLayoutInflater().inflate(R.layout.activity_geo_cache_foto_tab, container, false);
+                view = LayoutInflater.from(ctx).inflate(R.layout.activity_geo_cache_foto_tab, container, false);
                 final GridView gridView = (GridView) view.findViewById(R.id.gallery);
-                if (ctx.photos != null && !ctx.photos.isEmpty()) {
-                    gridView.setAdapter(new FileImageGridAdapter(ctx, ctx.photos));
+                if (geoCache != null && geoCache.filePhotoUrls != null && !geoCache.filePhotoUrls.isEmpty()) {
+                    gridView.setAdapter(new FileImageGridAdapter(ctx, geoCache.filePhotoUrls));
                 } else {
                     gridView.setAdapter(new WebImageGridAdapter(ctx, new JSONArray()));
-                    if (ctx.photosArray == null) {
-                        JsonArrayRequest request = new JsonArrayRequest(imagesUrl(ctx.geoCache.id), new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(final JSONArray response) {
-                                ctx.photosArray = response;
-                                setDataToPhotoTab(response, ctx, gridView);
-                                photosLoaded = true;
-                                if (infoLoaded && commentsLoaded) ctx.loaded = true;
-                            }
-                        }, ctx);
-                        request.setRetryPolicy(ctx.retryPolicy);
-                        ctx.queue.add(request);
-                    } else {
-                        setDataToPhotoTab(ctx.photosArray, ctx, gridView);
+                    if (geoCache != null && geoCache.webPhotoUrls != null) {
+                        setDataToPhotoTab(geoCache.webPhotoUrls, ctx, gridView);
                     }
                 }
                 container.addView(view);
@@ -154,11 +109,10 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
         return null;
     }
 
-    private void setDataToPhotoTab(final JSONArray response, final GeoCacheActivity ctx, GridView gridView) {
+    private void setDataToPhotoTab(JSONArray response, Context ctx, GridView gridView) {
         WebImageGridAdapter gridAdapter = new WebImageGridAdapter(ctx, response);
         gridView.setAdapter(gridAdapter);
         gridAdapter.notifyDataSetChanged();
-
     }
 
     private void setDataToCommentsTab(JSONArray response, RecyclerView recyclerView, ProgressBar commentsBar) {
@@ -188,7 +142,7 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
             TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
             surroundingArea.setText(response.getString("surroundingArea"));
         } catch (JSONException e) {
-            Log.e(GeoCacheActivityPagerAdapter.class.getName(), e.getMessage(), e);
+            Log.e(getClass().getName(), e.getMessage(), e);
         }
         bar.setVisibility(View.GONE);
         view.findViewById(R.id.infoCard).setVisibility(View.VISIBLE);

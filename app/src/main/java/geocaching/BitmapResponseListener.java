@@ -31,14 +31,14 @@ public class BitmapResponseListener implements Response.Listener<Bitmap> {
             fOut = new FileOutputStream(file);
             response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
         } catch (FileNotFoundException e) {
-            Log.e(BitmapResponseListener.class.getName(), e.getMessage(), e);
+            Log.e(getClass().getName(), e.getMessage(), e);
         } finally {
             if (fOut != null) {
                 try {
                     fOut.flush();
                     fOut.close();
                 } catch (IOException e) {
-                    Log.e(BitmapResponseListener.class.getName(), e.getMessage(), e);
+                    Log.e(getClass().getName(), e.getMessage(), e);
                 }
             }
         }
