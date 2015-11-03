@@ -19,11 +19,13 @@
     <LinearLayout
         android:layout_gravity="center_horizontal|bottom"
         android:id="@+id/markerInfo"
-        android:visibility="gone"
+        android:visibility="visible"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dim_foreground_material_light">
+        android:background="@color/cardview_light_background"
+        android:paddingStart="10sp"
+        android:paddingBottom="10sp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -32,19 +34,18 @@
             android:orientation="vertical"
             android:measureWithLargestChild="false">
 
-            <TextView
-                android:paddingLeft="5dp"
+            <geocaching.ui.views.AutoResizeTextView
                 android:id="@+id/nameView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceInverse"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:gravity="center_vertical"
                 android:background="?android:attr/activatedBackgroundIndicator"
                 android:minHeight="?android:attr/listPreferredItemHeightSmall"
-                android:text="Саржин яр" />
+                android:maxLines="1"
+                android:text="Левый берег" />
 
             <LinearLayout
-                android:padding="5dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -53,51 +54,57 @@
                     android:text="Традиционный пошаговый"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textColor="@color/background_floating_material_light"
+                    android:textAllCaps="true"
                     android:gravity="center_vertical"
                     android:layout_marginEnd="10dip"
+                    android:paddingBottom="5dip"
+                    android:paddingTop="5dip"
                     android:paddingLeft="5dip"
                     android:paddingRight="5dip"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:minHeight="10dip"
-                    android:background="#ff1892ff"
+                    android:background="@color/colorPrimaryDark"
                     android:id="@+id/geoCacheTypeView" />
 
                 <TextView
                     android:id="@+id/distanceLabel"
-                    android:text="10 км"
+                    android:text="171,1 км"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textColor="@color/abc_input_method_navigation_guard"
                     android:gravity="center_vertical"
-                    android:paddingLeft="5dip"
-                    android:paddingRight="5dip"
                     android:textSize="12sp"
                     android:minHeight="10dip"
-                    android:background="#ff1892ff" />
+                    android:textAllCaps="true" />
             </LinearLayout>
         </LinearLayout>
 
         <ImageButton
-            android:src="@android:drawable/ic_menu_save"
+            android:src="@drawable/ic_add_black_48dp"
             android:layout_width="0dp"
             android:layout_weight="0.2"
             android:layout_height="fill_parent"
-            android:id="@+id/saveBtn" />
+            android:id="@+id/saveBtn"
+            android:background="@null" />
 
         <ImageButton
-            android:src="@android:drawable/ic_menu_delete"
+            android:src="@drawable/ic_clear_black_48dp"
             android:layout_width="0dp"
             android:layout_weight="0.2"
-            android:layout_height="fill_parent"
-            android:id="@+id/deleteBtn" />
+            android:layout_height="match_parent"
+            android:id="@+id/deleteBtn"
+            android:visibility="gone"
+            android:background="@null" />
 
         <ImageButton
-            android:src="@android:drawable/ic_menu_compass"
+            android:src="@drawable/ic_navigation_black_48dp"
             android:layout_width="0dp"
             android:layout_weight="0.2"
-            android:layout_height="fill_parent"
-            android:id="@+id/findBtn" />
+            android:layout_height="match_parent"
+            android:id="@+id/findBtn"
+            android:background="@null"
+            android:paddingEnd="10sp" />
     </LinearLayout>
 
 </FrameLayout>
