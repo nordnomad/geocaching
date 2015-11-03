@@ -1,7 +1,6 @@
 package geocaching.ui.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,24 +10,21 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import geocaching.ImageManager;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.urls;
 
 public class WebImageGridAdapter extends BaseAdapter {
     LayoutInflater inflater;
+    Context ctx;
     JSONArray imageUrls;
 
     public WebImageGridAdapter(Context ctx, JSONArray imageUrls) {
+        this.ctx = ctx;
         inflater = LayoutInflater.from(ctx);
         this.imageUrls = imageUrls;
     }
@@ -62,47 +58,13 @@ public class WebImageGridAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) view.getTag();
         }
-
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                //TODO implement images for such situations
-//                .showImageOnLoading(R.drawable.ic_launcher)
-//                .showImageForEmptyUri(R.drawable.ic_launcher)
-//                .showImageOnFail(R.drawable.ic_launcher)
-//                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .considerExifParams(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
         String imageUrl = "";
         try {
             imageUrl = imageUrls.getJSONObject(position).getString("thumbnails");
         } catch (JSONException e) {
             Log.e(WebImageGridAdapter.class.getName(), e.getMessage(), e);
         }
-
-        ImageLoader.getInstance().displayImage(imageUrl, holder.imageView, options, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-                holder.progressBar.setProgress(0);
-                holder.progressBar.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                holder.progressBar.setVisibility(View.GONE);
-            }
-        }, new ImageLoadingProgressListener() {
-            @Override
-            public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                holder.progressBar.setProgress(Math.round(100.0f * current / total));
-            }
-        });
-
+        ImageManager.with(ctx).displayImage(imageUrl, holder.imageView, holder.progressBar);
         return view;
     }
 
