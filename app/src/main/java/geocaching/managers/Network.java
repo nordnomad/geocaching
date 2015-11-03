@@ -1,4 +1,4 @@
-package geocaching;
+package geocaching.managers;
 
 import android.content.Context;
 import android.util.Log;
@@ -23,16 +23,25 @@ import static geocaching.Const.M.fullGeoCacheUrl;
 import static geocaching.Const.M.fullInfoUrl;
 import static geocaching.Utils.urls;
 
-public class NetworkRequestManager {
+public class Network {
+
+    private static Network instance;
 
     RequestQueue queue;
     Context ctx;
     DefaultRetryPolicy policy;
 
-    public NetworkRequestManager(Context ctx) {
+    private Network(Context ctx) {
         this.ctx = ctx;
         queue = Volley.newRequestQueue(ctx);
         policy = new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+    }
+
+    public static synchronized Network with(Context ctx) {
+        if (instance == null) {
+            instance = new Network(ctx);
+        }
+        return instance;
     }
 
     public void loadGeoCachesOnMap(double nLon, double sLon, double nLat, double sLat, List<Long> excludeIds, Response.Listener<JSONArray> responseListener, Response.ErrorListener errorListener) {

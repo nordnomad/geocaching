@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import geocaching.ImageManager;
+import geocaching.managers.ImageManager;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.urls;

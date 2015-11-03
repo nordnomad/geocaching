@@ -1,4 +1,4 @@
-package geocaching;
+package geocaching.managers;
 
 import android.content.Context;
 import android.net.Uri;
@@ -12,9 +12,10 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ExternalStorageManager {
+public class SDCard {
+    private static SDCard instance;
 
-    private static final String TAG = ExternalStorageManager.class.getCanonicalName();
+    private static final String TAG = SDCard.class.getCanonicalName();
     //    private static final String OLD_PHOTOS_DIRECTORY = "/Android Geocaching.su/photos";
     private Context context;
 
@@ -47,10 +48,17 @@ public class ExternalStorageManager {
         return new File(getExternalFilesDir(), "/photos");
     }
 
-    public ExternalStorageManager(Context context) {
+    private SDCard(Context context) {
         this.context = context;
 //        updatePhotoCacheDirectory();
 //        prunePhotoCache();
+    }
+
+    public static synchronized SDCard with(Context ctx) {
+        if (instance == null) {
+            instance = new SDCard(ctx);
+        }
+        return instance;
     }
 
     /*private void updatePhotoCacheDirectory() {

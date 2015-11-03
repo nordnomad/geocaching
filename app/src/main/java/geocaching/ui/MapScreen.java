@@ -35,13 +35,12 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import geocaching.ContentProviderManager;
-import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
-import geocaching.NetworkRequestManager;
 import geocaching.Utils;
+import geocaching.managers.Network;
+import geocaching.managers.Storage;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
@@ -57,10 +56,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     GoogleApiClient gapiClient;
     FragmentManager fragmentManager;
     Location lastLocation;
-
-    ExternalStorageManager esm;
-    ContentProviderManager cpm;
-    NetworkRequestManager nrm;
 
     @Override
     public void onLocationChanged(Location l) {
@@ -91,9 +86,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        esm = new ExternalStorageManager(getActivity());
-        cpm = new ContentProviderManager(getActivity());
-        nrm = new NetworkRequestManager(getActivity());
     }
 
     @Override
@@ -192,11 +184,11 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 saveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        nrm.loadGeoCacheFullInfo(geoCache.id,
+                        Network.with(getActivity()).loadGeoCacheFullInfo(geoCache.id,
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject jsonObject) {
-                                        cpm.saveGeoCacheFullInfo(Utils.merge(geoCache, jsonObject));
+                                        Storage.with(getActivity()).saveGeoCacheFullInfo(Utils.merge(geoCache, jsonObject));
                                     }
                                 }, new Response.ErrorListener() {
                                     @Override
@@ -213,12 +205,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 deleteBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        cpm.deleteGeoCache(geoCache.id);
+                        Storage.with(getActivity()).deleteGeoCache(geoCache.id);
                         saveBtn.setVisibility(View.VISIBLE);
                         deleteBtn.setVisibility(View.GONE);
                     }
                 });
-                if (cpm.isGeoCacheInFavouriteList(geoCache.id)) {
+                if (Storage.with(getActivity()).isGeoCacheInFavouriteList(geoCache.id)) {
                     deleteBtn.setVisibility(View.VISIBLE);
                     saveBtn.setVisibility(View.GONE);
                 } else {
@@ -257,20 +249,20 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 item.setActionView(R.layout.actionbar_save_progress);
                 item.expandActionView();
 
-                List<Long> excludedIds = cpm.idsOfStoredGeoCaches();
+                List<Long> excludedIds = Storage.with(getActivity()).idsOfStoredGeoCaches();
 
                 LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
                 double nLat = bounds.northeast.latitude;
                 double nLon = bounds.northeast.longitude;
                 double sLat = bounds.southwest.latitude;
                 double sLon = bounds.southwest.longitude;
-                nrm.loadGeoCachesOnMap(nLon, sLon, nLat, sLat, excludedIds,
+                Network.with(getActivity()).loadGeoCachesOnMap(nLon, sLon, nLat, sLat, excludedIds,
                         new Response.Listener<JSONArray>() {
                             @Override
                             public void onResponse(JSONArray response) {
                                 try {
                                     for (int i = 0; i < response.length(); i++) {
-                                        cpm.saveGeoCacheFullInfo(response.getJSONObject(i));
+                                        Storage.with(getActivity()).saveGeoCacheFullInfo(response.getJSONObject(i));
                                     }
                                 } catch (JSONException e) {
                                     Log.e(MapScreen.class.getName(), e.getMessage(), e);

@@ -1,4 +1,4 @@
-package geocaching;
+package geocaching.managers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,19 +13,19 @@ import java.io.IOException;
 
 public class BitmapResponseListener implements Response.Listener<Bitmap> {
     private String imageUrl;
-    private ExternalStorageManager esm;
     private int geoCacheId;
+    Context ctx;
 
     public BitmapResponseListener(Context ctx, String imageUrl, int geoCacheId) {
-        esm = new ExternalStorageManager(ctx);
         this.imageUrl = imageUrl;
         this.geoCacheId = geoCacheId;
+        this.ctx = ctx;
     }
 
     @Override
     public void onResponse(Bitmap response) {
         String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
-        File file = esm.getPhotoFile(fileName, geoCacheId);
+        File file = SDCard.with(ctx).getPhotoFile(fileName, geoCacheId);
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);

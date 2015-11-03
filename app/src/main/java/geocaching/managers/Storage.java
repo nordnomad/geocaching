@@ -1,10 +1,11 @@
-package geocaching;
+package geocaching.managers;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -15,22 +16,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import geocaching.GeoCacheInfo;
 import geocaching.db.DB;
 import geocaching.db.GeoCacheProvider;
 
 import static geocaching.Utils.jsonGeoCacheToContentValues;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
-public class ContentProviderManager {
+public class Storage {
+
+    private static Storage storage;
 
     Context ctx;
-    ExternalStorageManager esm;
-    NetworkRequestManager nrm;
 
-    public ContentProviderManager(Context ctx) {
+    private Storage(Context ctx) {
         this.ctx = ctx;
-        nrm = new NetworkRequestManager(ctx);
-        esm = new ExternalStorageManager(ctx);
+    }
+
+    public static synchronized Storage with(Context ctx) {
+        if (storage == null) {
+            storage = new Storage(ctx);
+        }
+        return storage;
+    }
+
+    public static synchronized Storage with(Fragment ctx) {
+        if (storage == null) {
+            storage = new Storage(ctx.getActivity());
+        }
+        return storage;
     }
 
     public List<Long> idsOfStoredGeoCaches() {
@@ -49,7 +63,7 @@ public class ContentProviderManager {
     public void saveGeoCacheFullInfo(JSONObject geoCache) {
         try {
             ctx.getContentResolver().insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(geoCache));
-            nrm.savePhotos(geoCache.getJSONArray("images"), geoCache.getInt("id"));
+            Network.with(ctx).savePhotos(geoCache.getJSONArray("images"), geoCache.getInt("id"));
         } catch (JSONException e) {
             Log.e(getClass().getName(), e.getMessage(), e);
         }
@@ -81,20 +95,20 @@ public class ContentProviderManager {
 
     public void deleteGeoCache(int geoCacheId) {
         ctx.getContentResolver().delete(ContentUris.withAppendedId(GeoCacheProvider.GEO_CACHE_CONTENT_URI, geoCacheId), null, null);
-        esm.deletePhotos(geoCacheId);
+        SDCard.with(ctx).deletePhotos(geoCacheId);
     }
 
     public void deleteGeoCaches(long[] ids) {
         String where = "_id IN " + Arrays.toString(ids).replace("[", "(").replace("]", ")");
         ctx.getContentResolver().delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, where, null);
         for (long id : ids) {
-            esm.deletePhotos((int) id);
+            SDCard.with(ctx).deletePhotos((int) id);
         }
     }
 
     public void deleteAllGeoCaches() {
         ctx.getContentResolver().delete(GeoCacheProvider.GEO_CACHE_CONTENT_URI, null, null);
-        esm.deleteAllPhotos();
+        SDCard.with(ctx).deleteAllPhotos();
     }
 
     public GeoCacheInfo findGeoCache(int geoCacheId) {
@@ -108,7 +122,7 @@ public class ContentProviderManager {
                     cacheInfo.comments = new JSONArray(cursor.getString(commentsIndex));
                     int photosIndex = cursor.getColumnIndex(DB.Column.PHOTOS);
                     cacheInfo.webPhotoUrls = new JSONArray(cursor.getString(photosIndex));
-                    cacheInfo.filePhotoUrls = esm.getPhotos(geoCacheId);
+                    cacheInfo.filePhotoUrls = SDCard.with(ctx).getPhotos(geoCacheId);
                 } catch (JSONException e) {
                     Log.e(getClass().getName(), e.getMessage(), e);
                 }

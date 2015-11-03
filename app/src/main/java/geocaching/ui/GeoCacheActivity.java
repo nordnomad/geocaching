@@ -15,14 +15,13 @@ import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import geocaching.ContentProviderManager;
-import geocaching.ExternalStorageManager;
 import geocaching.GeoCache;
 import geocaching.GeoCacheInfo;
 import geocaching.GoTo;
-import geocaching.NetworkRequestManager;
 import geocaching.Utils;
 import geocaching.common.SlidingTabLayout;
+import geocaching.managers.Network;
+import geocaching.managers.Storage;
 import geocaching.ui.adapters.GeoCacheActivityPagerAdapter;
 import map.test.myapplication3.app.R;
 
@@ -30,11 +29,7 @@ import static geocaching.Utils.isBlank;
 
 public class GeoCacheActivity extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
 
-    ContentProviderManager cpm;
-    ExternalStorageManager esm;
-    NetworkRequestManager nrm;
-
-    public GeoCache geoCache;
+    GeoCache geoCache;
     GeoCacheInfo geoCacheInfo;
     ViewPager viewPager;
     MenuItem saveCacheItem;
@@ -45,12 +40,9 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         super.onCreate(savedInstanceState);
         geoCache = getIntent().getParcelableExtra("geoCache");
         setTitle(geoCache.name);
-        esm = new ExternalStorageManager(this);
-        cpm = new ContentProviderManager(this);
-        geoCacheInfo = cpm.findGeoCache(geoCache.id);
+        geoCacheInfo = Storage.with(this).findGeoCache(geoCache.id);
         if (geoCacheInfo.isEmpty()) {
-            nrm = new NetworkRequestManager(this);
-            nrm.loadGeoCacheFullInfo(geoCache.id, this, this);
+            Network.with(this).loadGeoCacheFullInfo(geoCache.id, this, this);
         }
         setContentView(R.layout.activity_geo_cache);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -80,7 +72,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         saveCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                cpm.saveGeoCacheFullInfo(Utils.merge(geoCache, geoCacheInfo));
+                Storage.with(getApplication()).saveGeoCacheFullInfo(Utils.merge(geoCache, geoCacheInfo));
                 removeCacheItem.setVisible(true);
                 saveCacheItem.setVisible(false);
                 return true;
@@ -89,7 +81,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         removeCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                cpm.deleteGeoCache(geoCache.id);
+                Storage.with(getApplication()).deleteGeoCache(geoCache.id);
                 removeCacheItem.setVisible(false);
                 saveCacheItem.setVisible(true);
                 return true;

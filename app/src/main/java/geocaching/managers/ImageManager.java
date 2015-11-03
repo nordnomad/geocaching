@@ -1,4 +1,4 @@
-package geocaching;
+package geocaching.managers;
 
 import android.content.Context;
 import android.graphics.Bitmap;

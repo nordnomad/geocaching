@@ -24,15 +24,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import geocaching.ContentProviderManager;
 import geocaching.GoTo;
 import geocaching.db.GeoCacheProvider;
+import geocaching.managers.Storage;
 import geocaching.ui.adapters.FavouritesListAdapter;
 import map.test.myapplication3.app.R;
 
 public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    ContentProviderManager cpm;
 
     ListView listView;
     LocationManager locationManager; // TODO replace with gApi
@@ -43,7 +41,6 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         locationManager = (LocationManager) getActivity().getSystemService(Service.LOCATION_SERVICE);
-        cpm = new ContentProviderManager(getActivity());
     }
 
     @Override
@@ -65,8 +62,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
 
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                cpm.deleteAllGeoCaches();
-                                removeCacheItem.setVisible(!cpm.isFavouriteListEmpty());
+                                Storage.with(getActivity()).deleteAllGeoCaches();
+                                removeCacheItem.setVisible(!Storage.with(getActivity()).isFavouriteListEmpty());
                                 dialog.dismiss();
                             }
                         }).setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
@@ -77,7 +74,7 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
                 return true;
             }
         });
-        removeCacheItem.setVisible(!cpm.isFavouriteListEmpty());
+        removeCacheItem.setVisible(!Storage.with(this).isFavouriteListEmpty());
     }
 
     @Override
@@ -117,8 +114,8 @@ public class FavoritesScreen extends ListFragment implements LoaderManager.Loade
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.item_delete:
-                        cpm.deleteGeoCaches(getListView().getCheckedItemIds());
-                        removeCacheItem.setVisible(!cpm.isFavouriteListEmpty());
+                        Storage.with(getActivity()).deleteGeoCaches(getListView().getCheckedItemIds());
+                        removeCacheItem.setVisible(!Storage.with(getActivity()).isFavouriteListEmpty());
                         mode.finish();
                         return true;
                 }
