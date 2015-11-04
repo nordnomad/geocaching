@@ -27,7 +27,7 @@
         android:textIsSelectable="false"
         android:textSize="20sp" />
 
-    <geocaching.ui.compass.CompassView
+    <geocaching.ui.compass.CompassView2
         android:id="@+id/compassView"
         android:layout_width="match_parent"
         android:layout_height="250dp"

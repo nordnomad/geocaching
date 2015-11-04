@@ -11,12 +11,12 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import geocaching.GeoCacheStatus;
 import geocaching.GeoCacheType;
 import geocaching.db.DB;
+import geocaching.ui.compass.CompassView2;
 import map.test.myapplication3.app.R;
 
 public class FavouritesListAdapter extends CursorAdapter implements LocationListener {
@@ -41,6 +41,15 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         TextView nameView = (TextView) view.findViewById(R.id.favouritesGeoCacheText);
         nameView.setText(cursor.getString(cursor.getColumnIndex(DB.Column.NAME)));
 
+        final double lat = cursor.getDouble(cursor.getColumnIndex(DB.Column.LAT));
+        final double lon = cursor.getDouble(cursor.getColumnIndex(DB.Column.LON));
+        Location objectLocation = new Location("");
+        objectLocation.setLatitude(lat);
+        objectLocation.setLongitude(lon);
+
+
+        CompassView2 compassView = (CompassView2) view.findViewById(R.id.compassView);
+        compassView.initializeCompass(getLastLocation(), objectLocation, R.drawable.arrow_up_bold_virtual);
 
         Location lnl = getLastLocation();
         Location loc = new Location("");
@@ -58,7 +67,7 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         int statusIdx = cursor.getColumnIndex(DB.Column.STATUS);
         GeoCacheStatus status = GeoCacheStatus.values()[cursor.getInt(statusIdx)];
 
-        ImageView iconView = (ImageView) view.findViewById(R.id.favouritesGeoCacheIcon);
+//        ImageView iconView = (ImageView) view.findViewById(R.id.favouritesGeoCacheIcon);
     }
 
     //TODO refactor

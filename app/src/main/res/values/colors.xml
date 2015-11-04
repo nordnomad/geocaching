@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="geoCacheTraditional">#80f444</color>
+    <color name="geoCacheTraditionalBorder">#52b023</color>
+    <color name="geoCacheTraditionalStepByStep">#f5f549</color>
+    <color name="geoCacheTraditionalStepByStepBorder">#c7c67c</color>
+    <color name="geoCacheVirtual">#49bcf5</color>
+    <color name="geoCacheVirtualBorder">#2381b0</color>
+    <color name="geoCacheVirtualStepByStep">#9CCC65</color>
+    <color name="geoCacheVirtualStepByStepBorder">#8Cbb65</color>
+
+
 </resources>

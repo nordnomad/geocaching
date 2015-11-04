@@ -4,15 +4,13 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -63,22 +61,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (id == R.id.nav_map) {
-            fragment = new MapScreen();
+            fragmentTransaction.replace(R.id.content_frame, new MapScreen(), "MAP_SCREEN");
         } else if (id == R.id.nav_favourite) {
-            fragment = new FavoritesScreen();
+            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "FAVOURITE_SCREEN");
         } else if (id == R.id.nav_profile) {
-            fragment = new ProfileScreen();
+            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "PROFILE_SCREEN");
         }
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment).commit();
-            actionBar.setTitle(item.getTitle());
-        } else {
-            Log.e(getLocalClassName(), "Error. Fragment is not created");
-        }
+        fragmentTransaction.commit();
+        actionBar.setTitle(item.getTitle());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

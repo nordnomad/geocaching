@@ -6,7 +6,7 @@
     android:background="?android:attr/activatedBackgroundIndicator"
     android:orientation="horizontal">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/favouritesGeoCacheIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,7 +15,12 @@
         android:paddingLeft="16dip"
         android:paddingRight="16dip"
         android:paddingTop="16dip"
-        android:src="@drawable/ic_cache_default_traditional_valid" />
+        android:src="@drawable/ic_cache_default_traditional_valid" />-->
+
+    <geocaching.ui.compass.CompassView2
+        android:id="@+id/compassView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"

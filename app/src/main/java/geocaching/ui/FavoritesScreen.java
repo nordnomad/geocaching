@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,9 +27,10 @@ import geocaching.GoTo;
 import geocaching.db.GeoCacheProvider;
 import geocaching.managers.Storage;
 import geocaching.ui.adapters.FavouritesListAdapter;
+import geocaching.ui.compass.CompassSensorsFragment;
 import map.test.myapplication3.app.R;
 
-public class FavoritesScreen extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FavoritesScreen extends CompassSensorsFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     ListView listView;
     LocationManager locationManager; // TODO replace with gApi

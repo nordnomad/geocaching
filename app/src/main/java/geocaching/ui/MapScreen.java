@@ -166,6 +166,21 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 final GeoCache geoCache = googleMap.inverseMap().get(marker);
                 TextView geoCacheTypeView = (TextView) markerInfo.findViewById(R.id.geoCacheTypeView);
                 geoCacheTypeView.setText(geoCache.type.title);
+//                geoCacheTypeView.setBackground(getResources().getDrawable(R.color.geoCacheTraditional));
+                switch (geoCache.type) {
+                    case TRADITIONAL:
+                        geoCacheTypeView.setBackground(getResources().getDrawable(R.drawable.background_traditional));
+                        break;
+                    case STEP_BY_STEP_TRADITIONAL:
+                        geoCacheTypeView.setBackground(getResources().getDrawable(R.drawable.background_traditional_step_by_step));
+                        break;
+                    case VIRTUAL:
+                        geoCacheTypeView.setBackground(getResources().getDrawable(R.drawable.background_virtual));
+                        break;
+                    case STEP_BY_STEP_VIRTUAL:
+                        geoCacheTypeView.setBackground(getResources().getDrawable(R.drawable.background_virtual_step_by_step));
+                        break;
+                }
 
                 ImageButton findBtn = (ImageButton) markerInfo.findViewById(R.id.findBtn);
                 findBtn.setOnClickListener(new View.OnClickListener() {
