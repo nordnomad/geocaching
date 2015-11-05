@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import geocaching.GoTo;
 import map.test.myapplication3.app.R;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_favourite) {
             fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "FAVOURITE_SCREEN");
         } else if (id == R.id.nav_profile) {
-            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "PROFILE_SCREEN");
+//            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "PROFILE_SCREEN");
+            GoTo.compassMap(this);
         }
         fragmentTransaction.commit();
         actionBar.setTitle(item.getTitle());

@@ -21,6 +21,7 @@ import android.widget.ImageView;
 
 import map.test.myapplication3.app.BuildConfig;
 
+// TODO duplicate of geocaching.ui.compass.CompassView2
 public class CompassView extends ImageView {
 
     private static final int FAST_ANIMATION_DURATION = 600;

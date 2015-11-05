@@ -68,6 +68,15 @@
                 android:value="geocaching.ui.MainActivity" />
         </activity>
 
+        <activity
+            android:name="geocaching.ui.MapCompassActivity"
+            android:parentActivityName="geocaching.ui.MainActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="geocaching.ui.MainActivity" />
+        </activity>
+
         <service
             android:name="geocaching.login.AuthService"
             android:exported="false">

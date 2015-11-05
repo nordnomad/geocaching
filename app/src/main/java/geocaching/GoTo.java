@@ -8,6 +8,7 @@ import java.util.List;
 
 import geocaching.ui.ImagePagerActivity;
 import geocaching.ui.MainActivity;
+import geocaching.ui.MapCompassActivity;
 import geocaching.ui.compass.CompassActivity;
 
 public class GoTo {
@@ -47,6 +48,11 @@ public class GoTo {
 
     public static void mainActivity(Context ctx) {
         Intent intent = new Intent(ctx, MainActivity.class);
+        ctx.startActivity(intent);
+    }
+
+    public static void compassMap(Context ctx) {
+        Intent intent = new Intent(ctx, MapCompassActivity.class);
         ctx.startActivity(intent);
     }
 }

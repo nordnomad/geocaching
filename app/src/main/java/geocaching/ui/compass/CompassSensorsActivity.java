@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Surface;
 
+// TODO copy paste from https://github.com/kvirair/Compass-View
 public abstract class CompassSensorsActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;

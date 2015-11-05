@@ -86,7 +86,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
     }
 
     @Override
