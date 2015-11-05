@@ -7,13 +7,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import geocaching.GeoCacheStatus;
 import geocaching.GeoCacheType;
 import geocaching.db.DB;
 import geocaching.ui.compass.CompassView2;
@@ -38,7 +38,7 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView nameView = (TextView) view.findViewById(R.id.favouritesGeoCacheText);
+        TextView nameView = (TextView) view.findViewById(R.id.nameView);
         nameView.setText(cursor.getString(cursor.getColumnIndex(DB.Column.NAME)));
 
         final double lat = cursor.getDouble(cursor.getColumnIndex(DB.Column.LAT));
@@ -46,28 +46,38 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         Location objectLocation = new Location("");
         objectLocation.setLatitude(lat);
         objectLocation.setLongitude(lon);
-
+        Location userLocation = getLastLocation();
 
         CompassView2 compassView = (CompassView2) view.findViewById(R.id.compassView);
-        compassView.initializeCompass(getLastLocation(), objectLocation, R.drawable.arrow_up_bold_virtual);
 
-        Location lnl = getLastLocation();
-        Location loc = new Location("");
-        loc.setLatitude(cursor.getDouble(cursor.getColumnIndex(DB.Column.LAT)));
-        loc.setLongitude(cursor.getDouble(cursor.getColumnIndex(DB.Column.LON)));
-
-        TextView distanceView = (TextView) view.findViewById(R.id.favouritesGeoCacheDist);
-        double distance = lnl != null ? lnl.distanceTo(loc) / 1000.0 : 0;
+        TextView distanceView = (TextView) view.findViewById(R.id.distanceLabel);
+        double distance = userLocation != null ? objectLocation.distanceTo(userLocation) / 1000.0 : 0;
         distanceView.setText(String.format("%.1f км", distance));
-        view.setTag(loc);
+        view.setTag(userLocation);
 
         int typeIdx = cursor.getColumnIndex(DB.Column.TYPE);
         cursor.getInt(typeIdx);
         GeoCacheType type = GeoCacheType.values()[cursor.getInt(typeIdx)];
-        int statusIdx = cursor.getColumnIndex(DB.Column.STATUS);
-        GeoCacheStatus status = GeoCacheStatus.values()[cursor.getInt(statusIdx)];
-
-//        ImageView iconView = (ImageView) view.findViewById(R.id.favouritesGeoCacheIcon);
+        TextView typeView = (TextView) view.findViewById(R.id.geoCacheTypeView);
+        typeView.setText(type.title);
+        switch (type) {
+            case TRADITIONAL:
+                typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_traditional));
+                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditional);
+                break;
+            case STEP_BY_STEP_TRADITIONAL:
+                typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_traditional_step_by_step));
+                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditiona_step_by_step);
+                break;
+            case VIRTUAL:
+                typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_virtual));
+                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_virtual);
+                break;
+            case STEP_BY_STEP_VIRTUAL:
+                typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_virtual_step_by_step));
+                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_virtual_step_by_step);
+                break;
+        }
     }
 
     //TODO refactor
