@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.GeomagneticField;
 import android.location.Location;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -79,7 +80,7 @@ public class CompassView2 extends ImageView {
 
         float rotation = bearTo - azimuth;
         if (rotation < 0) rotation = rotation + DEGREES_360;
-
+        setImageDrawable(ContextCompat.getDrawable(context, drawableResource));
         rotateImageView(this, drawableResource, rotation);
 
 //        if (BuildConfig.DEBUG) Log.d(CompassConstants.LOG_TAG, String.valueOf(rotation));

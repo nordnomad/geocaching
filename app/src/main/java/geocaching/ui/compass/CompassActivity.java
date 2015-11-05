@@ -30,7 +30,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    CompassView2 compassView;
+    CompassView compassView;
     TextView distanceView;
     TextView accuracyView;
     TextView myLocationView;
@@ -51,7 +51,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         myLocationView = (TextView) findViewById(R.id.my_location_view);
         cacheLocationView = (TextView) findViewById(R.id.cache_location_view);
 
-        compassView = (CompassView2) findViewById(R.id.compassView);
+        compassView = (CompassView) findViewById(R.id.compassView);
 
         setTitle(getIntent().getStringExtra("name"));
         double[] ol = getIntent().getDoubleArrayExtra("objectLocation");

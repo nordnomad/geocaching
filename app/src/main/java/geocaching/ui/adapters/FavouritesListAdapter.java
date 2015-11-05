@@ -41,8 +41,8 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         TextView nameView = (TextView) view.findViewById(R.id.nameView);
         nameView.setText(cursor.getString(cursor.getColumnIndex(DB.Column.NAME)));
 
-        final double lat = cursor.getDouble(cursor.getColumnIndex(DB.Column.LAT));
-        final double lon = cursor.getDouble(cursor.getColumnIndex(DB.Column.LON));
+        double lat = cursor.getDouble(cursor.getColumnIndex(DB.Column.LAT));
+        double lon = cursor.getDouble(cursor.getColumnIndex(DB.Column.LON));
         Location objectLocation = new Location("");
         objectLocation.setLatitude(lat);
         objectLocation.setLongitude(lon);
@@ -53,10 +53,9 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         TextView distanceView = (TextView) view.findViewById(R.id.distanceLabel);
         double distance = userLocation != null ? objectLocation.distanceTo(userLocation) / 1000.0 : 0;
         distanceView.setText(String.format("%.1f км", distance));
-        view.setTag(userLocation);
+        view.setTag(objectLocation);
 
         int typeIdx = cursor.getColumnIndex(DB.Column.TYPE);
-        cursor.getInt(typeIdx);
         GeoCacheType type = GeoCacheType.values()[cursor.getInt(typeIdx)];
         TextView typeView = (TextView) view.findViewById(R.id.geoCacheTypeView);
         typeView.setText(type.title);
@@ -67,7 +66,7 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
                 break;
             case STEP_BY_STEP_TRADITIONAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_traditional_step_by_step));
-                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditiona_step_by_step);
+                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditional_step_by_step);
                 break;
             case VIRTUAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_virtual));

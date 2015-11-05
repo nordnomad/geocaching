@@ -131,7 +131,7 @@ public class FavoritesScreen extends CompassSensorsFragment implements LoaderMan
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView nameView = (TextView) view.findViewById(R.id.distanceLabel);
+                TextView nameView = (TextView) view.findViewById(R.id.nameView);
                 Location loc = (Location) view.getTag();
                 GoTo.geoCacheActivity(getActivity(), id, nameView.getText(), loc.getLongitude(), loc.getLatitude());
             }
@@ -145,11 +145,11 @@ public class FavoritesScreen extends CompassSensorsFragment implements LoaderMan
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        ((FavouritesListAdapter) this.getListAdapter()).swapCursor(cursor);
+        ((FavouritesListAdapter) getListAdapter()).swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        ((FavouritesListAdapter) this.getListAdapter()).swapCursor(null);
+        ((FavouritesListAdapter) getListAdapter()).swapCursor(null);
     }
 }

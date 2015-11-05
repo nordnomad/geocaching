@@ -15,8 +15,8 @@ import map.test.myapplication3.app.R;
 
 public class FileImageGridAdapter extends BaseAdapter {
 
-    private final LayoutInflater inflater;
-    private final List<Uri> photos;
+    LayoutInflater inflater;
+    List<Uri> photos;
 
     public FileImageGridAdapter(Context ctx, List<Uri> photos) {
         inflater = LayoutInflater.from(ctx);
@@ -39,7 +39,7 @@ public class FileImageGridAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
+        ViewHolder holder;
         View view = convertView;
         if (convertView == null) {
             // if it's not recycled, initialize some attributes

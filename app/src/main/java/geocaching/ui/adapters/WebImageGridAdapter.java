@@ -46,7 +46,7 @@ public class WebImageGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
+        ViewHolder holder;
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.item_grid_image, parent, false);
