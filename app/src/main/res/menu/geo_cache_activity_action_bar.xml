@@ -3,19 +3,19 @@
     xmlns:myapp="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/find_cache"
-        android:icon="@android:drawable/ic_menu_compass"
+        android:icon="@drawable/compass_white"
         myapp:showAsAction="ifRoom"
-        android:title="Искать" />
+        android:title="@string/compass" />
     <item
         android:id="@+id/save_cache"
-        android:icon="@android:drawable/ic_menu_save"
+        android:icon="@drawable/ic_save_white_48dp"
         myapp:showAsAction="ifRoom"
         android:visible="false"
-        android:title="Сохранить" />
+        android:title="@string/save" />
     <item
         android:id="@+id/remove_cache"
-        android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/delete_white"
         myapp:showAsAction="ifRoom"
         android:visible="false"
-        android:title="Удалил" />
+        android:title="@string/remove" />
 </menu>

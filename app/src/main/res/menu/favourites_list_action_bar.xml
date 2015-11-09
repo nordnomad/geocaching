@@ -15,5 +15,5 @@
     <item android:id="@+id/favourites_delete"
         android:icon="@drawable/delete_white"
           myapp:showAsAction="ifRoom"
-        android:title="@string/action_bar_remove" />
+        android:title="@string/remove" />
 </menu>

@@ -29,6 +29,8 @@
     <string name="gc_activity_tab_comments">Комментарии</string>
     <string name="gc_activity_tab_photos">Фотографии</string>
     <string name="gc_activity_tab_error">Ошибка</string>
-    <string name="action_bar_remove">Удалить</string>
+    <string name="remove">Удалить</string>
+    <string name="save">Сохранить</string>
     <string name="drawer_menu_storage">Сохраненные</string>
+    <string name="compass">Компасс</string>
 </resources>
