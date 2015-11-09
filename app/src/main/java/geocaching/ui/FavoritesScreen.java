@@ -101,7 +101,7 @@ public class FavoritesScreen extends CompassSensorsFragment implements LoaderMan
 
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
+                mode.getMenuInflater().inflate(R.menu.favourites_list_action_bar_contextual_menu, menu);
                 return true;
             }
 

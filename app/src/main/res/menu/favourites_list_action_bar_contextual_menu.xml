@@ -3,9 +3,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:myapp="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/item_delete"
-          android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/delete_white"
           myapp:showAsAction="ifRoom"
-          android:title="Delete"
-          android:titleCondensed="Delete">
+        android:title="@string/action_bar_remove"
+        android:titleCondensed="@string/action_bar_remove">
     </item>
 </menu>

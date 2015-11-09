@@ -7,21 +7,9 @@
     android:orientation="horizontal"
     android:paddingBottom="10sp">
 
-    <ImageView
-        android:id="@+id/markerView"
-        android:src="@drawable/map_marker"
-        android:scaleX="2"
-        android:scaleY="2"
-        android:paddingTop="20dp"
-        android:paddingLeft="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-
     <LinearLayout
         android:id="@+id/info"
-        android:layout_toEndOf="@+id/markerView"
-        android:paddingLeft="20dp"
+        android:paddingLeft="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -67,6 +55,7 @@
         android:layout_alignParentEnd="true"
         android:gravity="end"
         android:paddingEnd="10dp"
+        android:paddingTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">

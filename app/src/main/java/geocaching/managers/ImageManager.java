@@ -52,18 +52,18 @@ public class ImageManager {
         ImageLoader.getInstance().displayImage(uri, imageView, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
-                progressBar.setVisibility(View.VISIBLE);
+                if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason e) {
-                progressBar.setVisibility(View.GONE);
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
                 Log.e(ImageManager.class.getName(), e.getType().name(), e.getCause());
             }
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                progressBar.setVisibility(View.GONE);
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
             }
         });
 

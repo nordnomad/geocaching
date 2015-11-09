@@ -6,10 +6,10 @@
     <!--work-->
     <string name="google_maps_key1">AIzaSyDrUZAVli4nCCodCrie5loG2hWPThcKdIk</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Открыть меню</string>
+    <string name="navigation_drawer_close">Закрыть меню</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Настройки</string>
 
     <string name="drawer_menu_map">Карта</string>
     <string name="gc_info_create_date">Дата создания</string>
@@ -20,13 +20,15 @@
     <string name="gc_info_author">Автор</string>
     <string name="gc_info_area">Описание окружающей местности</string>
     <string name="gc_info_description">Описание тайника</string>
-    <string name="compass_my_destination">My destination</string>
-    <string name="compass_my_location">My location</string>
-    <string name="favourites_screen">No data</string>
+    <string name="compass_my_destination">Моя цель</string>
+    <string name="compass_my_location">Моё местоположение</string>
+    <string name="favourites_screen">Нет сохраненных тайников</string>
     <string name="favourietes_list_item_gc_icon">Geocache icon</string>
     <string name="image_pager_item_gc_image">Geocache image</string>
-    <string name="gc_activity_tab_information">Information</string>
-    <string name="gc_activity_tab_comments">Comments</string>
-    <string name="gc_activity_tab_photos">Photos</string>
-    <string name="gc_activity_tab_error">Error</string>
+    <string name="gc_activity_tab_information">Информация</string>
+    <string name="gc_activity_tab_comments">Комментарии</string>
+    <string name="gc_activity_tab_photos">Фотографии</string>
+    <string name="gc_activity_tab_error">Ошибка</string>
+    <string name="action_bar_remove">Удалить</string>
+    <string name="drawer_menu_storage">Сохраненные</string>
 </resources>

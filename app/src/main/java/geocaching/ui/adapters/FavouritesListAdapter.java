@@ -62,21 +62,18 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
         switch (type) {
             case TRADITIONAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_traditional));
-                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditional);
                 break;
             case STEP_BY_STEP_TRADITIONAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_traditional_step_by_step));
-                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_traditional_step_by_step);
                 break;
             case VIRTUAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_virtual));
-                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_virtual);
                 break;
             case STEP_BY_STEP_VIRTUAL:
                 typeView.setBackground(ContextCompat.getDrawable(context, R.drawable.background_virtual_step_by_step));
-                compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_virtual_step_by_step);
                 break;
         }
+        compassView.initializeCompass(userLocation, objectLocation, R.drawable.arrow_gray_large);
     }
 
     //TODO refactor

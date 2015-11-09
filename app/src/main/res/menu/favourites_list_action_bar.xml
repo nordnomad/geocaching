@@ -13,7 +13,7 @@
           android:title="Sort"/>-->
 
     <item android:id="@+id/favourites_delete"
-          android:icon="@android:drawable/ic_menu_delete"
+        android:icon="@drawable/delete_white"
           myapp:showAsAction="ifRoom"
-          android:title="Delete"/>
+        android:title="@string/action_bar_remove" />
 </menu>

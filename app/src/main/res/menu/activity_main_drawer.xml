@@ -8,8 +8,8 @@
             android:title="@string/drawer_menu_map" />
         <item
             android:id="@+id/nav_favourite"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Избранное" />
+            android:icon="@drawable/ic_storage_black_48dp"
+            android:title="@string/drawer_menu_storage" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@android:drawable/ic_menu_slideshow"
