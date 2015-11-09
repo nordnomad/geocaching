@@ -19,12 +19,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import geocaching.GeoCache;
 import geocaching.GoTo;
 import geocaching.MapWrapper;
-import geocaching.ui.compass.MapCompassSensorActivity;
+import geocaching.ui.compass.LocationAndSensorActivity;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.markerFromCache;
 
-public class MapCompassActivity extends MapCompassSensorActivity {
+public class MapCompassActivity extends LocationAndSensorActivity {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     SupportMapFragment mapFragment;
     LocationSource.OnLocationChangedListener locationChangedListener;

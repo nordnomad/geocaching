@@ -16,7 +16,7 @@ import java.util.Date;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
-public abstract class MapCompassSensorActivity extends CompassSensorsActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public abstract class LocationAndSensorActivity extends CompassSensorsActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     protected static final String TAG = "location-updates";
 
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
