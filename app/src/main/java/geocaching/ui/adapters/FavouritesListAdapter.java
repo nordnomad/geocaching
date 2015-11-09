@@ -33,7 +33,7 @@ public class FavouritesListAdapter extends CursorAdapter implements LocationList
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return inflater.inflate(R.layout.favourites_list_item, parent, false);
+        return inflater.inflate(R.layout.favourites_list_item2, parent, false);
     }
 
     @Override
