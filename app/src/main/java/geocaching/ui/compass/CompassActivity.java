@@ -43,7 +43,6 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     LocationRequest locationRequest;
     Location currentLocation;
     String lastUpdateTime;
-    Location geoCacheLocation = new Location("geoCacheLocation");
     GeoCache geoCache;
 
     @Override
@@ -58,12 +57,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
 
         geoCache = getIntent().getParcelableExtra("geoCache");
         setTitle(geoCache.name);
-        double[] ol = getIntent().getDoubleArrayExtra("objectLocation");
-        if (ol != null) {
-            geoCacheLocation.setLongitude(geoCache.ln);
-            geoCacheLocation.setLatitude(geoCache.la);
-            cacheLocationView.setText(coordinateToString(geoCacheLocation));
-        }
+        cacheLocationView.setText(coordinateToString(geoCache.location()));
         lastUpdateTime = "";
         buildGoogleApiClient();
     }
@@ -96,10 +90,10 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     }
 
     private void updateUI() {
-        distanceView.setText(distanceToString(geoCacheLocation.distanceTo(currentLocation), true));
+        distanceView.setText(distanceToString(geoCache.location().distanceTo(currentLocation), true));
         accuracyView.setText(String.format("+/- %s", distanceToString(currentLocation.getAccuracy(), true)));
         myLocationView.setText(coordinateToString(currentLocation));
-        compassView.initializeCompass(currentLocation, geoCacheLocation, R.drawable.compass_background);
+        compassView.initializeCompass(currentLocation, geoCache.location(), R.drawable.compass_background);
     }
 
     @Override

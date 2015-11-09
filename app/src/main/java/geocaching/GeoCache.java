@@ -1,5 +1,6 @@
 package geocaching;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -34,8 +35,15 @@ public class GeoCache implements Parcelable {
     public GeoCacheType type;
     public GeoCacheStatus status;
 
-    public LatLng location() {
+    public LatLng latLng() {
         return new LatLng(la, ln);
+    }
+
+    public Location location() {
+        Location location = new Location("");
+        location.setLongitude(ln);
+        location.setLatitude(la);
+        return location;
     }
 
     @Override

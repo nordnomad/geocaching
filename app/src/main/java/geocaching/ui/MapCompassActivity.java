@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,14 +23,15 @@ import geocaching.MapWrapper;
 import geocaching.ui.compass.LocationAndSensorActivity;
 import map.test.myapplication3.app.R;
 
+import static geocaching.Utils.distanceToString;
 import static geocaching.Utils.markerFromCache;
 
 public class MapCompassActivity extends LocationAndSensorActivity {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     SupportMapFragment mapFragment;
     LocationSource.OnLocationChangedListener locationChangedListener;
-    Location geoCacheLocation = new Location("geoCacheLocation");
     GeoCache geoCache;
+    TextView distanceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +43,14 @@ public class MapCompassActivity extends LocationAndSensorActivity {
             setUpMapIfNeeded();
         }
         geoCache = getIntent().getParcelableExtra("geoCache");
-        geoCacheLocation.setLongitude(geoCache.ln);
-        geoCacheLocation.setLatitude(geoCache.la);
-//      cacheLocationView.setText(coordinateToString(geoCacheLocation));
+        setTitle(geoCache.name);
+        distanceView = (TextView) findViewById(R.id.distanceView);
+    }
+
+    public void updateUI() {
+        distanceView.setText(distanceToString(geoCache.location().distanceTo(currentLocation), true));
+        googleMap.map.clear();
+        drawMapContent();
     }
 
     private void setUpMap() {
@@ -77,6 +84,7 @@ public class MapCompassActivity extends LocationAndSensorActivity {
                 locationChangedListener = null;
             }
         });
+        updateUI();
     }
 
     private void centerMap() {
@@ -85,11 +93,10 @@ public class MapCompassActivity extends LocationAndSensorActivity {
             double lon = currentLocation.getLongitude();
             LatLng curLoc = new LatLng(lat, lon);
             googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(curLoc, 13.0f));
-            googleMap.map.addPolyline(new PolylineOptions().add(curLoc, geoCache.location()).color(Color.parseColor("#F57C00")));
-            googleMap.map.addMarker(markerFromCache(geoCache));
+            drawMapContent();
             LatLngBounds.Builder b = new LatLngBounds.Builder();
             b.include(curLoc);
-            b.include(geoCache.location());
+            b.include(geoCache.latLng());
             LatLngBounds bounds = b.build();
             View view = mapFragment.getView();
             if (view != null) {
@@ -99,6 +106,14 @@ public class MapCompassActivity extends LocationAndSensorActivity {
         }
     }
 
+    private void drawMapContent() {
+        double lat = currentLocation.getLatitude();
+        double lon = currentLocation.getLongitude();
+        LatLng curLoc = new LatLng(lat, lon);
+        googleMap.map.addPolyline(new PolylineOptions().add(curLoc, geoCache.latLng()).color(Color.parseColor("#F57C00")));
+        googleMap.map.addMarker(markerFromCache(geoCache));
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
@@ -106,6 +121,7 @@ public class MapCompassActivity extends LocationAndSensorActivity {
             location.setBearing(getAzimuth());
             locationChangedListener.onLocationChanged(location);
         }
+        updateUI();
     }
 
     @Override
@@ -121,6 +137,8 @@ public class MapCompassActivity extends LocationAndSensorActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.map_compass_activity_action_bar, menu);
         MenuItem centerMap = menu.findItem(R.id.center_map);
+        //TODO implement action in future
+        centerMap.setVisible(false);
         centerMap.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
