@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Class for parsing data from geocaching.su and put it in the List of GeoCache. Parse XML file is as follows:
  * <p/>
@@ -31,6 +33,10 @@ public class GeoCache implements Parcelable {
     public double ln;
     public GeoCacheType type;
     public GeoCacheStatus status;
+
+    public LatLng location() {
+        return new LatLng(la, ln);
+    }
 
     @Override
     public boolean equals(Object o) {

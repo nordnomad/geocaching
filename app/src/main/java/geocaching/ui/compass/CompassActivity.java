@@ -3,6 +3,7 @@ package geocaching.ui.compass;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,8 @@ import com.google.android.gms.location.LocationRequest;
 import java.text.DateFormat;
 import java.util.Date;
 
+import geocaching.GeoCache;
+import geocaching.GoTo;
 import map.test.myapplication3.app.R;
 
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -41,6 +44,7 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
     Location currentLocation;
     String lastUpdateTime;
     Location geoCacheLocation = new Location("geoCacheLocation");
+    GeoCache geoCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +54,14 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         accuracyView = (TextView) findViewById(R.id.accuracy_compass_view);
         myLocationView = (TextView) findViewById(R.id.my_location_view);
         cacheLocationView = (TextView) findViewById(R.id.cache_location_view);
-
         compassView = (CompassView) findViewById(R.id.compassView);
 
-        setTitle(getIntent().getStringExtra("name"));
+        geoCache = getIntent().getParcelableExtra("geoCache");
+        setTitle(geoCache.name);
         double[] ol = getIntent().getDoubleArrayExtra("objectLocation");
         if (ol != null) {
-            geoCacheLocation.setLongitude(ol[0]);
-            geoCacheLocation.setLatitude(ol[1]);
+            geoCacheLocation.setLongitude(geoCache.ln);
+            geoCacheLocation.setLatitude(geoCache.la);
             cacheLocationView.setText(coordinateToString(geoCacheLocation));
         }
         lastUpdateTime = "";
@@ -163,4 +167,19 @@ public class CompassActivity extends CompassSensorsActivity implements Connectio
         }
         return true;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.compass_activity_action_bar, menu);
+        MenuItem findCacheItem = menu.findItem(R.id.find_cache_map);
+        findCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                GoTo.compassMapActivity(CompassActivity.this, geoCache);
+                return true;
+            }
+        });
+        return true;
+    }
+
 }

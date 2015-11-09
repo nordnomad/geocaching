@@ -1,6 +1,5 @@
 package geocaching.ui;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -59,10 +58,7 @@ public class GeoCacheActivity extends AppCompatActivity implements Response.Erro
         findCacheItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Location cacheLocation = new Location("");
-                cacheLocation.setLatitude(geoCache.la);
-                cacheLocation.setLongitude(geoCache.ln);
-                GoTo.compassActivity(GeoCacheActivity.this, geoCache.id, geoCache.name, cacheLocation);
+                GoTo.compassActivity(GeoCacheActivity.this, geoCache);
                 return true;
             }
         });

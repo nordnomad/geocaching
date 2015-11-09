@@ -2,7 +2,6 @@ package geocaching;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 
 import java.util.List;
 
@@ -38,11 +37,9 @@ public class GoTo {
         ctx.startActivity(intent);
     }
 
-    public static void compassActivity(Context ctx, long geoCacheId, String name, Location dest) {
+    public static void compassActivity(Context ctx, GeoCache geoCache) {
         Intent intent = new Intent(ctx, CompassActivity.class);
-        intent.putExtra("geoCacheId", geoCacheId);
-        intent.putExtra("name", name);
-        intent.putExtra("objectLocation", new double[]{dest.getLongitude(), dest.getLatitude()});
+        intent.putExtra("geoCache", geoCache);
         ctx.startActivity(intent);
     }
 
@@ -51,8 +48,9 @@ public class GoTo {
         ctx.startActivity(intent);
     }
 
-    public static void compassMap(Context ctx) {
+    public static void compassMapActivity(Context ctx, GeoCache geoCache) {
         Intent intent = new Intent(ctx, MapCompassActivity.class);
+        intent.putExtra("geoCache", geoCache);
         ctx.startActivity(intent);
     }
 }
