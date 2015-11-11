@@ -63,6 +63,10 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
+
+        //TODO replace HttpClient -> HttpURLConnection
+//        URL url = new URL(LOGIN_URL);
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         HttpClient client = AndroidHttpClient.newInstance(USER_AGENT);
         HttpPost post = new HttpPost(LOGIN_URL);
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
@@ -70,6 +74,7 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         urlParameters.add(new BasicNameValuePair(PASSWORD_PARAM, password));
         urlParameters.add(new BasicNameValuePair(LONGTERM_PARAM, LONGTERM_PARAM_VAL));
         urlParameters.add(new BasicNameValuePair(LOGIN_PARAM, LOGIN_PARAM_VAL));
+
 
         HttpResponse response;
         try {

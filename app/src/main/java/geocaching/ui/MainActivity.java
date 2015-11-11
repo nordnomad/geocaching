@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import map.test.myapplication3.app.R;
@@ -35,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        TextView textView = (TextView) findViewById(R.id.userNameView);
-        textView.setText(getUserName());
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -47,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             actionBar.setTitle(getResources().getString(R.string.drawer_menu_map));
         }
+        View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        TextView textView = (TextView) headerLayout.findViewById(R.id.userNameView);
+        textView.setText(getUserName());
     }
 
     private String getUserName() {
