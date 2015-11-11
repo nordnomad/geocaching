@@ -126,6 +126,7 @@ public class CompassView extends ImageView {
         path.lineTo(cw / 2, 0);
         path.close();
         canvas.drawPath(path, paint);
+        canvas.save();
         canvas.restore();
     }
 
@@ -145,6 +146,7 @@ public class CompassView extends ImageView {
         canvas.drawText("S", cW / 2 - 27, 114, paint);
         canvas.rotate(90, cW / 2, cH / 2);
         canvas.drawText("W", cW / 2 - 33, 114, paint);
+        canvas.save();
         canvas.restore();
 
         paint.setStyle(Paint.Style.STROKE);
@@ -155,6 +157,7 @@ public class CompassView extends ImageView {
             canvas.rotate(10, cW / 2, cH / 2);
             canvas.drawLine(cW / 2, 20, cW / 2, 0, paint);
         }
+        canvas.save();
         canvas.restore();
 
         paint.setStrokeWidth(30);
@@ -162,11 +165,13 @@ public class CompassView extends ImageView {
             canvas.rotate(90, cW / 2, cH / 2);
             canvas.drawLine(cW / 2, 40, cW / 2, 0, paint);
         }
+        canvas.save();
         canvas.restore();
 
         canvas.drawLine(cW / 2, 130, cW / 2, cH - 130, paint);
         canvas.rotate(90, cW / 2, cH / 2);
         canvas.drawLine(cW / 2, 130, cW / 2, cH - 130, paint);
+        canvas.save();
         canvas.restore();
         drawTriangle(canvas);
 

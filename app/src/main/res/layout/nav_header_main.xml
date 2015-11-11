@@ -16,13 +16,13 @@
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
         android:src="@android:drawable/sym_def_app_icon"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageView"
+        android:contentDescription="@string/image_description_profile_avatar" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:text="Android Studio"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:id="@+id/userNameView" />
 

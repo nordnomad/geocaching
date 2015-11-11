@@ -2,9 +2,13 @@ package geocaching.ui;
 
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -14,12 +18,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import map.test.myapplication3.app.R;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActionBar actionBar;
+
+    private static final int LOCATION_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +59,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
         TextView textView = (TextView) headerLayout.findViewById(R.id.userNameView);
         textView.setText(getUserName());
+        if (!canAccessLocation()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, ACCESS_COARSE_LOCATION)) {
+                // TODO implement request ui
+                Toast.makeText(this, "Please grant Location permission for this application", Toast.LENGTH_SHORT).show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this, new String[]{ACCESS_COARSE_LOCATION}, LOCATION_REQUEST);
+            }
+        }
+    }
+
+    private boolean canAccessLocation() {
+        return hasPermission(ACCESS_FINE_LOCATION) || hasPermission(ACCESS_COARSE_LOCATION);
+    }
+
+    private boolean hasPermission(String perm) {
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, perm);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_REQUEST:
+                if (canAccessLocation()) {
+                    // TODO implement code if permission just granted
+                    Toast.makeText(this, "permission just granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    // TODO implement code if permission denied
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
     private String getUserName() {
