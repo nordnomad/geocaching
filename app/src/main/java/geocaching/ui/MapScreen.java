@@ -1,11 +1,15 @@
 package geocaching.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,10 +34,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import geocaching.GeoCache;
@@ -42,21 +45,25 @@ import geocaching.MapWrapper;
 import geocaching.Utils;
 import geocaching.managers.Network;
 import geocaching.managers.Storage;
+import geocaching.services.GCDownloadService;
 import geocaching.tasks.LoadCachesTask;
 import map.test.myapplication3.app.R;
 
-import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
-public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener/*, GeoCacheDownloadReceiver.Receiver*/ {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     View markerInfo;
     GoogleApiClient gapiClient;
     FragmentManager fragmentManager;
     Location lastLocation;
+    MenuItem saveMenuItem;
+
+    GCDownloadReceiver downloadStateReceiver = new GCDownloadReceiver();
+    IntentFilter downloadStateIntentFilter = new IntentFilter(GCDownloadService.Constants.BROADCAST_ACTION);
 
     @Override
     public void onLocationChanged(Location l) {
@@ -81,11 +88,28 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        gapiClient = new Builder(getActivity())
-                .addApi(API)
+        buildGoogleApiClient();
+        downloadStateIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        gapiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(API)
                 .build();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(downloadStateReceiver, downloadStateIntentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(downloadStateReceiver);
     }
 
     @Override
@@ -257,49 +281,56 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.map_screen_action_bar, menu);
         super.onCreateOptionsMenu(menu, inflater);
-        MenuItem item = menu.findItem(R.id.map_save);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                item.setActionView(R.layout.actionbar_save_progress);
-                item.expandActionView();
-
-                List<Long> excludedIds = Storage.with(getActivity()).idsOfStoredGeoCaches();
-
-                LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
-                double nLat = bounds.northeast.latitude;
-                double nLon = bounds.northeast.longitude;
-                double sLat = bounds.southwest.latitude;
-                double sLon = bounds.southwest.longitude;
-                Network.with(getActivity()).loadGeoCachesOnMap(nLon, sLon, nLat, sLat, excludedIds,
-                        new Response.Listener<JSONArray>() {
-                            @Override
-                            public void onResponse(JSONArray response) {
-                                try {
-                                    for (int i = 0; i < response.length(); i++) {
-                                        Storage.with(getActivity()).saveGeoCacheFullInfo(response.getJSONObject(i));
-                                    }
-                                } catch (JSONException e) {
-                                    Log.e(MapScreen.class.getName(), e.getMessage(), e);
-                                }
-                                item.collapseActionView();
-                                item.setActionView(null);
-                                Toast.makeText(getActivity(), response.length() + " caches was saved", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        , new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                item.collapseActionView();
-                                item.setActionView(null);
-                                String message = TextUtils.isEmpty(error.getMessage()) ? "0 caches was saved" : error.getMessage();
-                                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                return true;
-            }
-        });
+        saveMenuItem = menu.findItem(R.id.map_save);
+        saveMenuItem.setOnMenuItemClickListener(new MyOnMenuItemClickListener());
     }
 
+    private class GCDownloadReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int resultCode = intent.getIntExtra("status", -1);
+            switch (resultCode) {
+                case GCDownloadService.Constants.DOWNLOAD_STARTED:
+                    saveMenuItem.setActionView(R.layout.actionbar_save_progress);
+                    saveMenuItem.expandActionView();
+                    getActivity().invalidateOptionsMenu();
+                    break;
+                case GCDownloadService.Constants.DOWNLOAD_FINISHED:
+                    saveMenuItem.collapseActionView();
+                    saveMenuItem.setActionView(null);
+                    saveMenuItem.setOnMenuItemClickListener(new MyOnMenuItemClickListener());
+                    break;
+                case GCDownloadService.Constants.DOWNLOAD_ERROR:
+                    saveMenuItem.collapseActionView();
+                    saveMenuItem.setActionView(null);
+                    break;
+                default:
+                    Toast.makeText(getActivity(), "Unknown result code", Toast.LENGTH_SHORT).show();
+                    Log.e(getClass().getName(), "Unknown result code");
+                    break;
+            }
+        }
+    }
+
+    private class MyOnMenuItemClickListener implements MenuItem.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(final MenuItem item) {
+            LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+            double nLat = bounds.northeast.latitude;
+            double nLon = bounds.northeast.longitude;
+            double sLat = bounds.southwest.latitude;
+            double sLon = bounds.southwest.longitude;
+
+            Intent intent = new Intent(getActivity(), GCDownloadService.class);
+            intent.putExtra("nLat", nLat);
+            intent.putExtra("nLon", nLon);
+            intent.putExtra("sLat", sLat);
+            intent.putExtra("sLon", sLon);
+            List<Integer> excludedIds = Storage.with(getActivity()).idsOfStoredGeoCachesInt();
+            intent.putIntegerArrayListExtra("excludedIds", (ArrayList<Integer>) excludedIds);
+            getActivity().startService(intent);
+
+            return true;
+        }
+    }
 }

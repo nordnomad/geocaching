@@ -2,6 +2,7 @@ package geocaching.managers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -23,24 +24,31 @@ public class BitmapResponseListener implements Response.Listener<Bitmap> {
     }
 
     @Override
-    public void onResponse(Bitmap response) {
-        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
-        File file = SDCard.with(ctx).getPhotoFile(fileName, geoCacheId);
-        FileOutputStream fOut = null;
-        try {
-            fOut = new FileOutputStream(file);
-            response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-        } catch (FileNotFoundException e) {
-            Log.e(getClass().getName(), e.getMessage(), e);
-        } finally {
-            if (fOut != null) {
+    public void onResponse(final Bitmap response) {
+        new AsyncTask<Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
+                File file = SDCard.with(ctx).getPhotoFile(fileName, geoCacheId);
+                FileOutputStream fOut = null;
                 try {
-                    fOut.flush();
-                    fOut.close();
-                } catch (IOException e) {
+                    fOut = new FileOutputStream(file);
+                    response.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+                } catch (FileNotFoundException e) {
                     Log.e(getClass().getName(), e.getMessage(), e);
+                } finally {
+                    if (fOut != null) {
+                        try {
+                            fOut.flush();
+                            fOut.close();
+                        } catch (IOException e) {
+                            Log.e(getClass().getName(), e.getMessage(), e);
+                        }
+                    }
                 }
+                return null;
             }
-        }
+        }.execute();
     }
 }

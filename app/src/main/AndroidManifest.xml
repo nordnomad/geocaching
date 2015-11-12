@@ -88,7 +88,9 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
+        <service
+            android:name="geocaching.services.GCDownloadService"
+            android:exported="false" />
         <provider
             android:name="geocaching.db.GeoCacheProvider"
             android:authorities="com.geocaching.myown"

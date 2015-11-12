@@ -32,9 +32,9 @@ public class Network {
     DefaultRetryPolicy policy;
 
     private Network(Context ctx) {
-        this.ctx = ctx;
-        queue = Volley.newRequestQueue(ctx);
-        policy = new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        this.ctx = ctx.getApplicationContext();
+        queue = Volley.newRequestQueue(this.ctx);
+        policy = new DefaultRetryPolicy(5000, 4, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
     }
 
     public static synchronized Network with(Context ctx) {
@@ -44,7 +44,7 @@ public class Network {
         return instance;
     }
 
-    public void loadGeoCachesOnMap(double nLon, double sLon, double nLat, double sLat, List<Long> excludeIds, Response.Listener<JSONArray> responseListener, Response.ErrorListener errorListener) {
+    public void loadGeoCachesOnMap(double nLon, double sLon, double nLat, double sLat, List<? extends Number> excludeIds, Response.Listener<JSONArray> responseListener, Response.ErrorListener errorListener) {
         queue.add(new JsonArrayRequest(fullInfoUrl(nLon, sLon, nLat, sLat, excludeIds), responseListener, errorListener).setRetryPolicy(policy));
     }
 

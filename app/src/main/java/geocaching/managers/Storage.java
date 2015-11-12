@@ -2,6 +2,7 @@ package geocaching.managers;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
@@ -30,7 +31,7 @@ public class Storage {
     Context ctx;
 
     private Storage(Context ctx) {
-        this.ctx = ctx;
+        this.ctx = ctx.getApplicationContext();
     }
 
     public static synchronized Storage with(Context ctx) {
@@ -60,6 +61,15 @@ public class Storage {
         return excludedIds;
     }
 
+    public List<Integer> idsOfStoredGeoCachesInt() {
+        List<Long> longs = idsOfStoredGeoCaches();
+        List<Integer> result = new ArrayList<>();
+        for (Long id: longs) {
+            result.add(id.intValue());
+        }
+        return result;
+    }
+
     public void saveGeoCacheFullInfo(JSONObject geoCache) {
         try {
             ctx.getContentResolver().insert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, jsonGeoCacheToContentValues(geoCache));
@@ -68,6 +78,21 @@ public class Storage {
             Log.e(getClass().getName(), e.getMessage(), e);
         }
     }
+
+    public void bulkSaveGeoCacheFullInfo(JSONArray geoCaches) {
+        List<ContentValues> contentValues = new ArrayList<>();
+        try {
+            for (int i = 0; i < geoCaches.length(); i++) {
+                JSONObject geoCache = geoCaches.getJSONObject(i);
+                contentValues.add(jsonGeoCacheToContentValues(geoCache));
+                Network.with(ctx).savePhotos(geoCache.getJSONArray("images"), geoCache.getInt("id"));
+            }
+        } catch (JSONException e) {
+            Log.e("TAG", e.getMessage(), e);
+        }
+        ctx.getContentResolver().bulkInsert(GeoCacheProvider.GEO_CACHE_CONTENT_URI, contentValues.toArray(new ContentValues[geoCaches.length()]));
+    }
+
 
     public boolean isGeoCacheInFavouriteList(int geoCacheId) {
         int count = 0;

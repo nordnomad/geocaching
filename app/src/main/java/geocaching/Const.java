@@ -48,7 +48,7 @@ public interface Const {
             return String.format(fullGeoCache, id);
         }
 
-        public static String fullInfoUrl(double nLon, double sLon, double nLat, double shLat, List<Long> excludeIds) {
+        public static String fullInfoUrl(double nLon, double sLon, double nLat, double shLat, List<? extends Number> excludeIds) {
             if(excludeIds == null || excludeIds.isEmpty()) {
                 return String.format(fullInfo, nLon, sLon, nLat, shLat, "0").replace(",", ".");
             } else {

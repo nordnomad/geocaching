@@ -49,7 +49,7 @@ public class SDCard {
     }
 
     private SDCard(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
 //        updatePhotoCacheDirectory();
 //        prunePhotoCache();
     }
