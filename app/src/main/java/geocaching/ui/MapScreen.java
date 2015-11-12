@@ -53,6 +53,9 @@ import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallba
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_ERROR;
+import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_FINISHED;
+import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_STARTED;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener/*, GeoCacheDownloadReceiver.Receiver*/ {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -290,17 +293,15 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         public void onReceive(Context context, Intent intent) {
             int resultCode = intent.getIntExtra("status", -1);
             switch (resultCode) {
-                case GCDownloadService.Constants.DOWNLOAD_STARTED:
+                case DOWNLOAD_STARTED:
                     saveMenuItem.setActionView(R.layout.actionbar_save_progress);
                     saveMenuItem.expandActionView();
-                    getActivity().invalidateOptionsMenu();
                     break;
-                case GCDownloadService.Constants.DOWNLOAD_FINISHED:
+                case DOWNLOAD_FINISHED:
                     saveMenuItem.collapseActionView();
                     saveMenuItem.setActionView(null);
-                    saveMenuItem.setOnMenuItemClickListener(new MyOnMenuItemClickListener());
                     break;
-                case GCDownloadService.Constants.DOWNLOAD_ERROR:
+                case DOWNLOAD_ERROR:
                     saveMenuItem.collapseActionView();
                     saveMenuItem.setActionView(null);
                     break;

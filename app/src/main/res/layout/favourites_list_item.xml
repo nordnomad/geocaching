@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/activatedBackgroundIndicator"
     android:orientation="horizontal"
     android:paddingBottom="10sp">
 
-    <geocaching.ui.compass.CompassView2
-        android:id="@+id/compassView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-
-    <!--<ImageView-->
-    <!--android:id="@+id/compassView"-->
-    <!--android:src="@drawable/arrow_up_bold_virtual"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_gravity="center"/>-->
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/info"
+        android:paddingLeft="10dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/nameView"
-            android:layout_width="match_parent"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:maxWidth="250dp"
             android:layout_height="wrap_content"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
-            android:text="Левый берег"
-            android:textAppearance="?android:attr/textAppearanceListItem" />
+            android:text="Очеретянка вокруг да около. Узелковое письмо"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:layout_width="match_parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,17 +49,38 @@
                 android:textColor="@color/abc_input_method_navigation_guard"
                 android:textSize="10sp" />
 
-            <TextView
-                android:id="@+id/distanceLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:minHeight="10dip"
-                android:text="171,1 км"
-                android:textAllCaps="true"
-                android:textColor="@color/abc_input_method_navigation_guard"
-                android:textSize="12sp" />
+
         </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_toEndOf="@+id/info"
+        android:layout_alignParentEnd="true"
+        android:gravity="end"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <geocaching.ui.compass.CompassView2
+            android:id="@+id/compassView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_gravity="end" />
+
+        <TextView
+            android:id="@+id/distanceLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="10dip"
+            android:text="171,1 км"
+            android:layout_gravity="end"
+            android:textAllCaps="true"
+            android:textColor="@color/abc_input_method_navigation_guard"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</RelativeLayout>
