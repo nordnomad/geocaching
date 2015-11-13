@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -149,10 +152,10 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
             location.setText(response.getString("coordinates"));
             TextView author = (TextView) view.findViewById(R.id.author);
             author.setText(response.getJSONObject("author").getString("name"));
-            TextView descriptionText = (TextView) view.findViewById(R.id.descriptionText);
-            descriptionText.setText(response.getString("description"));
-            TextView surroundingArea = (TextView) view.findViewById(R.id.surroundingArea);
-            surroundingArea.setText(response.getString("surroundingArea"));
+            ExpandableTextView descriptionText = (ExpandableTextView) view.findViewById(R.id.descriptionText);
+            descriptionText.setText(Html.fromHtml(response.getString("description")));
+            ExpandableTextView surroundingArea = (ExpandableTextView) view.findViewById(R.id.surroundingArea);
+            surroundingArea.setText(Html.fromHtml(response.getString("surroundingArea")));
         } catch (JSONException e) {
             Log.e(getClass().getName(), e.getMessage(), e);
         }
