@@ -57,4 +57,7 @@ public interface Const {
         }
     }
 
+    String PREFS_NAME = "GeocachingPrefsFile";
+    String PREFS_KEY_BULK_SAVE_PROGRESS = "bulkSaveInProgress";
+
 }

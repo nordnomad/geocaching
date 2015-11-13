@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -53,9 +54,12 @@ import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallba
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static geocaching.Const.PREFS_KEY_BULK_SAVE_PROGRESS;
+import static geocaching.Const.PREFS_NAME;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_ERROR;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_FINISHED;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_STARTED;
+import static geocaching.services.GCDownloadService.Constants.KEY_STATUS;
 
 public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener/*, GeoCacheDownloadReceiver.Receiver*/ {
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
@@ -107,6 +111,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(downloadStateReceiver, downloadStateIntentFilter);
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -286,12 +291,18 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         super.onCreateOptionsMenu(menu, inflater);
         saveMenuItem = menu.findItem(R.id.map_save);
         saveMenuItem.setOnMenuItemClickListener(new MyOnMenuItemClickListener());
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
+        boolean bulkSaveInProgress = settings.getBoolean(PREFS_KEY_BULK_SAVE_PROGRESS, false);
+        if (bulkSaveInProgress) {
+            saveMenuItem.setActionView(R.layout.actionbar_save_progress);
+            saveMenuItem.expandActionView();
+        }
     }
 
     private class GCDownloadReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int resultCode = intent.getIntExtra("status", -1);
+            int resultCode = intent.getIntExtra(KEY_STATUS, -1);
             switch (resultCode) {
                 case DOWNLOAD_STARTED:
                     saveMenuItem.setActionView(R.layout.actionbar_save_progress);

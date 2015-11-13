@@ -33,4 +33,6 @@
     <string name="save">Сохранить</string>
     <string name="drawer_menu_storage">Сохраненные</string>
     <string name="compass">Компасс</string>
+    <string name="notification_save_all_title">Сохранение кешей</string>
+    <string name="notification_save_all_content_text">Идет загрузка</string>
 </resources>
