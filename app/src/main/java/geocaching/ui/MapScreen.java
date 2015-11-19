@@ -117,7 +117,14 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     @Override
     public void onPause() {
         super.onPause();
+        saveCameraPosition();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(downloadStateReceiver);
+    }
+
+    CameraPosition cameraPosition;
+
+    private void saveCameraPosition() {
+        cameraPosition = googleMap.map.getCameraPosition();
     }
 
     @Override
@@ -140,7 +147,12 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     public void onConnected(Bundle bundle) {
         lastLocation = FusedLocationApi.getLastLocation(gapiClient);
         if (lastLocation != null) {
-            googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13.0f));
+            if (cameraPosition != null) {
+                googleMap.map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                cameraPosition = null;
+            } else {
+                googleMap.map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13.0f));
+            }
         }
     }
 
@@ -165,6 +177,9 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         }
     }
 
+    LatLngBounds previousBounds;
+    LoadCachesTask previousLoadCachesTask;
+
     private void setUpMap() {
         googleMap.map.setMyLocationEnabled(true);
         googleMap.map.getUiSettings().setCompassEnabled(true);
@@ -172,7 +187,25 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
+                if (position.zoom < 10) return;
+                LatLngBounds currentProjection = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+                boolean contains = false;
+                if (previousBounds != null) {
+                    contains = previousBounds.contains(currentProjection.northeast)
+                            && previousBounds.contains(currentProjection.southwest);
+                }
+                if (!contains) {
+                    previousBounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+                    if (cameraPosition == null) {
+                        if (previousLoadCachesTask != null && !previousLoadCachesTask.isCancelled()) {
+                            previousLoadCachesTask.cancel(true);
+                            previousLoadCachesTask = null;
+                        }
+                        previousLoadCachesTask = new LoadCachesTask(googleMap);
+                        previousLoadCachesTask.execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
+//                        new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
+                    }
+                }
             }
         });
         googleMap.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
