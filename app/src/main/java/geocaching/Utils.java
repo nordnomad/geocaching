@@ -1,7 +1,10 @@
 package geocaching;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -359,5 +362,11 @@ public class Utils {
             Log.e(Utils.class.getName(), e.getMessage(), e);
         }
         return resultObject;
+    }
+
+    public static boolean isOnline(Context ctx) {
+        ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 }

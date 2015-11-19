@@ -56,6 +56,7 @@ import static com.google.android.gms.location.LocationServices.API;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 import static geocaching.Const.PREFS_KEY_BULK_SAVE_PROGRESS;
 import static geocaching.Const.PREFS_NAME;
+import static geocaching.Utils.isOnline;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_ERROR;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_FINISHED;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_STARTED;
@@ -189,7 +190,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                if (position.zoom < 10) return;
+                if (position.zoom < 10 || !isOnline(getActivity())) return;
                 LatLngBounds currentProjection = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
                 boolean contains = false;
                 if (previousBounds != null) {

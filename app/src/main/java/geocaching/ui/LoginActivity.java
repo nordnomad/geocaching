@@ -4,10 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -22,6 +19,7 @@ import geocaching.login.UserLoginTask;
 import map.test.myapplication3.app.R;
 
 import static geocaching.Utils.isBlank;
+import static geocaching.Utils.isOnline;
 
 public class LoginActivity extends AppCompatActivity {
     AccountAuthenticatorResponse accountAuthenticatorResponse;
@@ -65,14 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
-    }
-
     void attemptLogin() {
-        if (!isOnline()) {
+        if (!isOnline(this)) {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             AlertDialog alertDialog = alertDialogBuilder
                     .setTitle("Network is required")
