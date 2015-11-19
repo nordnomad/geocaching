@@ -74,6 +74,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
 
     GCDownloadReceiver downloadStateReceiver = new GCDownloadReceiver();
     IntentFilter downloadStateIntentFilter = new IntentFilter(GCDownloadService.Constants.BROADCAST_ACTION);
+    static int MIN_ZOOM_LEVEL_FOR_LOAD = 10;
 
     @Override
     public void onLocationChanged(Location l) {
@@ -190,7 +191,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
         googleMap.map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                if (position.zoom < 10 || !isOnline(getActivity())) return;
+                if (position.zoom < MIN_ZOOM_LEVEL_FOR_LOAD || !isOnline(getActivity())) return;
                 LatLngBounds currentProjection = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
                 boolean contains = false;
                 if (previousBounds != null) {

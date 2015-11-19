@@ -13,7 +13,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -66,7 +65,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
                 map.markerGeoCaches.put(cache, marker);
             }
         }
-        Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
+      /*Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
         while (iterator.hasNext()) {
             GeoCache cache = iterator.next();
             if (!caches.contains(cache)) {
@@ -74,7 +73,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
                 marker.remove();
                 iterator.remove();
             }
-        }
+        }*/
     }
 }
 
