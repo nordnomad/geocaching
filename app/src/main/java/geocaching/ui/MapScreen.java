@@ -204,7 +204,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                             previousLoadCachesTask.cancel(true);
                             previousLoadCachesTask = null;
                         }
-                        previousLoadCachesTask = new LoadCachesTask(googleMap).execute(bounds);
+                        previousLoadCachesTask = new LoadCachesTask(googleMap, getActivity().findViewById(R.id.map_screen_geocaches_loader)).execute(bounds);
                     }
                 }
             }

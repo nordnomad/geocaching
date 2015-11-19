@@ -2,6 +2,7 @@ package geocaching.tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -27,12 +28,20 @@ import static geocaching.Utils.numberToStatus;
 import static geocaching.Utils.numberToType;
 
 public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
+    View loader;
     List<GeoCache> caches = new ArrayList<>();
 
     MapWrapper map;
 
-    public LoadCachesTask(MapWrapper map) {
+    public LoadCachesTask(MapWrapper map, View loader) {
         this.map = map;
+        this.loader = loader;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        loader.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -65,6 +74,7 @@ public class LoadCachesTask extends AsyncTask<LatLngBounds, Void, Void> {
                 map.markerGeoCaches.put(cache, marker);
             }
         }
+        loader.setVisibility(View.GONE);
       /*Iterator<GeoCache> iterator = map.markerGeoCaches.keySet().iterator();
         while (iterator.hasNext()) {
             GeoCache cache = iterator.next();

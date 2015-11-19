@@ -36,4 +36,5 @@
     <string name="notification_save_all_title">Сохранение кешей</string>
     <string name="notification_save_all_content_text">Идет загрузка</string>
     <string name="favourite_screen_empty_list_goto_map_button">перейти</string>
+    <string name="map_screen_geocaches_loader">Загрузка кешей...</string>
 </resources>
