@@ -56,11 +56,17 @@ public class GCDownloadService extends IntentService {
         double sLon = intent.getDoubleExtra("sLon", 0);
         double nLat = intent.getDoubleExtra("nLat", 0);
         double sLat = intent.getDoubleExtra("sLat", 0);
-        List<Integer> excludeIds = intent.getIntegerArrayListExtra("excludeIds");
+        List<Integer> excludeIds = intent.getIntegerArrayListExtra("excludedIds");
         Network.with(this).loadGeoCachesOnMap(nLon, sLon, nLat, sLat, excludeIds, new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(final JSONArray response) {
-
+                        if (response.length() == 0) {
+                            nm.cancel(SAVE_ALL_NOTIFICATION_ID);
+                            editor.putBoolean(PREFS_KEY_BULK_SAVE_PROGRESS, false).commit();
+                            Intent localIntent = new Intent(GCDownloadService.Constants.BROADCAST_ACTION).putExtra(KEY_STATUS, DOWNLOAD_FINISHED);
+                            LocalBroadcastManager.getInstance(GCDownloadService.this).sendBroadcast(localIntent);
+                            return;
+                        }
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... params) {
