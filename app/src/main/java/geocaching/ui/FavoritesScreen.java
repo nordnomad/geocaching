@@ -10,7 +10,11 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -135,6 +140,21 @@ public class FavoritesScreen extends CompassSensorsFragment implements LoaderMan
                 TextView nameView = (TextView) view.findViewById(R.id.nameView);
                 Location loc = (Location) view.getTag();
                 GoTo.geoCacheActivity(getActivity(), id, nameView.getText(), loc.getLongitude(), loc.getLatitude());
+            }
+        });
+        Button gotoMapButton = (Button) getActivity().findViewById(R.id.gotoMapButton);
+        gotoMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_frame, new MapScreen(), MapScreen.TAG)
+                        .commit();
+                ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                if (actionBar != null) actionBar.setTitle(getString(R.string.drawer_menu_map));
+                DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                MainActivity.currentFragmentTag = MapScreen.TAG;
             }
         });
     }

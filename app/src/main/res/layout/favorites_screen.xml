@@ -6,15 +6,40 @@
     android:orientation="vertical">
 
     <ListView
+        android:visibility="gone"
         android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:drawSelectorOnTop="false" />
 
-    <TextView
+    <LinearLayout
+        android:paddingTop="40dp"
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/favourites_screen" />
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:maxWidth="220dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:text="@string/favourites_screen_is_empty" />
+
+        <Button
+            android:layout_marginTop="20dp"
+            android:id="@+id/gotoMapButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#2196f3"
+            android:textColor="@android:color/white"
+            android:text="@string/favourite_screen_empty_list_goto_map_button" />
+    </LinearLayout>
 </LinearLayout>

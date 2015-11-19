@@ -22,7 +22,7 @@
     <string name="gc_info_description">Описание тайника</string>
     <string name="compass_my_destination">Моя цель</string>
     <string name="compass_my_location">Моё местоположение</string>
-    <string name="favourites_screen">Нет сохраненных тайников</string>
+    <string name="favourites_screen_is_empty">Нет сохраненных тайников, чтобы сохранить тайники перейдите на карту</string>
     <string name="favourietes_list_item_gc_icon">Geocache icon</string>
     <string name="image_pager_item_gc_image">Geocache image</string>
     <string name="gc_activity_tab_information">Информация</string>
@@ -35,4 +35,5 @@
     <string name="compass">Компасс</string>
     <string name="notification_save_all_title">Сохранение кешей</string>
     <string name="notification_save_all_content_text">Идет загрузка</string>
+    <string name="favourite_screen_empty_list_goto_map_button">перейти</string>
 </resources>

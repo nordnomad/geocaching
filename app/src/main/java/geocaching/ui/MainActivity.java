@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return AccountManager.get(this).getAccountsByType("com.geocaching")[0].name;
     }
 
-    String currentFragmentTag = MapScreen.TAG;
+    static String currentFragmentTag = MapScreen.TAG;
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
