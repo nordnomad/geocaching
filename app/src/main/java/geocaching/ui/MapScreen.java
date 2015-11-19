@@ -203,7 +203,6 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                         }
                         previousLoadCachesTask = new LoadCachesTask(googleMap);
                         previousLoadCachesTask.execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
-//                        new LoadCachesTask(googleMap).execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
                     }
                 }
             }
