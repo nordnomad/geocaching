@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -182,7 +183,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
     }
 
     LatLngBounds previousBounds;
-    LoadCachesTask previousLoadCachesTask;
+    AsyncTask previousLoadCachesTask;
 
     private void setUpMap() {
         googleMap.map.setMyLocationEnabled(true);
@@ -192,21 +193,18 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
             @Override
             public void onCameraChange(CameraPosition position) {
                 if (position.zoom < MIN_ZOOM_LEVEL_FOR_LOAD || !isOnline(getActivity())) return;
-                LatLngBounds currentProjection = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
-                boolean contains = false;
-                if (previousBounds != null) {
-                    contains = previousBounds.contains(currentProjection.northeast)
-                            && previousBounds.contains(currentProjection.southwest);
-                }
+                LatLngBounds bounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+                boolean contains = previousBounds != null
+                        && previousBounds.contains(bounds.northeast)
+                        && previousBounds.contains(bounds.southwest);
                 if (!contains) {
-                    previousBounds = googleMap.map.getProjection().getVisibleRegion().latLngBounds;
+                    previousBounds = bounds;
                     if (cameraPosition == null) {
                         if (previousLoadCachesTask != null && !previousLoadCachesTask.isCancelled()) {
                             previousLoadCachesTask.cancel(true);
                             previousLoadCachesTask = null;
                         }
-                        previousLoadCachesTask = new LoadCachesTask(googleMap);
-                        previousLoadCachesTask.execute(googleMap.map.getProjection().getVisibleRegion().latLngBounds);
+                        previousLoadCachesTask = new LoadCachesTask(googleMap).execute(bounds);
                     }
                 }
             }
