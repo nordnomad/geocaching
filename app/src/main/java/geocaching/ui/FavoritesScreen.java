@@ -32,6 +32,7 @@ import map.test.myapplication3.app.R;
 
 public class FavoritesScreen extends CompassSensorsFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static String TAG = "FAVOURITE_SCREEN";
     ListView listView;
     LocationManager locationManager; // TODO replace with gApi
     MenuItem removeCacheItem;

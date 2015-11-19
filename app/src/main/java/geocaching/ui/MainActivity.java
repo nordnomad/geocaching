@@ -4,7 +4,6 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -57,21 +56,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return AccountManager.get(this).getAccountsByType("com.geocaching")[0].name;
     }
 
+    String currentFragmentTag = MapScreen.TAG;
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (id == R.id.nav_map) {
-            fragmentTransaction.replace(R.id.content_frame, new MapScreen(), "MAP_SCREEN");
+            if (!MapScreen.TAG.equals(currentFragmentTag)) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_frame, new MapScreen(), MapScreen.TAG)
+                        .commit();
+                currentFragmentTag = MapScreen.TAG;
+            }
         } else if (id == R.id.nav_favourite) {
-            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "FAVOURITE_SCREEN");
+            if (!FavoritesScreen.TAG.equals(currentFragmentTag)) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_frame, new FavoritesScreen(), FavoritesScreen.TAG)
+                        .commit();
+                currentFragmentTag = FavoritesScreen.TAG;
+            }
         }
 //        else if (id == R.id.nav_profile) {
 //            fragmentTransaction.replace(R.id.content_frame, new FavoritesScreen(), "PROFILE_SCREEN");
 //            GoTo.compassMapActivity(this);
 //        }
-        fragmentTransaction.commit();
         actionBar.setTitle(item.getTitle());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

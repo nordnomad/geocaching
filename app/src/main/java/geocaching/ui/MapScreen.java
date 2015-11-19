@@ -61,7 +61,9 @@ import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_FINISHED;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_STARTED;
 import static geocaching.services.GCDownloadService.Constants.KEY_STATUS;
 
-public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener/*, GeoCacheDownloadReceiver.Receiver*/ {
+public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+    public static String TAG = "MAP_SCREEN";
+
     MapWrapper googleMap; // Might be null if Google Play services APK is not available.
     View markerInfo;
     GoogleApiClient gapiClient;
@@ -215,7 +217,7 @@ public class MapScreen extends Fragment implements ConnectionCallbacks, OnConnec
                     markerInfo.setVisibility(View.VISIBLE);
                 }
 
-                Location location = new Location("Test");
+                Location location = new Location("");
                 location.setLatitude(marker.getPosition().latitude);
                 location.setLongitude(marker.getPosition().longitude);
 
