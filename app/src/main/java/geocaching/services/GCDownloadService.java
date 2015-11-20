@@ -14,6 +14,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -23,6 +25,8 @@ import map.test.myapplication3.app.R;
 
 import static geocaching.Const.PREFS_KEY_BULK_SAVE_PROGRESS;
 import static geocaching.Const.PREFS_NAME;
+import static geocaching.Utils.numberToStatus;
+import static geocaching.Utils.numberToType;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_ERROR;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_FINISHED;
 import static geocaching.services.GCDownloadService.Constants.DOWNLOAD_STARTED;
@@ -70,15 +74,30 @@ public class GCDownloadService extends IntentService {
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... params) {
-                                Storage.with(GCDownloadService.this).bulkSaveGeoCacheFullInfo(response);
+                                Storage.with(GCDownloadService.this).bulkSaveGeoCacheFullInfo(fixGeoCacheTypeAndStatus(response));
                                 return null;
+                            }
+
+                            private JSONArray fixGeoCacheTypeAndStatus(JSONArray geoCaches) {
+                                try {
+                                    for (int i = 0; i < geoCaches.length(); i++) {
+                                        JSONObject geoCache = geoCaches.getJSONObject(i);
+                                        int serverType = geoCache.getInt("ct");
+                                        geoCache.put("ct", numberToType(serverType).ordinal());
+                                        int serverStatus = geoCache.getInt("st");
+                                        geoCache.put("st", numberToStatus(serverStatus).ordinal());
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                return geoCaches;
                             }
 
                             @Override
                             protected void onPostExecute(Void aVoid) {
                                 nm.cancel(SAVE_ALL_NOTIFICATION_ID);
                                 editor.putBoolean(PREFS_KEY_BULK_SAVE_PROGRESS, false).commit();
-                                Intent localIntent = new Intent(GCDownloadService.Constants.BROADCAST_ACTION).putExtra(KEY_STATUS, DOWNLOAD_FINISHED);
+                                Intent localIntent = new Intent(Constants.BROADCAST_ACTION).putExtra(KEY_STATUS, DOWNLOAD_FINISHED);
                                 LocalBroadcastManager.getInstance(GCDownloadService.this).sendBroadcast(localIntent);
                             }
                         }.execute();
