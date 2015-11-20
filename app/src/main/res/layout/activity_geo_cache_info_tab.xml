@@ -212,7 +212,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#666666" />
+                        android:textColor="@android:color/black" />
 
                     <ImageButton
                         android:visibility="gone"
@@ -271,7 +271,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#666666" />
+                        android:textColor="@android:color/black" />
 
                     <ImageButton
                         android:id="@id/expand_collapse"

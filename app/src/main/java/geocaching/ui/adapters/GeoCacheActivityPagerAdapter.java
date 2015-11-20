@@ -7,6 +7,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -154,8 +155,14 @@ public class GeoCacheActivityPagerAdapter extends PagerAdapter {
             author.setText(response.getJSONObject("author").getString("name"));
             ExpandableTextView descriptionText = (ExpandableTextView) view.findViewById(R.id.descriptionText);
             descriptionText.setText(Html.fromHtml(response.getString("description")));
+            TextView descriptionTextExpandable = (TextView) descriptionText.findViewById(R.id.expandable_text);
+            descriptionTextExpandable.setOnClickListener(null);
+            descriptionTextExpandable.setMovementMethod(LinkMovementMethod.getInstance());
             ExpandableTextView surroundingArea = (ExpandableTextView) view.findViewById(R.id.surroundingArea);
             surroundingArea.setText(Html.fromHtml(response.getString("surroundingArea")));
+            TextView surroundingAreaExpandable = (TextView) surroundingArea.findViewById(R.id.expandable_text);
+            surroundingAreaExpandable.setOnClickListener(null);
+            surroundingAreaExpandable.setMovementMethod(LinkMovementMethod.getInstance());
         } catch (JSONException e) {
             Log.e(getClass().getName(), e.getMessage(), e);
         }
